@@ -2,6 +2,10 @@
 
 use App\Models\userModel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 uses(RefreshDatabase::class);
 
@@ -51,4 +55,46 @@ it('can update and delete a user', function () {
     $this->assertSoftDeleted('tb_users', [
         'id' => $user->id,
     ]);
+});
+
+it('can import users from an xlsx file', function () {
+    $spreadsheet = new Spreadsheet();
+    $sheet = $spreadsheet->getActiveSheet();
+    $sheet->setCellValue('A1', 'TEMPLATE IMPORT DATA USER');
+    $sheet->setCellValue('A2', 'Silakan isi data di bawah ini sesuai format yang tersedia.');
+    $sheet->fromArray([
+        ['nama', 'username', 'password', 'role', 'status'],
+        ['Budi Santoso', 'budisantoso', 'secret123', 'admin', null],
+        ['Siti Nurhaliza', 'sitinurhaliza', 'secret123', 'guru', null],
+    ], null, 'A4');
+
+    $sheet->setCellValueExplicit('E5', 1, DataType::TYPE_NUMERIC);
+    $sheet->setCellValueExplicit('E6', 0, DataType::TYPE_NUMERIC);
+
+    $writer = new Xlsx($spreadsheet);
+    $tempFile = tempnam(sys_get_temp_dir(), 'users-import-');
+    $xlsxPath = $tempFile . '.xlsx';
+    unlink($tempFile);
+    $writer->save($xlsxPath);
+
+    $file = UploadedFile::fake()->createWithContent('users-import.xlsx', file_get_contents($xlsxPath));
+
+    $this->post(route('auth.import.store'), [
+        'file' => $file,
+    ])->assertRedirect(route('auth'))
+        ->assertSessionHas('success', 'Data user berhasil diimport.');
+
+    $this->assertDatabaseHas('tb_users', [
+        'username' => 'budisantoso',
+        'role' => 'admin',
+        'status' => 'active',
+    ]);
+
+    $this->assertDatabaseHas('tb_users', [
+        'username' => 'sitinurhaliza',
+        'role' => 'guru',
+        'status' => 'inactive',
+    ]);
+
+    unlink($xlsxPath);
 });

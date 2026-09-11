@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Imports\UsersImport;
 use App\Models\userModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
+use Maatwebsite\Excel\Facades\Excel;
 
 class authController extends Controller
 {
@@ -25,7 +27,7 @@ class authController extends Controller
         $validated      = $request->validate([
             'nama'      => ['required', 'string', 'max:255'],
             'username'  => ['required', 'string', 'max:255', 'unique:tb_users,username'],
-            'password'  => ['required', 'string', 'min:8', 'confirmed'],
+            'password'  => ['required', 'string', 'min:3', 'confirmed'],
             'role'      => ['required', 'in:admin,guru,siswa'],
             'status'    => ['required', 'in:active,inactive'],
         ]);
@@ -72,5 +74,15 @@ class authController extends Controller
     public function import()
     {
         return view('auth.import');
+    }
+
+    public function importStore(Request $request)
+    {
+        $validated = $request->validate([
+            'file' => ['required', 'file', 'mimes:xlsx,xls,csv'],
+        ]);
+
+        Excel::import(new UsersImport, $validated['file']);
+        return redirect()->route('auth')->with('success', 'Data user berhasil diimport.');
     }
 }

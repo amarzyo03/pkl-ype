@@ -17,4 +17,5 @@ Route::get('/auth/edit/{id}', [authController::class, 'edit'])->name('auth.edit'
 Route::put('/auth/update/{id}', [authController::class, 'update'])->name('auth.update');
 Route::delete('/auth/delete/{id}', [authController::class, 'delete'])->name('auth.delete');
 Route::get('/auth/import', [authController::class, 'import'])->name('auth.import');
+Route::post('/auth/import', [authController::class, 'importStore'])->name('auth.import.store');
 Route::get('/dashboard', [dashboardController::class, 'index'])->name('dashboard');

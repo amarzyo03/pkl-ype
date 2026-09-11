@@ -3,27 +3,46 @@
     <section class="hero">
         <div class="hero-text"><span class="eyebrow">Master · User · Import</span>
             <h1 class="hero-title">Import <span class="accent">Users</span></h1>
-            <p class="hero-sub">Upload a CSV file to import multiple users into the system.</p>
+            <p class="hero-sub">Upload file Excel (.xlsx) untuk menambahkan beberapa user sekaligus.</p>
         </div>
         <div class="hero-actions">
-            <button class="btn btn--ghost">Cancel</button>
-            <button class="btn btn--primary">Save Changes</button>
+            <a href="{{ route('auth') }}" class="btn btn--ghost">Cancel</a>
+            <a href="{{ asset('assets/static/template/user-import-template.xlsx') }}" class="btn btn--ghost"
+                download>Download Template</a>
+            <button type="submit" class="btn btn--primary" form="import-form">Save Changes</button>
         </div>
     </section>
 
-    <section class="card" style="min-height:360px;align-items:center;justify-content:center">
-        <div style="text-align:center;color:var(--t-light);padding:60px 20px">
-            <div
-                style="width:56px;height:56px;margin:0 auto 18px;border-radius:14px;background:var(--bg-muted);color:var(--t-muted);display:grid;place-items:center">
-                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor"
-                    stroke-width="1.6">
-                    <path d="M12 5v14M5 12h14" />
-                </svg>
-            </div>
-            <div
-                style="font-family:'Inter Tight',sans-serif;font-weight:700;font-size:18px;color:var(--t-base);letter-spacing:-.018em;margin-bottom:6px">
-                Import Users</div>
-            <div style="font-size:13px;max-width:36ch;margin:0 auto">import excel file, (.xlxs)</div>
+    <section class="card" style="min-height:360px;display:flex;align-items:center;justify-content:center">
+        <div style="width:min(100%,560px);padding:20px;">
+            <form id="import-form" action="{{ route('auth.import.store') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+
+                <div style="margin-bottom:18px;">
+                    <label for="file" style="display:block;margin-bottom:8px;font-weight:600;color:var(--t-base);">Pilih
+                        File Excel</label>
+                    <input id="file" name="file" type="file" accept=".xlsx,.xls,.csv" class="input"
+                        style="padding:14px;">
+                </div>
+
+                @if ($errors->any())
+                    <div
+                        style="margin-bottom:16px;padding:12px;border-radius:10px;background:rgba(239,68,68,.08);color:#ef4444;border:1px solid rgba(239,68,68,.2);">
+                        @foreach ($errors->all() as $error)
+                            <div>{{ $error }}</div>
+                        @endforeach
+                    </div>
+                @endif
+
+                <div
+                    style="padding:16px;border-radius:12px;background:var(--bg-muted);border:1px solid rgba(148,163,184,.2);color:var(--t-muted);font-size:13px;line-height:1.6;">
+                    Kolom yang disarankan pada file Excel:<br>
+                    <strong>nama</strong>, <strong>username</strong>, <strong>password</strong>, <strong>role</strong>,
+                    <strong>status</strong><br><br>
+                    Catatan status:<br>
+                    <strong>1</strong> = aktif, <strong>0</strong> = inactive
+                </div>
+            </form>
         </div>
     </section>
 @endsection
