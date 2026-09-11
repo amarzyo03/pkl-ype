@@ -1,8 +1,7 @@
 <?php
 
-use App\Http\Controllers\authController;
 use App\Http\Controllers\dashboardController;
-use App\Http\Controllers\guruController;
+use App\Http\Controllers\userController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -10,13 +9,13 @@ Route::get('/', function () {
 });
 
 
-Route::get('/auth', [authController::class, 'index'])->name('auth');
-Route::get('/auth/add', [authController::class, 'add'])->name('auth.add');
-Route::post('/auth/save', [authController::class, 'save'])->name('auth.save');
-Route::get('/auth/edit/{id}', [authController::class, 'edit'])->name('auth.edit');
-Route::put('/auth/update/{id}', [authController::class, 'update'])->name('auth.update');
-Route::delete('/auth/delete/{id}', [authController::class, 'delete'])->name('auth.delete');
-Route::get('/auth/import', [authController::class, 'import'])->name('auth.import');
-Route::post('/auth/import', [authController::class, 'importStore'])->name('auth.import.store');
+Route::get('/user', [userController::class, 'index'])->name('user');
+Route::get('/user/add', [userController::class, 'add'])->name('user.add');
+Route::post('/user/save', [userController::class, 'save'])->name('user.save');
+Route::get('/user/edit/{id}', [userController::class, 'edit'])->name('user.edit');
+Route::put('/user/update/{id}', [userController::class, 'update'])->name('user.update');
+Route::delete('/user/delete/{id}', [userController::class, 'delete'])->name('user.delete');
+Route::get('/user/import', [userController::class, 'import'])->name('user.import');
+Route::post('/user/import', [userController::class, 'importStore'])->name('user.import.store');
 
 Route::get('/dashboard', [dashboardController::class, 'index'])->name('dashboard');

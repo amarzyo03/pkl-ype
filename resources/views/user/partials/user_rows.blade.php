@@ -27,13 +27,13 @@
         </td>
         <td>
             <div class="data-cell-actions">
-                <a href="{{ route('auth.edit', $row->id) }}" class="btn--icon" aria-label="Edit" title="Edit">
+                <a href="{{ route('user.edit', $row->id) }}" class="btn--icon" aria-label="Edit" title="Edit">
                     <svg viewBox="0 0 24 24">
                         <path d="M12 20h9" />
                         <path d="M16.5 3.5a2.1 2.1 0 1 1 3 3L7 19l-4 1 1-4z" />
                     </svg>
                 </a>
-                <form action="{{ route('auth.delete', $row->id) }}" method="post" style="display:inline;">
+                <form action="{{ route('user.delete', $row->id) }}" method="post" style="display:inline;">
                     @csrf
                     @method('DELETE')
                     <button type="submit" class="btn--icon btn--icon-delete" aria-label="Delete" title="Delete">

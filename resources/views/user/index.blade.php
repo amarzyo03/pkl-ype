@@ -35,13 +35,13 @@
             <p class="hero-sub">Manajemen User Aplikasi</p>
         </div>
         <div class="hero-actions">
-            <a href="{{ route('auth.import') }}" class="btn btn--ghost"><svg viewBox="0 0 24 24">
+            <a href="{{ route('user.import') }}" class="btn btn--ghost"><svg viewBox="0 0 24 24">
                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                     <path d="M7 10l5 5 5-5" />
                     <path d="M12 15V3" />
                 </svg> Import
             </a>
-            <a href="{{ route('auth.add') }}" class="btn btn--primary">
+            <a href="{{ route('user.add') }}" class="btn btn--primary">
                 <svg viewBox="0 0 24 24">
                     <path d="M12 5v14M5 12h14" />
                 </svg> Add user
@@ -123,7 +123,7 @@
     </div>
 
     <script>
-        const authIndexUrl = "{{ route('auth') }}";
+        const userIndexUrl = "{{ route('user') }}";
         const searchInput = document.getElementById('user-search');
         const roleSelect = document.getElementById('user-role');
         const statusSelect = document.getElementById('user-status');
@@ -160,7 +160,7 @@
 
         function updateList(page = 1) {
             const params = buildQueryParams(page);
-            const url = `${authIndexUrl}?${params.toString()}`;
+            const url = `${userIndexUrl}?${params.toString()}`;
 
             fetch(url, {
                     headers: {
@@ -173,7 +173,7 @@
                     summaryContainer.innerHTML = data.summary;
                     pagerContainer.innerHTML = data.pager;
 
-                    const summaryUrl = new URL(authIndexUrl, window.location.origin);
+                    const summaryUrl = new URL(userIndexUrl, window.location.origin);
                     summaryUrl.search = params.toString().replace(/&ajax=1/g, '');
                     history.replaceState({}, '', summaryUrl.toString().replace(window.location.origin, ''));
                 })
