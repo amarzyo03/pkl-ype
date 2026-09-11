@@ -1,5 +1,34 @@
 @extends('app')
 @section('content')
+    <style>
+        .badge.user-role-admin {
+            background: rgba(239, 68, 68, 0.14);
+            color: #b91c1c;
+            border-color: rgba(239, 68, 68, 0.35);
+        }
+
+        .badge.user-role-guru {
+            background: rgba(59, 130, 246, 0.14);
+            color: #1d4ed8;
+            border-color: rgba(59, 130, 246, 0.35);
+        }
+
+        .badge.user-role-siswa {
+            background: rgba(245, 158, 11, 0.14);
+            color: #b45309;
+            border-color: rgba(245, 158, 11, 0.35);
+        }
+
+        .btn--icon-delete {
+            color: #ef4444;
+        }
+
+        .btn--icon-delete:hover {
+            background: rgba(239, 68, 68, 0.12);
+            color: #b91c1c;
+        }
+    </style>
+
     <section class="hero">
         <div class="hero-text"><span class="eyebrow">Master · Users</span>
             <h1 class="hero-title">Data <span class="accent">Users</span></h1>
@@ -21,7 +50,6 @@
     </section>
 
     <div class="grid">
-
         <section class="col-12 card">
             <div class="data-toolbar">
                 <div class="data-toolbar-left">
@@ -32,20 +60,24 @@
                                 <path d="m21 21-4.3-4.3" />
                             </svg>
                         </span>
-                        <input class="input" type="search" placeholder="Search users by name, email, or ID...">
+                        <input id="user-search" class="input" type="search" name="search"
+                            placeholder="Search users by name, email, or ID..." value="{{ request('search', '') }}">
                     </div>
                 </div>
                 <div class="data-toolbar-right">
-                    <select class="select" style="width:auto;padding:7px 28px 7px 10px;font-size:12px">
-                        <option>All roles</option>
-                        <option>Admin</option>
-                        <option>Guru</option>
-                        <option>Siswa</option>
+                    <select id="user-role" class="select" name="role"
+                        style="width:auto;padding:7px 28px 7px 10px;font-size:12px">
+                        <option value="all" {{ request('role', 'all') === 'all' ? 'selected' : '' }}>All roles</option>
+                        <option value="admin" {{ request('role') === 'admin' ? 'selected' : '' }}>Admin</option>
+                        <option value="guru" {{ request('role') === 'guru' ? 'selected' : '' }}>Guru</option>
+                        <option value="siswa" {{ request('role') === 'siswa' ? 'selected' : '' }}>Siswa</option>
                     </select>
-                    <select class="select" style="width:auto;padding:7px 28px 7px 10px;font-size:12px">
-                        <option>All status</option>
-                        <option>Active</option>
-                        <option>Inactive</option>
+                    <select id="user-status" class="select" name="status"
+                        style="width:auto;padding:7px 28px 7px 10px;font-size:12px">
+                        <option value="all" {{ request('status', 'all') === 'all' ? 'selected' : '' }}>All status
+                        </option>
+                        <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Active</option>
+                        <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>Inactive</option>
                     </select>
                 </div>
             </div>
@@ -73,86 +105,107 @@
                             <th></th>
                         </tr>
                     </thead>
-                    <tbody>
-                        @forelse ($users as $i => $row)
-                            <tr class="data-row">
-                                <td>{{ $loop->iteration }}</td>
-                                <td>
-                                    <div class="data-cell-user">
-                                        <div class="av ma-2">A</div>
-                                        <div class="data-cell-user-meta">
-                                            <div class="data-cell-user-name">{{ ucwords($row->nama) }}</div>
-                                            <div class="data-cell-user-email">{{ strtolower($row->username) }}</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td><span class="badge primary">{{ ucwords($row->role) }}</span></td>
-                                <td><span class="badge success dot">{{ ucwords($row->status) }}</span></td>
-                                <td>
-                                    <div class="data-cell-actions">
-                                        <a href="{{ route('auth.edit', $row->id) }}" class="btn--icon" aria-label="Edit"
-                                            title="Edit">
-                                            <svg viewBox="0 0 24 24">
-                                                <path d="M12 20h9" />
-                                                <path d="M16.5 3.5a2.1 2.1 0 1 1 3 3L7 19l-4 1 1-4z" />
-                                            </svg>
-                                        </a>
-                                        <form action="{{ route('auth.delete', $row->id) }}" method="post"
-                                            style="display:inline;">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn--icon" aria-label="Delete" title="Delete">
-                                                <svg viewBox="0 0 24 24">
-                                                    <circle cx="12" cy="5" r="1" />
-                                                    <circle cx="12" cy="12" r="1" />
-                                                    <circle cx="12" cy="19" r="1" />
-                                                </svg>
-                                            </button>
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="5" class="text-center text-muted"> No users data Found.</td>
-                            </tr>
-                        @endforelse
+                    <tbody id="user-table-body">
+                        @include('auth.partials.user_rows', ['users' => $users])
                     </tbody>
                 </table>
             </div>
 
             <div class="data-foot">
-                <div class="data-foot-info">
-                    <span>Showing <strong style="color:var(--t-base)">1–15</strong> of
-                        <strong style="color:var(--t-base)">142</strong>
-                    </span>
-                    <select class="select">
-                        <option>15 per page</option>
-                        <option>25 per page</option>
-                        <option>50 per page</option>
-                        <option>100 per page</option>
-                    </select>
+                <div class="data-foot-info" id="user-summary">
+                    @include('auth.partials.user_summary', ['users' => $users])
                 </div>
-                <div class="pager">
-                    <button class="pager-btn" disabled="disabled" aria-label="Previous">
-                        <svg viewBox="0 0 24 24">
-                            <path d="m15 18-6-6 6-6" />
-                        </svg>
-                    </button>
-                    <button class="pager-btn is-active">1</button>
-                    <button class="pager-btn">2</button>
-                    <button class="pager-btn">3</button>
-                    <button class="pager-btn">…</button>
-                    <button class="pager-btn">10</button>
-                    <button class="pager-btn" aria-label="Next">
-                        <svg viewBox="0 0 24 24">
-                            <path d="m9 18 6-6-6-6" />
-                        </svg>
-                    </button>
+                <div class="pager" id="user-pager">
+                    @include('auth.partials.user_pager', ['users' => $users])
                 </div>
             </div>
-
         </section>
-
     </div>
+
+    <script>
+        const authIndexUrl = "{{ route('auth') }}";
+        const searchInput = document.getElementById('user-search');
+        const roleSelect = document.getElementById('user-role');
+        const statusSelect = document.getElementById('user-status');
+
+        const tableBody = document.getElementById('user-table-body');
+        const summaryContainer = document.getElementById('user-summary');
+        const pagerContainer = document.getElementById('user-pager');
+
+        function buildQueryParams(page = 1) {
+            const params = new URLSearchParams();
+            const search = searchInput.value.trim();
+            const role = roleSelect.value;
+            const status = statusSelect.value;
+            const perPage = document.querySelector('[data-per-page]')?.value || '15';
+
+            if (search) {
+                params.set('search', search);
+            }
+
+            if (role && role !== 'all') {
+                params.set('role', role);
+            }
+
+            if (status && status !== 'all') {
+                params.set('status', status);
+            }
+
+            params.set('perPage', perPage);
+            params.set('page', page);
+            params.set('ajax', '1');
+
+            return params;
+        }
+
+        function updateList(page = 1) {
+            const params = buildQueryParams(page);
+            const url = `${authIndexUrl}?${params.toString()}`;
+
+            fetch(url, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    tableBody.innerHTML = data.rows;
+                    summaryContainer.innerHTML = data.summary;
+                    pagerContainer.innerHTML = data.pager;
+
+                    const summaryUrl = new URL(authIndexUrl, window.location.origin);
+                    summaryUrl.search = params.toString().replace(/&ajax=1/g, '');
+                    history.replaceState({}, '', summaryUrl.toString().replace(window.location.origin, ''));
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+        }
+
+        let searchTimer;
+        searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimer);
+            searchTimer = setTimeout(() => updateList(1), 300);
+        });
+
+        document.addEventListener('change', function(event) {
+            if (event.target === roleSelect || event.target === statusSelect) {
+                updateList(1);
+            }
+
+            if (event.target.matches('[data-per-page]')) {
+                updateList(1);
+            }
+        });
+
+        document.addEventListener('click', function(event) {
+            const paginationButton = event.target.closest('[data-page]');
+            if (!paginationButton) {
+                return;
+            }
+
+            event.preventDefault();
+            updateList(paginationButton.dataset.page);
+        });
+    </script>
 @endsection

@@ -57,6 +57,39 @@ it('can update and delete a user', function () {
     ]);
 });
 
+it('can filter users by role and status on the auth index', function () {
+    userModel::create([
+        'nama' => 'Admin Active',
+        'username' => 'adminactive',
+        'password' => bcrypt('secret123'),
+        'role' => 'admin',
+        'status' => 'active',
+    ]);
+
+    userModel::create([
+        'nama' => 'Admin Inactive',
+        'username' => 'admininactive',
+        'password' => bcrypt('secret123'),
+        'role' => 'admin',
+        'status' => 'inactive',
+    ]);
+
+    userModel::create([
+        'nama' => 'Student Active',
+        'username' => 'studentactive',
+        'password' => bcrypt('secret123'),
+        'role' => 'siswa',
+        'status' => 'active',
+    ]);
+
+    $response = $this->get(route('auth', ['role' => 'admin', 'status' => 'active']));
+
+    $response->assertOk();
+    $response->assertSee('Admin Active');
+    $response->assertDontSee('Admin Inactive');
+    $response->assertDontSee('Student Active');
+});
+
 it('can import users from an xlsx file', function () {
     $spreadsheet = new Spreadsheet();
     $sheet = $spreadsheet->getActiveSheet();

@@ -11,9 +11,47 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class authController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $users = UserModel::orderBy('created_at', 'desc')->get();
+        $query = UserModel::query();
+
+        $search = trim((string) $request->input('search', ''));
+        if ($search !== '') {
+            $query->where(function ($q) use ($search) {
+                $q->where('nama', 'like', "%{$search}%")
+                    ->orWhere('username', 'like', "%{$search}%")
+                    ->orWhere('id', 'like', "%{$search}%");
+            });
+        }
+
+        $role = strtolower((string) $request->input('role', 'all'));
+        if (in_array($role, ['admin', 'guru', 'siswa'], true)) {
+            $query->where('role', $role);
+        }
+
+        $status = strtolower((string) $request->input('status', 'all'));
+        if (in_array($status, ['active', 'inactive'], true)) {
+            $query->where('status', $status);
+        }
+
+        $perPage = (int) $request->input('perPage', 15);
+        if (!in_array($perPage, [15, 25, 50, 100], true)) {
+            $perPage = 15;
+        }
+
+        $users = $query
+            ->orderBy('id', 'asc')
+            ->paginate($perPage)
+            ->appends($request->query());
+
+        if ($request->boolean('ajax')) {
+            return response()->json([
+                'rows' => view('auth.partials.user_rows', compact('users'))->render(),
+                'summary' => view('auth.partials.user_summary', compact('users'))->render(),
+                'pager' => view('auth.partials.user_pager', compact('users'))->render(),
+            ]);
+        }
+
         return view('auth.index', compact('users'));
     }
 
