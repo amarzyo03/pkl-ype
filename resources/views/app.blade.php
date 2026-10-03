@@ -24,7 +24,7 @@
     <link href="/assets/style.css" rel="stylesheet">
 </head>
 
-<body data-active="dashboard" data-crumbs="Workspace | Dashboard">
+<body data-active="{{ request()->segment(1) ?: 'dashboard' }}" data-crumbs="Workspace | Dashboard">
     <div class="shell">
         <div data-shell-sidebar></div>
         <div class="main">

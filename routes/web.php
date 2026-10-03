@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\dashboardController;
+use App\Http\Controllers\dudiController;
 use App\Http\Controllers\jurusanController;
+use App\Http\Controllers\kelasController;
 use App\Http\Controllers\siswaController;
 use App\Http\Controllers\userController;
 use Illuminate\Support\Facades\Route;
@@ -39,5 +41,25 @@ Route::put('/jurusan/update/{id}', [jurusanController::class, 'update'])->name('
 Route::delete('/jurusan/delete/{id}', [jurusanController::class, 'delete'])->name('jurusan.delete');
 Route::get('/jurusan/import', [jurusanController::class, 'import'])->name('jurusan.import');
 Route::post('/jurusan/import', [jurusanController::class, 'importStore'])->name('jurusan.import.store');
+
+// KELAS
+Route::get('/kelas', [kelasController::class, 'index'])->name('kelas');
+Route::get('/kelas/add', [kelasController::class, 'add'])->name('kelas.add');
+Route::post('/kelas/save', [kelasController::class, 'save'])->name('kelas.save');
+Route::get('/kelas/edit/{id}', [kelasController::class, 'edit'])->name('kelas.edit');
+Route::put('/kelas/update/{id}', [kelasController::class, 'update'])->name('kelas.update');
+Route::delete('/kelas/delete/{id}', [kelasController::class, 'delete'])->name('kelas.delete');
+Route::get('/kelas/import', [kelasController::class, 'import'])->name('kelas.import');
+Route::post('/kelas/import', [kelasController::class, 'importStore'])->name('kelas.import.store');
+
+// DUDI
+Route::get('/dudi', [dudiController::class, 'index'])->name('dudi');
+Route::get('/dudi/add', [dudiController::class, 'add'])->name('dudi.add');
+Route::post('/dudi/save', [dudiController::class, 'save'])->name('dudi.save');
+Route::get('/dudi/edit/{id}', [dudiController::class, 'edit'])->name('dudi.edit');
+Route::put('/dudi/update/{id}', [dudiController::class, 'update'])->name('dudi.update');
+Route::delete('/dudi/delete/{id}', [dudiController::class, 'delete'])->name('dudi.delete');
+Route::get('/dudi/import', [dudiController::class, 'import'])->name('dudi.import');
+Route::post('/dudi/import', [dudiController::class, 'importStore'])->name('dudi.import.store');
 
 Route::get('/dashboard', [dashboardController::class, 'index'])->name('dashboard');
