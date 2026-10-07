@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\dashboardController;
 use App\Http\Controllers\dudiController;
+use App\Http\Controllers\guruController;
 use App\Http\Controllers\jurusanController;
 use App\Http\Controllers\kelasController;
 use App\Http\Controllers\siswaController;
@@ -61,5 +62,15 @@ Route::put('/dudi/update/{id}', [dudiController::class, 'update'])->name('dudi.u
 Route::delete('/dudi/delete/{id}', [dudiController::class, 'delete'])->name('dudi.delete');
 Route::get('/dudi/import', [dudiController::class, 'import'])->name('dudi.import');
 Route::post('/dudi/import', [dudiController::class, 'importStore'])->name('dudi.import.store');
+
+// GURU
+Route::get('/guru', [guruController::class, 'index'])->name('guru');
+Route::get('/guru/add', [guruController::class, 'add'])->name('guru.add');
+Route::post('/guru/save', [guruController::class, 'save'])->name('guru.save');
+Route::get('/guru/edit/{id}', [guruController::class, 'edit'])->name('guru.edit');
+Route::put('/guru/update/{id}', [guruController::class, 'update'])->name('guru.update');
+Route::delete('/guru/delete/{id}', [guruController::class, 'delete'])->name('guru.delete');
+Route::get('/guru/import', [guruController::class, 'import'])->name('guru.import');
+Route::post('/guru/import', [guruController::class, 'importStore'])->name('guru.import.store');
 
 Route::get('/dashboard', [dashboardController::class, 'index'])->name('dashboard');

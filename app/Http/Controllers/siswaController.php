@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Imports\SiswaImport;
+use App\Models\kelasModel;
 use App\Models\siswaModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -33,7 +34,7 @@ class siswaController extends Controller
         }
 
         $perPage = (int) $request->input('perPage', 15);
-        if (!in_array($perPage, [15, 25, 50, 100], true)) {
+        if (! in_array($perPage, [15, 25, 50, 100], true)) {
             $perPage = 15;
         }
 
@@ -55,7 +56,9 @@ class siswaController extends Controller
 
     public function add()
     {
-        return view('siswa.add');
+        $daftarKelas = kelasModel::orderBy('nama')->get();
+
+        return view('siswa.add', compact('daftarKelas'));
     }
 
     public function save(Request $request)
@@ -64,7 +67,7 @@ class siswaController extends Controller
             'nis' => ['required', 'string', 'max:255', 'unique:tb_siswa,nis'],
             'nisn' => ['required', 'string', 'max:255', 'unique:tb_siswa,nisn'],
             'nama' => ['required', 'string', 'max:255'],
-            'kelas' => ['required', 'string', 'max:255'],
+            'kelas' => ['required', 'string', Rule::exists('tb_kelas', 'nama')->whereNull('deleted_at')],
             'username' => ['required', 'string', 'max:255', 'unique:tb_siswa,username'],
             'password' => ['required', 'string', 'min:3', 'confirmed'],
             'status' => ['required', 'in:active,inactive'],
@@ -79,8 +82,9 @@ class siswaController extends Controller
     public function edit(string $id)
     {
         $siswa = siswaModel::findOrFail($id);
+        $daftarKelas = kelasModel::orderBy('nama')->get();
 
-        return view('siswa.edit', compact('siswa'));
+        return view('siswa.edit', compact('siswa', 'daftarKelas'));
     }
 
     public function update(Request $request, string $id)
@@ -91,7 +95,7 @@ class siswaController extends Controller
             'nis' => ['required', 'string', 'max:255', Rule::unique('tb_siswa', 'nis')->ignore($siswa->id)],
             'nisn' => ['required', 'string', 'max:255', Rule::unique('tb_siswa', 'nisn')->ignore($siswa->id)],
             'nama' => ['required', 'string', 'max:255'],
-            'kelas' => ['required', 'string', 'max:255'],
+            'kelas' => ['required', 'string', Rule::exists('tb_kelas', 'nama')->whereNull('deleted_at')],
             'username' => ['required', 'string', 'max:255', Rule::unique('tb_siswa', 'username')->ignore($siswa->id)],
             'password' => ['nullable', 'string', 'min:8', 'confirmed'],
             'status' => ['required', 'in:active,inactive'],

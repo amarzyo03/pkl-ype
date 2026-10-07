@@ -48,8 +48,14 @@
                         <label class="field-label" for="kelas">Kelas
                             <span class="req">*</span>
                         </label>
-                        <input id="kelas" class="input" type="text" name="kelas" value="{{ old('kelas') }}"
-                            placeholder="Kelas" required>
+                        <select id="kelas" class="select" name="kelas" required>
+                            <option value="">Pilih Kelas</option>
+                            @foreach ($daftarKelas as $kelas)
+                                <option value="{{ $kelas->nama }}" {{ old('kelas') === $kelas->nama ? 'selected' : '' }}>
+                                    {{ $kelas->nama }}
+                                </option>
+                            @endforeach
+                        </select>
                     </div>
                     <div class="field">
                         <label class="field-label" for="username">Username
