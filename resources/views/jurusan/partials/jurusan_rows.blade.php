@@ -1,8 +1,8 @@
 @forelse ($jurusans as $row)
     <tr class="data-row">
         <td>{{ $jurusans->firstItem() + $loop->index }}</td>
-        <td>{{ $row->kode }}</td>
-        <td>{{ $row->nama }}</td>
+        <td>{{ strtoupper($row->kode) }}</td>
+        <td>{{ ucfirst($row->nama) }}</td>
         <td>
             <div class="data-cell-actions">
                 <a href="{{ route('jurusan.edit', $row->id) }}" class="btn--icon" aria-label="Edit" title="Edit">

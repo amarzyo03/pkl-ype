@@ -1,20 +1,28 @@
-@if ($dudis->hasPages())
-    @if ($dudis->onFirstPage())
-        <span class="btn--icon disabled" aria-label="Previous page" title="Previous page">‹</span>
-    @else
-        <a href="{{ $dudis->previousPageUrl() }}" class="btn--icon" data-page="{{ $dudis->currentPage() - 1 }}"
-            aria-label="Previous page" title="Previous page">‹</a>
-    @endif
+@php
+    $currentPage = $dudis->currentPage();
+    $lastPage = $dudis->lastPage();
+    $pages = range(1, $lastPage);
+@endphp
 
-    @foreach ($dudis->getUrlRange(max(1, $dudis->currentPage() - 2), min($dudis->lastPage(), $dudis->currentPage() + 2)) as $page => $url)
-        <a href="{{ $url }}" class="btn--icon {{ $page === $dudis->currentPage() ? 'active' : '' }}"
-            data-page="{{ $page }}" aria-label="Page {{ $page }}">{{ $page }}</a>
+@if ($lastPage > 1)
+    <button class="pager-btn" data-page="{{ max(1, $currentPage - 1) }}" aria-label="Previous"
+        {{ $currentPage <= 1 ? 'disabled' : '' }}>
+        <svg viewBox="0 0 24 24">
+            <path d="m15 18-6-6 6-6" />
+        </svg>
+    </button>
+
+    @foreach ($pages as $page)
+        <button class="pager-btn {{ $page == $currentPage ? 'is-active' : '' }}" data-page="{{ $page }}"
+            {{ $page == $currentPage ? 'disabled' : '' }}>
+            {{ $page }}
+        </button>
     @endforeach
 
-    @if ($dudis->hasMorePages())
-        <a href="{{ $dudis->nextPageUrl() }}" class="btn--icon" data-page="{{ $dudis->currentPage() + 1 }}"
-            aria-label="Next page" title="Next page">›</a>
-    @else
-        <span class="btn--icon disabled" aria-label="Next page" title="Next page">›</span>
-    @endif
+    <button class="pager-btn" data-page="{{ min($lastPage, $currentPage + 1) }}" aria-label="Next"
+        {{ $currentPage >= $lastPage ? 'disabled' : '' }}>
+        <svg viewBox="0 0 24 24">
+            <path d="m9 18 6-6-6-6" />
+        </svg>
+    </button>
 @endif

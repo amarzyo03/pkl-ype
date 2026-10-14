@@ -46,14 +46,14 @@
                             value="{{ old('nama', $siswa->nama) }}" placeholder="Nama Lengkap" required>
                     </div>
                     <div class="field">
-                        <label class="field-label" for="kelas">Kelas
+                        <label class="field-label" for="id_kelas">Kelas
                             <span class="req">*</span>
                         </label>
-                        <select id="kelas" class="select" name="kelas" required>
+                        <select id="id_kelas" class="select" name="id_kelas" required>
                             <option value="">Pilih Kelas</option>
                             @foreach ($daftarKelas as $kelas)
-                                <option value="{{ $kelas->nama }}"
-                                    {{ old('kelas', $siswa->kelas) === $kelas->nama ? 'selected' : '' }}>
+                                <option value="{{ $kelas->id }}"
+                                    {{ old('id_kelas', $siswa->id_kelas) == $kelas->id ? 'selected' : '' }}>
                                     {{ $kelas->nama }}
                                 </option>
                             @endforeach

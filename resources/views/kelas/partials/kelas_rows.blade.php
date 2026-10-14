@@ -1,8 +1,8 @@
 @forelse ($kelas as $row)
     <tr class="data-row">
         <td>{{ $kelas->firstItem() + $loop->index }}</td>
-        <td>{{ $row->nama }}</td>
-        <td>{{ $row->jurusan?->nama ?? '-' }}</td>
+        <td>{{ strtoupper($row->nama) }}</td>
+        <td>{{ ucfirst($row->jurusan?->nama ?? '-') }}</td>
         <td>
             <div class="data-cell-actions">
                 <a href="{{ route('kelas.edit', $row->id) }}" class="btn--icon" aria-label="Edit" title="Edit">

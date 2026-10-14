@@ -2,10 +2,11 @@
     <tr class="data-row">
         <td>{{ $dudis->firstItem() + $loop->index }}</td>
         <td>{{ $row->nama }}</td>
-        <td>{{ $row->bidang_usaha ?: '-' }}</td>
-        <td>{{ $row->alamat ?: '-' }}</td>
-        <td>{{ $row->telepon ?: '-' }}</td>
-        <td>{{ $row->email ?: '-' }}</td>
+        <td>{{ $row->alamat }}</td>
+        <td>{{ $row->telp }}</td>
+        <td>{{ $row->pic }}</td>
+        <td>{{ $row->jurusan?->nama ?? '-' }}</td>
+        <td>{{ $row->guru?->nama ?? '-' }}</td>
         <td>
             <div class="data-cell-actions">
                 <a href="{{ route('dudi.edit', $row->id) }}" class="btn--icon" aria-label="Edit" title="Edit">
@@ -31,6 +32,6 @@
     </tr>
 @empty
     <tr>
-        <td colspan="7" class="text-center text-muted">Belum ada data DUDI.</td>
+        <td colspan="8" class="text-center text-muted">No DUDI data found.</td>
     </tr>
 @endforelse

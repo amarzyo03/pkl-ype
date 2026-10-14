@@ -35,13 +35,13 @@
                     </div>
                     <div class="field">
                         <label class="field-label" for="password">Password <span class="req">*</span></label>
-                        <input id="password" class="input" type="password" name="password" minlength="8" required>
+                        <input id="password" class="input" type="password" name="password" minlength="3" required>
                     </div>
                     <div class="field">
                         <label class="field-label" for="password_confirmation">Konfirmasi Password <span
                                 class="req">*</span></label>
                         <input id="password_confirmation" class="input" type="password" name="password_confirmation"
-                            minlength="8" required>
+                            minlength="3" required>
                     </div>
                 </div>
             </section>

@@ -4,24 +4,33 @@ namespace App\Http\Controllers;
 
 use App\Imports\DudiImport;
 use App\Models\dudiModel;
+use App\Models\guruModel;
+use App\Models\jurusanModel;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Maatwebsite\Excel\Facades\Excel;
 
 class dudiController extends Controller
 {
     public function index(Request $request)
     {
-        $query = dudiModel::query();
+        $query = dudiModel::with(['jurusan', 'guru']);
         $search = trim((string) $request->input('search', ''));
 
         if ($search !== '') {
-            $query->where(function ($q) use ($search) {
-                $q->where('nama', 'like', "%{$search}%")
-                    ->orWhere('bidang_usaha', 'like', "%{$search}%")
+            $query->where(function ($query) use ($search) {
+                $query->where('nama', 'like', "%{$search}%")
                     ->orWhere('alamat', 'like', "%{$search}%")
-                    ->orWhere('telepon', 'like', "%{$search}%")
-                    ->orWhere('email', 'like', "%{$search}%")
-                    ->orWhere('id', 'like', "%{$search}%");
+                    ->orWhere('telp', 'like', "%{$search}%")
+                    ->orWhere('pic', 'like', "%{$search}%")
+                    ->orWhere('id', 'like', "%{$search}%")
+                    ->orWhereHas('jurusan', function ($jurusanQuery) use ($search) {
+                        $jurusanQuery->where('kode', 'like', "%{$search}%")
+                            ->orWhere('nama', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('guru', function ($guruQuery) use ($search) {
+                        $guruQuery->where('nama', 'like', "%{$search}%");
+                    });
             });
         }
 
@@ -48,18 +57,15 @@ class dudiController extends Controller
 
     public function add()
     {
-        return view('dudi.add');
+        $jurusans = jurusanModel::orderBy('nama')->get();
+        $gurus = guruModel::orderBy('nama')->get();
+
+        return view('dudi.add', compact('jurusans', 'gurus'));
     }
 
     public function save(Request $request)
     {
-        $validated = $request->validate([
-            'nama' => ['required', 'string', 'max:255'],
-            'bidang_usaha' => ['nullable', 'string', 'max:255'],
-            'alamat' => ['nullable', 'string'],
-            'telepon' => ['nullable', 'string', 'max:30'],
-            'email' => ['nullable', 'email', 'max:255'],
-        ]);
+        $validated = $request->validate($this->rules());
 
         dudiModel::create($validated);
 
@@ -69,31 +75,23 @@ class dudiController extends Controller
     public function edit(string $id)
     {
         $dudi = dudiModel::findOrFail($id);
+        $jurusans = jurusanModel::orderBy('nama')->get();
+        $gurus = guruModel::orderBy('nama')->get();
 
-        return view('dudi.edit', compact('dudi'));
+        return view('dudi.edit', compact('dudi', 'jurusans', 'gurus'));
     }
 
     public function update(Request $request, string $id)
     {
         $dudi = dudiModel::findOrFail($id);
-
-        $validated = $request->validate([
-            'nama' => ['required', 'string', 'max:255'],
-            'bidang_usaha' => ['nullable', 'string', 'max:255'],
-            'alamat' => ['nullable', 'string'],
-            'telepon' => ['nullable', 'string', 'max:30'],
-            'email' => ['nullable', 'email', 'max:255'],
-        ]);
-
-        $dudi->update($validated);
+        $dudi->update($request->validate($this->rules()));
 
         return redirect()->route('dudi')->with('success', 'Data DUDI berhasil diperbarui.');
     }
 
     public function delete(string $id)
     {
-        $dudi = dudiModel::findOrFail($id);
-        $dudi->delete();
+        dudiModel::findOrFail($id)->delete();
 
         return redirect()->route('dudi')->with('success', 'Data DUDI berhasil dihapus.');
     }
@@ -112,5 +110,25 @@ class dudiController extends Controller
         Excel::import(new DudiImport, $validated['file']);
 
         return redirect()->route('dudi')->with('success', 'Data DUDI berhasil diimport.');
+    }
+
+    private function rules(): array
+    {
+        return [
+            'nama' => ['required', 'string', 'max:255'],
+            'alamat' => ['required', 'string', 'max:255'],
+            'telp' => ['required', 'string', 'max:30'],
+            'pic' => ['required', 'string', 'max:255'],
+            'id_jurusan' => [
+                'required',
+                'integer',
+                Rule::exists('tb_jurusan', 'id')->whereNull('deleted_at'),
+            ],
+            'id_guru' => [
+                'required',
+                'integer',
+                Rule::exists('tb_guru', 'id')->whereNull('deleted_at'),
+            ],
+        ];
     }
 }

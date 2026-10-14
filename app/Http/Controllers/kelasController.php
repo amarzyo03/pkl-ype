@@ -59,11 +59,12 @@ class kelasController extends Controller
         $validated = $request->validate([
             'tingkat' => ['required', 'in:X,XI,XII'],
             'id_jurusan' => ['required', 'exists:tb_jurusan,id'],
-            'nomor' => ['required', 'integer', 'min:1', 'max:10'],
+            'nomor' => ['nullable', 'integer', 'min:1', 'max:10'],
         ]);
 
         $jurusan = jurusanModel::findOrFail($validated['id_jurusan']);
-        $validated['nama'] = sprintf('%s %s %d', $validated['tingkat'], $jurusan->kode, $validated['nomor']);
+        $validated['nama'] = $validated['tingkat'].' '.strtoupper($jurusan->kode)
+            .(isset($validated['nomor']) ? ' '.$validated['nomor'] : '');
 
         unset($validated['tingkat'], $validated['nomor']);
 
@@ -79,7 +80,9 @@ class kelasController extends Controller
 
         $parts = preg_split('/\s+/', trim($kelas->nama));
         $tingkat = $parts[0] ?? '';
-        $nomor = (int) ($parts[count($parts) - 1] ?? 0);
+        $nomor = preg_match('/\s(\d+)$/', $kelas->nama, $matches) === 1
+            ? (int) $matches[1]
+            : null;
 
         return view('kelas.edit', compact('kelas', 'jurusans', 'tingkat', 'nomor'));
     }
@@ -91,11 +94,12 @@ class kelasController extends Controller
         $validated = $request->validate([
             'tingkat' => ['required', 'in:X,XI,XII'],
             'id_jurusan' => ['required', 'exists:tb_jurusan,id'],
-            'nomor' => ['required', 'integer', 'min:1', 'max:10'],
+            'nomor' => ['nullable', 'integer', 'min:1', 'max:10'],
         ]);
 
         $jurusan = jurusanModel::findOrFail($validated['id_jurusan']);
-        $validated['nama'] = sprintf('%s %s %d', $validated['tingkat'], $jurusan->kode, $validated['nomor']);
+        $validated['nama'] = $validated['tingkat'].' '.strtoupper($jurusan->kode)
+            .(isset($validated['nomor']) ? ' '.$validated['nomor'] : '');
 
         unset($validated['tingkat'], $validated['nomor']);
 

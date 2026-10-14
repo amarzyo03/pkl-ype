@@ -11,7 +11,7 @@
                 </div>
             </div>
         </td>
-        <td>{{ $row->kelas }}</td>
+        <td>{{ strtoupper($row->kelas?->nama ?? '-') }}</td>
         <td>{{ strtolower($row->username) }}</td>
         <td>
             <span class="badge {{ $row->status === 'active' ? 'success' : 'danger' }} dot">

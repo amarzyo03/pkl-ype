@@ -70,6 +70,18 @@
                 tugasLink.insertAdjacentElement('afterend', pendaftaranLink);
             }
 
+            if (!workspaceSection.querySelector('[data-dudi-sidebar-link]')) {
+                const dudiLink = document.createElement('a');
+                dudiLink.href = "{{ route('dudi') }}";
+                dudiLink.className = `nav-link${document.body.dataset.active === 'dudi' ? ' is-active' : ''}`;
+                dudiLink.dataset.dudiSidebarLink = '';
+                dudiLink.innerHTML =
+                    '<svg viewBox="0 0 24 24"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6M9 9h.01M15 9h.01"/></svg><span>DUDI</span>';
+
+                const pendaftaranLink = workspaceSection.querySelector('[data-pendaftaran-sidebar-link]');
+                (pendaftaranLink || tugasLink).insertAdjacentElement('afterend', dudiLink);
+            }
+
             tugasSidebarObserver.disconnect();
         });
 

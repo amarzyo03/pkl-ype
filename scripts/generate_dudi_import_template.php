@@ -13,7 +13,7 @@ $spreadsheet = new Spreadsheet;
 $sheet = $spreadsheet->getActiveSheet();
 $sheet->setTitle('Template DUDI');
 
-$sheet->mergeCells('A1:E1');
+$sheet->mergeCells('A1:F1');
 $sheet->setCellValue('A1', 'TEMPLATE IMPORT DATA DUDI');
 $sheet->getStyle('A1')->applyFromArray([
     'font' => [
@@ -29,7 +29,7 @@ $sheet->getStyle('A1')->applyFromArray([
 ]);
 $sheet->getRowDimension(1)->setRowHeight(26);
 
-$sheet->mergeCells('A2:E2');
+$sheet->mergeCells('A2:F2');
 $sheet->setCellValue('A2', 'Isi informasi mitra pada kolom yang tersedia.');
 $sheet->getStyle('A2')->applyFromArray([
     'font' => [
@@ -45,7 +45,7 @@ $sheet->getStyle('A2')->applyFromArray([
 ]);
 $sheet->getRowDimension(2)->setRowHeight(22);
 
-$headers = ['nama', 'bidang_usaha', 'alamat', 'telepon', 'email'];
+$headers = ['nama', 'alamat', 'telp', 'pic', 'id_jurusan', 'id_guru'];
 $sheet->fromArray([$headers], null, 'A4');
 
 $headerStyle = [
@@ -71,16 +71,16 @@ $headerStyle = [
     ],
 ];
 
-$sheet->getStyle('A4:E4')->applyFromArray($headerStyle);
+$sheet->getStyle('A4:F4')->applyFromArray($headerStyle);
 $sheet->getRowDimension(4)->setRowHeight(22);
 
 $sampleRows = [
-    ['PT Contoh Teknologi', 'Teknologi Informasi', 'Jl. Merdeka No. 10', '0215551234', 'info@contoh.test'],
-    ['CV Mitra Industri', 'Manufaktur', 'Jl. Industri No. 5', '0225556789', 'kontak@mitra.test'],
+    ['PT Contoh Teknologi', 'Jl. Merdeka No. 10', '0215551234', 'Budi Santoso', 1, 1],
+    ['CV Mitra Industri', 'Jl. Industri No. 5', '0225556789', 'Siti Rahmawati', 2, 2],
 ];
 
 $sheet->fromArray($sampleRows, null, 'A5');
-$sheet->getStyle('A5:E6')->applyFromArray([
+$sheet->getStyle('A5:F6')->applyFromArray([
     'font' => [
         'name' => 'Cambria',
         'size' => 11,
@@ -103,8 +103,8 @@ for ($row = 5; $row <= 6; $row++) {
     $sheet->getRowDimension($row)->setRowHeight(30);
 }
 
-$sheet->mergeCells('A8:E8');
-$sheet->setCellValue('A8', 'Catatan: nama wajib diisi dan dipakai untuk mencocokkan data saat import.');
+$sheet->mergeCells('A8:F8');
+$sheet->setCellValue('A8', 'Catatan: ganti contoh ID dengan ID jurusan dan guru yang aktif. Nama dipakai untuk mencocokkan data saat import.');
 $sheet->getStyle('A8')->applyFromArray([
     'font' => [
         'name' => 'Cambria',
@@ -118,11 +118,11 @@ $sheet->getStyle('A8')->applyFromArray([
 ]);
 $sheet->getRowDimension(8)->setRowHeight(30);
 
-foreach (['A' => 28, 'B' => 26, 'C' => 36, 'D' => 18, 'E' => 32] as $column => $width) {
+foreach (['A' => 28, 'B' => 36, 'C' => 18, 'D' => 26, 'E' => 18, 'F' => 18] as $column => $width) {
     $sheet->getColumnDimension($column)->setWidth($width);
 }
 
-$sheet->getStyle('A1:E8')->getFont()->setName('Cambria');
+$sheet->getStyle('A1:F8')->getFont()->setName('Cambria');
 
 $writer = new Xlsx($spreadsheet);
 $writer->save(__DIR__.'/../public/assets/static/template/dudi-import-template.xlsx');

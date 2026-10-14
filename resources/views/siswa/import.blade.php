@@ -39,6 +39,8 @@
                     Kolom yang disarankan pada file Excel:<br>
                     <strong>nis</strong>, <strong>nisn</strong>, <strong>nama</strong>, <strong>kelas</strong>,
                     <strong>username</strong>, <strong>password</strong>, <strong>status</strong><br><br>
+                    Isi kolom <strong>kelas</strong> dengan nama kelas sesuai data kelas yang tersedia.
+                    Sistem akan menyimpan ID kelas secara otomatis.<br><br>
                     Catatan status:<br>
                     <strong>1</strong> = aktif, <strong>0</strong> = inactive
                 </div>

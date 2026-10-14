@@ -3,20 +3,11 @@
     <section class="hero">
         <div class="hero-text"><span class="eyebrow">Master · DUDI</span>
             <h1 class="hero-title">Data <span class="accent">DUDI</span></h1>
-            <p class="hero-sub">Manajemen Data Dunia Usaha dan Dunia Industri</p>
+            <p class="hero-sub">Manajemen mitra dunia usaha dan dunia industri.</p>
         </div>
         <div class="hero-actions">
-            <a href="{{ route('dudi.import') }}" class="btn btn--ghost"><svg viewBox="0 0 24 24">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                    <path d="M7 10l5 5 5-5" />
-                    <path d="M12 15V3" />
-                </svg> Import
-            </a>
-            <a href="{{ route('dudi.add') }}" class="btn btn--primary">
-                <svg viewBox="0 0 24 24">
-                    <path d="M12 5v14M5 12h14" />
-                </svg> Add DUDI
-            </a>
+            <a href="{{ route('dudi.import') }}" class="btn btn--ghost">Import</a>
+            <a href="{{ route('dudi.add') }}" class="btn btn--primary">Add DUDI</a>
         </div>
     </section>
 
@@ -32,7 +23,7 @@
                             </svg>
                         </span>
                         <input id="dudi-search" class="input" type="search" name="search"
-                            placeholder="Cari nama, bidang usaha, kontak, atau ID..." value="{{ request('search', '') }}">
+                            placeholder="Cari nama, PIC, jurusan, guru, atau ID..." value="{{ request('search', '') }}">
                     </div>
                 </div>
             </div>
@@ -43,10 +34,11 @@
                         <tr>
                             <th style="width:32px">#</th>
                             <th>Nama DUDI</th>
-                            <th>Bidang Usaha</th>
                             <th>Alamat</th>
                             <th>Telepon</th>
-                            <th>Email</th>
+                            <th>PIC</th>
+                            <th>Jurusan</th>
+                            <th>Guru</th>
                             <th></th>
                         </tr>
                     </thead>

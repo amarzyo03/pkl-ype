@@ -49,11 +49,9 @@
                         </select>
                     </div>
                     <div class="field">
-                        <label class="field-label" for="nomor">Nomor
-                            <span class="req">*</span>
-                        </label>
+                        <label class="field-label" for="nomor">Nomor (Opsional)</label>
                         <input id="nomor" class="input" type="number" name="nomor" value="{{ old('nomor') }}"
-                            min="1" max="10" placeholder="1-10" required>
+                            min="1" max="10" placeholder="1-10">
                     </div>
                 </div>
 

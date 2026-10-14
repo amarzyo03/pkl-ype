@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('nis');
             $table->string('nisn');
             $table->string('nama');
-            $table->string('kelas');
+            $table->foreignId('id_kelas');
             $table->string('username');
             $table->string('password');
             $table->enum('status', ['active', 'inactive'])->default('active');

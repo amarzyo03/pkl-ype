@@ -36,13 +36,13 @@
                     </div>
                     <div class="field">
                         <label class="field-label" for="password">Password baru</label>
-                        <input id="password" class="input" type="password" name="password" minlength="8"
+                        <input id="password" class="input" type="password" name="password" minlength="3"
                             placeholder="Kosongkan untuk mempertahankan password">
                     </div>
                     <div class="field">
                         <label class="field-label" for="password_confirmation">Konfirmasi Password Baru</label>
                         <input id="password_confirmation" class="input" type="password" name="password_confirmation"
-                            minlength="8">
+                            minlength="3">
                     </div>
                 </div>
             </section>

@@ -45,3 +45,29 @@ it('can create, update, and delete a kelas', function () {
         'id' => $kelas->id,
     ]);
 });
+
+it('allows a kelas without a nomor', function () {
+    $jurusan = jurusanModel::create([
+        'kode' => 'akt',
+        'nama' => 'Akuntansi',
+    ]);
+
+    $this->post(route('kelas.save'), [
+        'tingkat' => 'X',
+        'id_jurusan' => $jurusan->id,
+    ])->assertRedirect(route('kelas'));
+
+    $kelas = kelasModel::where('id_jurusan', $jurusan->id)->firstOrFail();
+    expect($kelas->nama)->toBe('X AKT');
+
+    $this->put(route('kelas.update', $kelas->id), [
+        'tingkat' => 'XI',
+        'id_jurusan' => $jurusan->id,
+        'nomor' => '',
+    ])->assertRedirect(route('kelas'));
+
+    $this->assertDatabaseHas('tb_kelas', [
+        'id' => $kelas->id,
+        'nama' => 'XI AKT',
+    ]);
+});

@@ -55,7 +55,7 @@ class guruController extends Controller
         $validated = $request->validate([
             'nama' => ['required', 'string', 'max:255'],
             'username' => ['required', 'string', 'max:255', 'unique:tb_guru,username'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'password' => ['required', 'string', 'min:3', 'confirmed'],
         ]);
 
         $validated['password'] = Hash::make($validated['password']);
@@ -78,7 +78,7 @@ class guruController extends Controller
         $validated = $request->validate([
             'nama' => ['required', 'string', 'max:255'],
             'username' => ['required', 'string', 'max:255', Rule::unique('tb_guru', 'username')->ignore($guru->id)],
-            'password' => ['nullable', 'string', 'min:8', 'confirmed'],
+            'password' => ['nullable', 'string', 'min:3', 'confirmed'],
         ]);
 
         if ($request->filled('password')) {

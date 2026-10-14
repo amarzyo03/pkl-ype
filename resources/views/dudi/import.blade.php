@@ -3,7 +3,7 @@
     <section class="hero">
         <div class="hero-text"><span class="eyebrow">Master · DUDI · Import</span>
             <h1 class="hero-title">Import <span class="accent">DUDI</span></h1>
-            <p class="hero-sub">Upload file Excel untuk menambahkan atau memperbarui data DUDI.</p>
+            <p class="hero-sub">Upload file Excel untuk menambahkan atau memperbarui data mitra.</p>
         </div>
         <div class="hero-actions">
             <a href="{{ route('dudi') }}" class="btn btn--ghost">Cancel</a>
@@ -15,7 +15,8 @@
 
     <section class="card" style="min-height:360px;display:flex;align-items:center;justify-content:center">
         <div style="width:min(100%,560px);padding:20px;">
-            <form id="import-form" action="{{ route('dudi.import.store') }}" method="POST" enctype="multipart/form-data">
+            <form id="import-form" action="{{ route('dudi.import.store') }}" method="POST"
+                enctype="multipart/form-data">
                 @csrf
                 <div style="margin-bottom:18px;">
                     <label for="file" style="display:block;margin-bottom:8px;font-weight:600;color:var(--t-base);">Pilih
@@ -35,10 +36,11 @@
 
                 <div
                     style="padding:16px;border-radius:12px;background:var(--bg-muted);border:1px solid rgba(148,163,184,.2);color:var(--t-muted);font-size:13px;line-height:1.6;">
-                    Kolom pada file Excel:<br>
-                    <strong>nama</strong>, <strong>bidang_usaha</strong>, <strong>alamat</strong>, <strong>telepon</strong>,
-                    <strong>email</strong><br><br>
-                    Baris data tanpa <strong>nama</strong> akan dilewati. Data dengan nama yang sama akan diperbarui.
+                    Kolom file Excel:<br>
+                    <strong>nama</strong>, <strong>alamat</strong>, <strong>telp</strong>, <strong>pic</strong>,
+                    <strong>id_jurusan</strong>, <strong>id_guru</strong><br><br>
+                    Isi <strong>id_jurusan</strong> dan <strong>id_guru</strong> dengan ID yang tersedia pada data
+                    jurusan dan guru. Nama DUDI digunakan untuk mencocokkan data saat import.
                 </div>
             </form>
         </div>

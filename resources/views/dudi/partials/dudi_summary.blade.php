@@ -1,5 +1,4 @@
-<span>Showing <strong style="color:var(--t-base)">{{ $dudis->firstItem() ?? 0 }}–{{ $dudis->lastItem() ?? 0 }}</strong>
-    of
+<span>Showing <strong style="color:var(--t-base)">{{ $dudis->firstItem() }}–{{ $dudis->lastItem() }}</strong> of
     <strong style="color:var(--t-base)">{{ $dudis->total() }}</strong>
 </span>
 <select class="select per-page-select" data-per-page>

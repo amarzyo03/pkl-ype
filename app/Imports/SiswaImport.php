@@ -2,9 +2,12 @@
 
 namespace App\Imports;
 
+use App\Models\kelasModel;
 use App\Models\siswaModel;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
@@ -28,6 +31,22 @@ class SiswaImport implements ToCollection, WithHeadingRow
                 continue;
             }
 
+            $kelasRecord = kelasModel::query()
+                ->where(function (Builder $query) use ($kelas): void {
+                    $query->where('nama', $kelas);
+
+                    if (ctype_digit($kelas)) {
+                        $query->orWhereKey((int) $kelas);
+                    }
+                })
+                ->first();
+
+            if ($kelasRecord === null) {
+                throw ValidationException::withMessages([
+                    'file' => "Kelas '{$kelas}' tidak ditemukan di data kelas.",
+                ]);
+            }
+
             $statusValue = $row['status'] ?? null;
 
             if ($statusValue === null || $statusValue === '') {
@@ -43,7 +62,7 @@ class SiswaImport implements ToCollection, WithHeadingRow
                     $status = 'active';
                 } elseif ($status === '0') {
                     $status = 'inactive';
-                } elseif (!in_array($status, ['active', 'inactive'], true)) {
+                } elseif (! in_array($status, ['active', 'inactive'], true)) {
                     $status = 'active';
                 }
             }
@@ -54,7 +73,7 @@ class SiswaImport implements ToCollection, WithHeadingRow
                 'nis' => $nis,
                 'nisn' => $nisn,
                 'nama' => $nama,
-                'kelas' => $kelas,
+                'id_kelas' => $kelasRecord->id,
                 'username' => $username,
                 'status' => $status,
                 'password' => Hash::make($password !== '' ? $password : 'password123'),

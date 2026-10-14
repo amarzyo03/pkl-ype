@@ -14,7 +14,7 @@ class siswaController extends Controller
 {
     public function index(Request $request)
     {
-        $query = siswaModel::query();
+        $query = siswaModel::query()->with('kelas');
 
         $search = trim((string) $request->input('search', ''));
         if ($search !== '') {
@@ -22,7 +22,10 @@ class siswaController extends Controller
                 $q->where('nis', 'like', "%{$search}%")
                     ->orWhere('nisn', 'like', "%{$search}%")
                     ->orWhere('nama', 'like', "%{$search}%")
-                    ->orWhere('kelas', 'like', "%{$search}%")
+                    ->orWhere('id_kelas', 'like', "%{$search}%")
+                    ->orWhereHas('kelas', function ($kelasQuery) use ($search) {
+                        $kelasQuery->where('nama', 'like', "%{$search}%");
+                    })
                     ->orWhere('username', 'like', "%{$search}%")
                     ->orWhere('id', 'like', "%{$search}%");
             });
@@ -67,7 +70,7 @@ class siswaController extends Controller
             'nis' => ['required', 'string', 'max:255', 'unique:tb_siswa,nis'],
             'nisn' => ['required', 'string', 'max:255', 'unique:tb_siswa,nisn'],
             'nama' => ['required', 'string', 'max:255'],
-            'kelas' => ['required', 'string', Rule::exists('tb_kelas', 'nama')->whereNull('deleted_at')],
+            'id_kelas' => ['required', 'integer', Rule::exists('tb_kelas', 'id')->whereNull('deleted_at')],
             'username' => ['required', 'string', 'max:255', 'unique:tb_siswa,username'],
             'password' => ['required', 'string', 'min:3', 'confirmed'],
             'status' => ['required', 'in:active,inactive'],
@@ -95,7 +98,7 @@ class siswaController extends Controller
             'nis' => ['required', 'string', 'max:255', Rule::unique('tb_siswa', 'nis')->ignore($siswa->id)],
             'nisn' => ['required', 'string', 'max:255', Rule::unique('tb_siswa', 'nisn')->ignore($siswa->id)],
             'nama' => ['required', 'string', 'max:255'],
-            'kelas' => ['required', 'string', Rule::exists('tb_kelas', 'nama')->whereNull('deleted_at')],
+            'id_kelas' => ['required', 'integer', Rule::exists('tb_kelas', 'id')->whereNull('deleted_at')],
             'username' => ['required', 'string', 'max:255', Rule::unique('tb_siswa', 'username')->ignore($siswa->id)],
             'password' => ['nullable', 'string', 'min:8', 'confirmed'],
             'status' => ['required', 'in:active,inactive'],

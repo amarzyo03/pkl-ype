@@ -11,13 +11,13 @@ it('can create, update, and delete a guru account', function () {
     $this->post(route('guru.save'), [
         'nama' => 'Budi Santoso',
         'username' => 'budisantoso',
-        'password' => 'guru-password-123',
-        'password_confirmation' => 'guru-password-123',
+        'password' => 'abc',
+        'password_confirmation' => 'abc',
     ])->assertRedirect(route('guru'));
 
     $guru = guruModel::where('username', 'budisantoso')->firstOrFail();
 
-    expect(Hash::check('guru-password-123', $guru->password))->toBeTrue();
+    expect(Hash::check('abc', $guru->password))->toBeTrue();
 
     $this->put(route('guru.update', $guru->id), [
         'nama' => 'Budi Santoso',
@@ -28,10 +28,38 @@ it('can create, update, and delete a guru account', function () {
 
     $guru->refresh();
     expect($guru->username)->toBe('budi.santoso')
-        ->and(Hash::check('guru-password-123', $guru->password))->toBeTrue();
+        ->and(Hash::check('abc', $guru->password))->toBeTrue();
 
     $this->delete(route('guru.delete', $guru->id))->assertRedirect(route('guru'));
     $this->assertSoftDeleted('tb_guru', ['id' => $guru->id]);
+});
+
+it('rejects guru passwords shorter than three characters on create and update', function () {
+    $this->from(route('guru.add'))
+        ->post(route('guru.save'), [
+            'nama' => 'Guru Baru',
+            'username' => 'guru.baru',
+            'password' => 'ab',
+            'password_confirmation' => 'ab',
+        ])
+        ->assertRedirect(route('guru.add'))
+        ->assertSessionHasErrors('password');
+
+    $guru = guruModel::create([
+        'nama' => 'Guru Lama',
+        'username' => 'guru.lama',
+        'password' => Hash::make('password-lama'),
+    ]);
+
+    $this->from(route('guru.edit', $guru->id))
+        ->put(route('guru.update', $guru->id), [
+            'nama' => 'Guru Lama',
+            'username' => 'guru.lama',
+            'password' => 'ab',
+            'password_confirmation' => 'ab',
+        ])
+        ->assertRedirect(route('guru.edit', $guru->id))
+        ->assertSessionHasErrors('password');
 });
 
 it('rejects duplicate guru usernames', function () {
