@@ -5,7 +5,9 @@ use App\Http\Controllers\dudiController;
 use App\Http\Controllers\guruController;
 use App\Http\Controllers\jurusanController;
 use App\Http\Controllers\kelasController;
+use App\Http\Controllers\pendaftaranController;
 use App\Http\Controllers\siswaController;
+use App\Http\Controllers\tugasController;
 use App\Http\Controllers\userController;
 use Illuminate\Support\Facades\Route;
 
@@ -72,5 +74,22 @@ Route::put('/guru/update/{id}', [guruController::class, 'update'])->name('guru.u
 Route::delete('/guru/delete/{id}', [guruController::class, 'delete'])->name('guru.delete');
 Route::get('/guru/import', [guruController::class, 'import'])->name('guru.import');
 Route::post('/guru/import', [guruController::class, 'importStore'])->name('guru.import.store');
+
+// TUGAS
+Route::get('/tugas', [tugasController::class, 'index'])->name('tugas');
+Route::get('/tugas/add', [tugasController::class, 'add'])->name('tugas.add');
+Route::post('/tugas/save', [tugasController::class, 'save'])->name('tugas.save');
+Route::get('/tugas/edit/{id}', [tugasController::class, 'edit'])->name('tugas.edit');
+Route::put('/tugas/update/{id}', [tugasController::class, 'update'])->name('tugas.update');
+Route::delete('/tugas/delete/{id}', [tugasController::class, 'delete'])->name('tugas.delete');
+Route::get('/tugas/file/{id}', [tugasController::class, 'downloadFile'])->name('tugas.file');
+
+// PENDAFTARAN
+Route::get('/pendaftaran', [pendaftaranController::class, 'index'])->name('pendaftaran');
+Route::get('/pendaftaran/add', [pendaftaranController::class, 'add'])->name('pendaftaran.add');
+Route::post('/pendaftaran/save', [pendaftaranController::class, 'save'])->name('pendaftaran.save');
+Route::get('/pendaftaran/edit/{id}', [pendaftaranController::class, 'edit'])->name('pendaftaran.edit');
+Route::put('/pendaftaran/update/{id}', [pendaftaranController::class, 'update'])->name('pendaftaran.update');
+Route::delete('/pendaftaran/delete/{id}', [pendaftaranController::class, 'delete'])->name('pendaftaran.delete');
 
 Route::get('/dashboard', [dashboardController::class, 'index'])->name('dashboard');

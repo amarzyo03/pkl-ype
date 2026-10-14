@@ -35,6 +35,49 @@
             <div data-shell-footer></div>
         </div>
     </div>
+    <script>
+        const tugasSidebarObserver = new MutationObserver(() => {
+            const workspaceSection = [...document.querySelectorAll('.nav-section')]
+                .find((section) => section.querySelector('.nav-label')?.textContent.trim() === 'Workspace');
+
+            if (!workspaceSection) {
+                return;
+            }
+
+            let tugasLink = workspaceSection.querySelector('[data-tugas-sidebar-link]');
+            if (!tugasLink) {
+                tugasLink = document.createElement('a');
+                tugasLink.href = "{{ route('tugas') }}";
+                tugasLink.className = `nav-link${document.body.dataset.active === 'tugas' ? ' is-active' : ''}`;
+                tugasLink.dataset.tugasSidebarLink = '';
+                tugasLink.innerHTML =
+                    '<svg viewBox="0 0 24 24"><path d="M5 3h14v18H5z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg><span>Tugas</span>';
+
+                const jurnalLink = workspaceSection.querySelector('a[href="/jurnal"]');
+                jurnalLink ? jurnalLink.insertAdjacentElement('afterend', tugasLink) : workspaceSection.append(
+                    tugasLink);
+            }
+
+            if (!workspaceSection.querySelector('[data-pendaftaran-sidebar-link]')) {
+                const pendaftaranLink = document.createElement('a');
+                pendaftaranLink.href = "{{ route('pendaftaran') }}";
+                pendaftaranLink.className =
+                    `nav-link${document.body.dataset.active === 'pendaftaran' ? ' is-active' : ''}`;
+                pendaftaranLink.dataset.pendaftaranSidebarLink = '';
+                pendaftaranLink.innerHTML =
+                    '<svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M20 8v6M17 11h6"/></svg><span>Pendaftaran</span>';
+
+                tugasLink.insertAdjacentElement('afterend', pendaftaranLink);
+            }
+
+            tugasSidebarObserver.disconnect();
+        });
+
+        tugasSidebarObserver.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
+    </script>
 </body>
 
 </html>
