@@ -38,7 +38,7 @@
                             <th>Telepon</th>
                             <th>PIC</th>
                             <th>Jurusan</th>
-                            <th>Guru</th>
+                            <th>Guru Pembimbing</th>
                             <th></th>
                         </tr>
                     </thead>

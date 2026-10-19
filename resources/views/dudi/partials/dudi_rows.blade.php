@@ -1,12 +1,12 @@
 @forelse ($dudis as $row)
     <tr class="data-row">
         <td>{{ $dudis->firstItem() + $loop->index }}</td>
-        <td>{{ $row->nama }}</td>
+        <td>{{ strtoupper($row->nama) }}</td>
         <td>{{ $row->alamat }}</td>
         <td>{{ $row->telp }}</td>
-        <td>{{ $row->pic }}</td>
-        <td>{{ $row->jurusan?->nama ?? '-' }}</td>
-        <td>{{ $row->guru?->nama ?? '-' }}</td>
+        <td>{{ ucwords($row->pic ?? '-') }}</td>
+        <td>{{ ucwords($row->jurusan?->nama ?? '-') }}</td>
+        <td>{{ ucwords($row->guru?->nama ?? '-') }}
         <td>
             <div class="data-cell-actions">
                 <a href="{{ route('dudi.edit', $row->id) }}" class="btn--icon" aria-label="Edit" title="Edit">

@@ -18,10 +18,12 @@ class DatabaseSeeder extends Seeder
         // User::factory(10)->create();
 
         $this->call([
-            jurusanSeeder::class,
-            kelasSeeder::class,
             userSeeder::class,
             siswaSeeder::class,
+            kelasSeeder::class,
+            jurusanSeeder::class,
+            guruSeeder::class,
+            dudiSeeder::class,
         ]);
     }
 }
