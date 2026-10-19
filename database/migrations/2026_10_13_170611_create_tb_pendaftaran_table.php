@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('tb_pendaftaran', function (Blueprint $table) {
             $table->id();
-            $table->string('nama');
-            $table->string('dudi');
+            $table->string('id_siswa');
+            $table->string('id_dudi');
             $table->timestamps();
             $table->softDeletes();
         });

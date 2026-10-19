@@ -10,11 +10,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class dudiModel extends Model
 {
     use HasFactory, SoftDeletes;
-
     protected $table = 'tb_dudi';
-
     protected $primaryKey = 'id';
-
     protected $fillable = [
         'nama',
         'alamat',

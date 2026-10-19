@@ -17,7 +17,7 @@ class siswaSeeder extends Seeder
             'nis' => '123',
             'nisn' => '00123',
             'nama' => 'siswa1',
-            'id_kelas' => kelasModel::where('nama', 'xi akt')->firstOrFail()->id,
+            'id_kelas' => 1,
             'username' => 'siswa1',
             'password' => bcrypt('siswa1'),
             'status' => 'active',

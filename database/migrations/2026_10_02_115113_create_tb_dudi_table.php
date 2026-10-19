@@ -14,10 +14,11 @@ return new class extends Migration
         Schema::create('tb_dudi', function (Blueprint $table) {
             $table->id();
             $table->string('nama');
-            $table->string('bidang_usaha')->nullable();
-            $table->text('alamat')->nullable();
-            $table->string('telepon', 30)->nullable();
-            $table->string('email')->nullable();
+            $table->string('alamat');
+            $table->string('telp');
+            $table->string('pic');
+            $table->integer('id_jurusan')->unsigned();
+            $table->integer('id_guru')->unsigned();
             $table->timestamps();
             $table->softDeletes();
         });

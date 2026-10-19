@@ -9,6 +9,7 @@ use App\Http\Controllers\pendaftaranController;
 use App\Http\Controllers\siswaController;
 use App\Http\Controllers\tugasController;
 use App\Http\Controllers\userController;
+use App\Http\Controllers\userSiswaController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -91,5 +92,14 @@ Route::post('/pendaftaran/save', [pendaftaranController::class, 'save'])->name('
 Route::get('/pendaftaran/edit/{id}', [pendaftaranController::class, 'edit'])->name('pendaftaran.edit');
 Route::put('/pendaftaran/update/{id}', [pendaftaranController::class, 'update'])->name('pendaftaran.update');
 Route::delete('/pendaftaran/delete/{id}', [pendaftaranController::class, 'delete'])->name('pendaftaran.delete');
+
+// LOGIN SISWA
+Route::get('/id/siswa/login', [userSiswaController::class, 'showLogin'])->name('userSiswa.login');
+Route::get('/id/siswa/dashboard', [userSiswaController::class, 'dashboard'])->name('userSiswa.dashboard');
+Route::get('/id/siswa/pendaftaran', [userSiswaController::class, 'pendaftaran'])->name('userSiswa.pendaftaran');
+Route::post('/id/siswa/pendaftaran', [userSiswaController::class, 'daftarPkl'])->name('userSiswa.pendaftaran.save');
+Route::get('/id/siswa/pendaftaran/ubah', [userSiswaController::class, 'ubahPendaftaran'])->name('userSiswa.pendaftaran.edit');
+Route::put('/id/siswa/pendaftaran', [userSiswaController::class, 'updatePendaftaran'])->name('userSiswa.pendaftaran.update');
+Route::delete('/id/siswa/pendaftaran', [userSiswaController::class, 'batalkanPendaftaran'])->name('userSiswa.pendaftaran.cancel');
 
 Route::get('/dashboard', [dashboardController::class, 'index'])->name('dashboard');

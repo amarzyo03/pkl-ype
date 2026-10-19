@@ -36,11 +36,13 @@
         </div>
     </div>
     <script>
-        const tugasSidebarObserver = new MutationObserver(() => {
+        const sidebarObserver = new MutationObserver(() => {
             const workspaceSection = [...document.querySelectorAll('.nav-section')]
                 .find((section) => section.querySelector('.nav-label')?.textContent.trim() === 'Workspace');
+            const masterSection = [...document.querySelectorAll('.nav-section')]
+                .find((section) => section.querySelector('.nav-label')?.textContent.trim() === 'Master');
 
-            if (!workspaceSection) {
+            if (!workspaceSection || !masterSection) {
                 return;
             }
 
@@ -70,7 +72,7 @@
                 tugasLink.insertAdjacentElement('afterend', pendaftaranLink);
             }
 
-            if (!workspaceSection.querySelector('[data-dudi-sidebar-link]')) {
+            if (!masterSection.querySelector('[data-dudi-sidebar-link]')) {
                 const dudiLink = document.createElement('a');
                 dudiLink.href = "{{ route('dudi') }}";
                 dudiLink.className = `nav-link${document.body.dataset.active === 'dudi' ? ' is-active' : ''}`;
@@ -78,14 +80,19 @@
                 dudiLink.innerHTML =
                     '<svg viewBox="0 0 24 24"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6M9 9h.01M15 9h.01"/></svg><span>DUDI</span>';
 
-                const pendaftaranLink = workspaceSection.querySelector('[data-pendaftaran-sidebar-link]');
-                (pendaftaranLink || tugasLink).insertAdjacentElement('afterend', dudiLink);
+                masterSection.append(dudiLink);
             }
 
-            tugasSidebarObserver.disconnect();
+            const masterLinks = ['/dudi', '/siswa', '/guru', '/kelas', '/jurusan', '/user']
+                .map((href) => masterSection.querySelector(`a[href="${href}"]`))
+                .filter(Boolean);
+
+            masterLinks.forEach((link) => masterSection.append(link));
+
+            sidebarObserver.disconnect();
         });
 
-        tugasSidebarObserver.observe(document.body, {
+        sidebarObserver.observe(document.body, {
             childList: true,
             subtree: true
         });

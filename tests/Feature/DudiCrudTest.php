@@ -47,6 +47,7 @@ it('can create, update, and delete a dudi', function () {
     $this->get(route('dudi'))
         ->assertOk()
         ->assertSee('data-dudi-sidebar-link')
+        ->assertSee("const masterLinks = ['/dudi', '/siswa', '/guru', '/kelas', '/jurusan', '/user']", false)
         ->assertSee('PT Contoh Teknologi')
         ->assertSee('Rekayasa Perangkat Lunak')
         ->assertSee('Budi Santoso');
