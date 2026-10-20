@@ -85,7 +85,7 @@ class userSiswaController extends Controller
         return redirect()->route('userSiswa.pendaftaran')->with('success', 'Pendaftaran berhasil dikirim.');
     }
 
-    public function editPendaftaran(): View
+    public function editPendaftaran(): View|RedirectResponse
     {
         $pendaftaran = pendaftaranModel::query()
             ->whereNotNull('id_siswa')
@@ -94,6 +94,12 @@ class userSiswaController extends Controller
             ->with('siswa')
             ->latest('id')
             ->firstOrFail();
+
+        if ($pendaftaran->status === 'disetujui') {
+            return redirect()->route('userSiswa.pendaftaran')
+                ->with('error', 'DUDI tidak dapat diubah setelah pendaftaran disetujui.');
+        }
+
         $dudi = dudiModel::query()->get();
 
         return view('userSiswa.pendaftaran.pendaftaran', compact('dudi', 'pendaftaran'));
@@ -116,9 +122,22 @@ class userSiswaController extends Controller
             ->latest('id')
             ->firstOrFail();
 
-        $pendaftaran->update([
-            'id_dudi' => (string) $validated['dudi'],
-        ]);
+        if ($pendaftaran->status === 'disetujui') {
+            return redirect()->route('userSiswa.pendaftaran')
+                ->with('error', 'DUDI tidak dapat diubah setelah pendaftaran disetujui.');
+        }
+
+        $updated = pendaftaranModel::query()
+            ->whereKey($pendaftaran->getKey())
+            ->whereIn('status', ['pending', 'ditolak'])
+            ->update([
+                'id_dudi' => (string) $validated['dudi'],
+            ]);
+
+        if ($updated === 0) {
+            return redirect()->route('userSiswa.pendaftaran')
+                ->with('error', 'Status pendaftaran sudah berubah. DUDI tidak dapat diubah.');
+        }
 
         return redirect()->route('userSiswa.pendaftaran')->with('success', 'Tempat PKL berhasil diperbarui.');
     }

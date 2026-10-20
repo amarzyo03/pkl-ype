@@ -40,6 +40,58 @@ it('shows the status view for the student linked to a registration with a filled
         ->assertDontSee('<table', false);
 });
 
+it('prevents changing the DUDI after a registration is approved', function () {
+    $siswa = siswaModel::query()->create([
+        'nis' => '1003',
+        'nisn' => '2003',
+        'nama' => 'Siswa Disetujui',
+        'id_kelas' => 1,
+        'username' => 'siswa-disetujui',
+        'password' => 'secret',
+    ]);
+    $dudiAwal = dudiModel::query()->create([
+        'nama' => 'PT Disetujui',
+        'alamat' => 'Jl. Lama',
+        'telp' => '08123456789',
+        'pic' => 'Kontak Lama',
+        'id_jurusan' => 1,
+        'id_guru' => 1,
+    ]);
+    $dudiBaru = dudiModel::query()->create([
+        'nama' => 'PT Tujuan Baru',
+        'alamat' => 'Jl. Baru',
+        'telp' => '08123456780',
+        'pic' => 'Kontak Baru',
+        'id_jurusan' => 1,
+        'id_guru' => 1,
+    ]);
+    $pendaftaran = pendaftaranModel::query()->create([
+        'id_siswa' => (string) $siswa->id,
+        'id_dudi' => (string) $dudiAwal->id,
+        'status' => 'disetujui',
+    ]);
+
+    $this->get(route('userSiswa.pendaftaran'))
+        ->assertOk()
+        ->assertSee('DUDI tidak dapat diubah karena pendaftaran sudah disetujui.')
+        ->assertDontSee(route('userSiswa.pendaftaran.edit'), false);
+
+    $this->get(route('userSiswa.pendaftaran.edit'))
+        ->assertRedirect(route('userSiswa.pendaftaran'))
+        ->assertSessionHas('error');
+
+    $this->put(route('userSiswa.pendaftaran.update'), [
+        'dudi' => $dudiBaru->id,
+    ])->assertRedirect(route('userSiswa.pendaftaran'))
+        ->assertSessionHas('error');
+
+    $this->assertDatabaseHas('tb_pendaftaran', [
+        'id' => $pendaftaran->id,
+        'id_dudi' => (string) $dudiAwal->id,
+        'status' => 'disetujui',
+    ]);
+});
+
 it('allows changing the DUDI for an existing registration', function () {
     $siswa = siswaModel::query()->create([
         'nis' => '1002',

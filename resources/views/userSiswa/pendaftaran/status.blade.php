@@ -23,6 +23,9 @@
                 @if (session('success'))
                     <p role="status">{{ session('success') }}</p>
                 @endif
+                @if (session('error'))
+                    <p role="alert">{{ session('error') }}</p>
+                @endif
                 <div class="form-grid">
                     <div class="field">
                         <span class="field-label">NAMA</span>
@@ -39,12 +42,23 @@
                     <div class="field">
                         <span class="field-label">Status Pendaftaran</span>
                         <p>
-                            <span class="badge warning dot">{{ strtoupper($siswa->pendaftaran->status) }}</span>
+                            @php
+                                $statusClass = match ($siswa->pendaftaran->status) {
+                                    'pending' => 'warning',
+                                    'disetujui' => 'success',
+                                    'ditolak' => 'danger',
+                                    default => 'info',
+                                };
+                            @endphp
+                            <span class="badge {{ $statusClass }} dot">{{ strtoupper($siswa->pendaftaran->status) }}</span>
                         </p>
                     </div>
                 </div>
-                <a href="{{ route('userSiswa.pendaftaran.edit') }}" class="btn btn--primary" style="margin-top: 22px;">Ubah
-                    DUDI</a>
+                @if ($siswa->pendaftaran->status === 'disetujui')
+                    <p class="text-muted">Selamat menjalankan Praktek Kerja Lapangan (PKL), Jaga Nama Baik Sekolah</p>
+                @else
+                    <a href="{{ route('userSiswa.pendaftaran.edit') }}" class="btn btn--primary">Ubah DUDI</a>
+                @endif
             @else
                 <p class="text-muted">Belum ada pendaftaran dengan data siswa yang sesuai.</p>
             @endif

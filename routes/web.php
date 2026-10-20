@@ -5,6 +5,7 @@ use App\Http\Controllers\dudiController;
 use App\Http\Controllers\guruController;
 use App\Http\Controllers\jurusanController;
 use App\Http\Controllers\kelasController;
+use App\Http\Controllers\pendaftaranController;
 use App\Http\Controllers\siswaController;
 use App\Http\Controllers\userController;
 use App\Http\Controllers\userSiswaController;
@@ -17,6 +18,15 @@ Route::get('/', function () {
 // # ===== ADMIN ===== ##
 // DASHBOARD
 Route::get('/dashboard', [dashboardController::class, 'index'])->name('dashboard');
+
+// PENDAFTARAN
+Route::get('/pendaftaran', [pendaftaranController::class, 'index'])->name('pendaftaran');
+Route::get('/pendaftaran/add', [pendaftaranController::class, 'add'])->name('pendaftaran.add');
+Route::post('/pendaftaran/save', [pendaftaranController::class, 'save'])->name('pendaftaran.save');
+Route::get('/pendaftaran/edit/{id}', [pendaftaranController::class, 'edit'])->name('pendaftaran.edit');
+Route::put('/pendaftaran/update/{id}', [pendaftaranController::class, 'update'])->name('pendaftaran.update');
+Route::delete('/pendaftaran/delete/{id}', [pendaftaranController::class, 'delete'])->name('pendaftaran.delete');
+Route::patch('/pendaftaran/{id}/status', [pendaftaranController::class, 'updateStatus'])->name('pendaftaran.status');
 
 // DUDI
 Route::get('/dudi', [dudiController::class, 'index'])->name('dudi');
