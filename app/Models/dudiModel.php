@@ -10,8 +10,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class dudiModel extends Model
 {
     use HasFactory, SoftDeletes;
+
     protected $table = 'tb_dudi';
+
     protected $primaryKey = 'id';
+
     protected $fillable = [
         'nama',
         'alamat',
@@ -29,5 +32,10 @@ class dudiModel extends Model
     public function guru(): BelongsTo
     {
         return $this->belongsTo(guruModel::class, 'id_guru');
+    }
+
+    public function pendaftaran()
+    {
+        return $this->hasMany(pendaftaranModel::class, 'id_dudi');
     }
 }

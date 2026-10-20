@@ -13,8 +13,9 @@ return new class extends Migration
     {
         Schema::create('tb_pendaftaran', function (Blueprint $table) {
             $table->id();
-            $table->string('id_siswa');
+            $table->string('id_siswa')->unique();
             $table->string('id_dudi');
+            $table->string('status')->default('pending');
             $table->timestamps();
             $table->softDeletes();
         });
