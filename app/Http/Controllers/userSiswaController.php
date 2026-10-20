@@ -11,7 +11,7 @@ use Illuminate\Validation\Rule;
 
 class userSiswaController extends Controller
 {
-    // LOGIN
+    ## ===== LOGIN ===== ##
     public function login()
     {
         //
@@ -27,29 +27,13 @@ class userSiswaController extends Controller
         //
     }
 
-    // WORKSPACE
-
+    ## ===== DASHBOARD ===== ##
     public function dashboard()
     {
         return view('userSiswa.dashboard');
     }
 
-    public function absensi()
-    {
-        //
-    }
-
-    public function jurnal()
-    {
-        //
-    }
-
-    public function tugas()
-    {
-        //
-    }
-
-    // PENDAFTARAN
+    ## ===== PENDAFTARAN ===== ##
     public function pendaftaran()
     {
         $pendaftaran = pendaftaranModel::query()
@@ -142,7 +126,22 @@ class userSiswaController extends Controller
         return redirect()->route('userSiswa.pendaftaran')->with('success', 'Tempat PKL berhasil diperbarui.');
     }
 
-    // PROFILE
+    ## ===== ABSENSI ===== ##
+    public function absensi() {}
+
+    ## ===== JURNAL ===== ##
+    public function jurnal()
+    {
+        //
+    }
+
+    ## ===== TUGAS ===== ##
+    public function tugas()
+    {
+        //
+    }
+
+    ## ===== PROFIL ===== ##
     public function profile()
     {
         //
