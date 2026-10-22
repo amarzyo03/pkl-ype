@@ -19,4 +19,9 @@ class guruModel extends Model
         'username',
         'password',
     ];
+
+    public function tugas()
+    {
+        return $this->hasMany(tugasModel::class, 'id_guru', 'id');
+    }
 }

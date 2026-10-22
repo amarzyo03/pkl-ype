@@ -43,7 +43,8 @@ it('can create, update, and soft delete a registration', function () {
 
     $this->get(route('pendaftaran.add'))
         ->assertOk()
-        ->assertSee('Budi Santoso')
+        ->assertSee('type="text" name="id_siswa"', false)
+        ->assertSee('value="1" readonly', false)
         ->assertSee('PT Contoh');
 
     $this->post(route('pendaftaran.save'), [
@@ -77,7 +78,7 @@ it('can create, update, and soft delete a registration', function () {
 
     $this->get(route('pendaftaran.edit', $pendaftaran->id))
         ->assertOk()
-        ->assertSee('Siti Aminah')
+        ->assertSee('value="'.$siswaPertama->id.'" readonly', false)
         ->assertSee('CV Teknologi');
 
     $this->put(route('pendaftaran.update', $pendaftaran->id), [

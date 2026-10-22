@@ -56,8 +56,12 @@
                     <div class="form-grid">
                         <div class="field">
                             <label class="field-label" for="nama">Nama Siswa <span class="req">*</span></label>
-                            <input id="nama" class="input" name="nama"
-                                value="{{ $pendaftaran->siswa->id ?? 1 }}" type="text" readonly>
+                            @php
+                                $namaValue =
+                                    $pendaftaran->nama ?? ($pendaftaran->siswa->nama ?? ($pendaftaran->siswa->id ?? 1));
+                            @endphp
+                            <input id="nama" class="input" name="nama" value="{{ $namaValue }}" type="text"
+                                {{ isset($legacy) && $legacy ? '' : 'readonly' }}>
                             @error('nama')
                                 <small role="alert">{{ $message }}</small>
                             @enderror
@@ -67,7 +71,15 @@
                             <select id="dudi" class="input" name="dudi" required>
                                 <option value="">Pilih DUDI</option>
                                 @foreach ($dudi as $i => $row)
-                                    <option value="{{ $row->id }}" @selected((string) old('dudi', $pendaftaran->id_dudi ?? '') === (string) $row->id)>
+                                    @php
+                                        $selectedDudi =
+                                            isset($legacy) && $legacy
+                                                ? old('dudi', $pendaftaran->dudi ?? '') === $row->nama ||
+                                                    old('dudi', $pendaftaran->dudi ?? '') === (string) $row->id
+                                                : (string) old('dudi', $pendaftaran->id_dudi ?? '') ===
+                                                    (string) $row->id;
+                                    @endphp
+                                    <option value="{{ $row->id }}" @selected($selectedDudi)>
                                         {{ $row->nama }}
                                     </option>
                                 @endforeach
@@ -81,7 +93,7 @@
                         <a href="{{ route('userSiswa.pendaftaran') }}" class="btn btn--ghost registration-submit">Batal</a>
                     @endif
                     <button class="btn btn--primary registration-submit" type="submit">
-                        {{ isset($pendaftaran) ? 'Simpan Perubahan' : 'Daftar' }}
+                        {{ isset($legacy) && $legacy ? 'Simpan perubahan' : (isset($pendaftaran) ? 'Simpan Perubahan' : 'Daftar') }}
                     </button>
                 </form>
             </section>

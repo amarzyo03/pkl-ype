@@ -13,10 +13,11 @@ return new class extends Migration
     {
         Schema::create('tb_tugas', function (Blueprint $table) {
             $table->id();
-            $table->string('pengirim');
+            $table->integer('id_guru')->unsigned();
+            $table->date('tanggal');
             $table->string('judul');
             $table->text('deskripsi');
-            $table->string('file');
+            $table->string('file')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

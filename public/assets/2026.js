@@ -20,6 +20,12 @@
                             icon: '<path d="M9 4h6l1 2h3v14H5V6h3z"/><path d="M9 11h6M9 15h6"/>',
                         },
                         {
+                            key: "tugas-siswa",
+                            text: "Tugas",
+                            href: "/id/siswa/tugas",
+                            icon: '<path d="M8 6h13M8 12h13M8 18h13"/><path d="M3 6h.01M3 12h.01M3 18h.01"/>',
+                        },
+                        {
                             key: "absensi",
                             text: "Absensi",
                             href: "/absensi",
@@ -37,16 +43,22 @@
                     label: "Monitoring",
                     items: [
                         {
-                            key: "pendaftaran",
-                            text: "Pendaftaran",
-                            href: "/pendaftaran",
-                            icon: '<path d="M8 4h8l1 2h3v14H4V6h3z"/><path d="M8 11h8M8 15h5"/>',
+                            key: "tugas-guru",
+                            text: "Tugas",
+                            href: "/id/guru/tugas",
+                            icon: '<path d="M8 6h13M8 12h13M8 18h13"/><path d="M3 6h.01M3 12h.01M3 18h.01"/>',
                         },
                     ],
                 },
                 {
                     label: "Master",
                     items: [
+                        {
+                            key: "pendaftaran",
+                            text: "Pendaftaran",
+                            href: "/pendaftaran",
+                            icon: '<path d="M8 4h8l1 2h3v14H4V6h3z"/><path d="M8 11h8M8 15h5"/>',
+                        },
                         {
                             key: "siswa",
                             text: "Siswa",

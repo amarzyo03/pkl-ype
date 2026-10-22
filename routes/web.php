@@ -7,6 +7,7 @@ use App\Http\Controllers\jurusanController;
 use App\Http\Controllers\kelasController;
 use App\Http\Controllers\pendaftaranController;
 use App\Http\Controllers\siswaController;
+use App\Http\Controllers\tugasController;
 use App\Http\Controllers\userController;
 use App\Http\Controllers\userSiswaController;
 use Illuminate\Support\Facades\Route;
@@ -15,7 +16,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// # ===== ADMIN ===== ##
+// ===== ADMIN ===== ##
 // DASHBOARD
 Route::get('/dashboard', [dashboardController::class, 'index'])->name('dashboard');
 
@@ -88,7 +89,17 @@ Route::delete('/user/delete/{id}', [userController::class, 'delete'])->name('use
 Route::get('/user/import', [userController::class, 'import'])->name('user.import');
 Route::post('/user/import', [userController::class, 'importStore'])->name('user.import.store');
 
-// # ==== SISWA ===== ##
+// ==== ADMIN & GURU ===== ##
+// TUGAS
+Route::get('/id/guru/tugas', [tugasController::class, 'index'])->name('tugas');
+Route::get('/id/guru/tugas/add', [tugasController::class, 'add'])->name('tugas.add');
+Route::post('/id/guru/tugas/save', [tugasController::class, 'save'])->name('tugas.save');
+Route::get('/id/guru/tugas/edit/{id}', [tugasController::class, 'edit'])->name('tugas.edit');
+Route::put('/id/guru/tugas/update/{id}', [tugasController::class, 'update'])->name('tugas.update');
+Route::delete('/id/guru/tugas/delete/{id}', [tugasController::class, 'delete'])->name('tugas.delete');
+Route::get('/id/guru/tugas/{id}/file', [tugasController::class, 'downloadFile'])->name('tugas.file');
+
+// ==== SISWA ===== ##
 // DASHBOARD
 Route::get('/id/siswa/dashboard', [userSiswaController::class, 'dashboard'])->name('userSiswa.dashboard');
 
@@ -97,3 +108,9 @@ Route::get('/id/siswa/pendaftaran', [userSiswaController::class, 'pendaftaran'])
 Route::post('/id/siswa/pendaftaran', [userSiswaController::class, 'attemptPendaftaran'])->name('userSiswa.pendaftaran.attempt');
 Route::get('/id/siswa/pendaftaran/edit', [userSiswaController::class, 'editPendaftaran'])->name('userSiswa.pendaftaran.edit');
 Route::put('/id/siswa/pendaftaran', [userSiswaController::class, 'updatePendaftaran'])->name('userSiswa.pendaftaran.update');
+
+// TUGAS
+Route::get('/id/siswa/tugas', [userSiswaController::class, 'tugas'])->name('userSiswa.tugas');
+Route::get('/id/siswa/tugas/{id}/kerjakan', [userSiswaController::class, 'tugasKerjakan'])->name('userSiswa.tugas.kerjakan');
+Route::post('/id/siswa/tugas/{id}/kerjakan', [userSiswaController::class, 'attemptTugasKerjakan'])->name('userSiswa.tugas.kerjakan.attempt');
+Route::post('/id/siswa/tugas/{id}/batalkan', [userSiswaController::class, 'cancelTugasKerjakan'])->name('userSiswa.tugas.kerjakan.cancel');

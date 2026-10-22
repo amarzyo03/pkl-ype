@@ -32,14 +32,8 @@
             <div class="form-grid">
                 <div class="field">
                     <label class="field-label" for="id_siswa">Siswa <span class="req">*</span></label>
-                    <select id="id_siswa" class="select" name="id_siswa" required>
-                        <option value="">Pilih siswa</option>
-                        @foreach ($siswa as $row)
-                            <option value="{{ $row->id }}" @selected((string) old('id_siswa', $pendaftaran->id_siswa ?? '') === (string) $row->id)>
-                                {{ $row->nama }} — {{ $row->nis }}
-                            </option>
-                        @endforeach
-                    </select>
+                    <input id="id_siswa" class="input" type="text" name="id_siswa"
+                        value="{{ old('id_siswa', $pendaftaran->id_siswa ?? 1) }}" readonly required>
                     @error('id_siswa')
                         <small role="alert">{{ $message }}</small>
                     @enderror
@@ -59,9 +53,6 @@
                     @enderror
                 </div>
             </div>
-            @if ($siswa->isEmpty())
-                <p class="text-muted">Tidak ada siswa yang tersedia untuk didaftarkan.</p>
-            @endif
         </section>
     </div>
 </form>

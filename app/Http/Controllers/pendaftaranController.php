@@ -4,9 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\dudiModel;
 use App\Models\pendaftaranModel;
-use App\Models\siswaModel;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -42,10 +40,9 @@ class pendaftaranController extends Controller
 
     public function add(): View
     {
-        $siswa = $this->availableSiswa();
         $dudis = dudiModel::query()->orderBy('nama')->get();
 
-        return view('pendaftaran.add', compact('siswa', 'dudis'));
+        return view('pendaftaran.add', compact('dudis'));
     }
 
     public function save(Request $request): RedirectResponse
@@ -63,10 +60,9 @@ class pendaftaranController extends Controller
     public function edit(string $id): View
     {
         $pendaftaran = pendaftaranModel::query()->findOrFail($id);
-        $siswa = $this->availableSiswa($pendaftaran);
         $dudis = dudiModel::query()->orderBy('nama')->get();
 
-        return view('pendaftaran.edit', compact('pendaftaran', 'siswa', 'dudis'));
+        return view('pendaftaran.edit', compact('pendaftaran', 'dudis'));
     }
 
     public function update(Request $request, string $id): RedirectResponse
@@ -116,28 +112,6 @@ class pendaftaranController extends Controller
             : "Pendaftaran berhasil {$targetStatus}.";
 
         return redirect()->route('pendaftaran')->with('success', $message);
-    }
-
-    private function availableSiswa(?pendaftaranModel $current = null): Collection
-    {
-        $usedStudentIds = pendaftaranModel::withTrashed()
-            ->when($current !== null, function (Builder $query) use ($current): void {
-                $query->where('id', '!=', $current->getKey());
-            })
-            ->select('id_siswa');
-
-        $query = siswaModel::query()->orderBy('nama');
-
-        if ($current !== null) {
-            $query->where(function (Builder $query) use ($current, $usedStudentIds): void {
-                $query->where('id', $current->id_siswa)
-                    ->orWhereNotIn('id', $usedStudentIds);
-            });
-        } else {
-            $query->whereNotIn('id', $usedStudentIds);
-        }
-
-        return $query->get();
     }
 
     private function rules(?pendaftaranModel $current = null): array
