@@ -24,7 +24,9 @@
     <link href="/assets/style.css" rel="stylesheet">
 </head>
 
-<body data-active="{{ request()->segment(1) === 'id' ? (request()->segment(3) === 'pendaftaran' ? 'pendaftaran-siswa' : (request()->segment(3) === 'tugas' ? 'tugas-' . request()->segment(2) : request()->segment(3))) : (request()->segment(1) ?: 'dashboard') }}" data-crumbs="Workspace | Dashboard">
+<body
+    data-active="{{ request()->segment(1) === 'id' ? (request()->segment(3) === 'pendaftaran' ? 'pendaftaran-siswa' : (request()->segment(3) === 'tugas' || request()->segment(3) === 'jurnal' || request()->segment(3) === 'absensi' ? request()->segment(3) . '-' . request()->segment(2) : request()->segment(3))) : (request()->segment(1) ?: 'dashboard') }}"
+    data-crumbs="Workspace | Dashboard">
     <div class="shell">
         <div data-shell-sidebar></div>
         <div class="main">
