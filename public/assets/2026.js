@@ -45,19 +45,19 @@
                         {
                             key: "tugas-guru",
                             text: "Tugas",
-                            href: "#",
+                            href: "/id/guru/tugas",
                             icon: '<path d="M8 6h13M8 12h13M8 18h13"/><path d="M3 6h.01M3 12h.01M3 18h.01"/>',
                         },
                         {
                             key: "jurnal-guru",
                             text: "Jurnal",
-                            href: "#",
+                            href: "/id/guru/jurnal",
                             icon: '<path d="M4 4h16v16H4z"/><path d="M8 8h8M8 12h8M8 16h5"/>',
                         },
                         {
                             key: "absensi-guru",
                             text: "Absensi",
-                            href: "#",
+                            href: "/id/guru/absensi",
                             icon: '<path d="M4 5h16v14H4z"/><path d="m8 12 2 2 4-4"/>',
                         },
                     ],

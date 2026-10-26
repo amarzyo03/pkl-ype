@@ -138,142 +138,11 @@ class userSiswaController extends Controller
     {
         //
     }
+
     // # ===== JURNAL ===== ##
-    public function jurnal(Request $request): View
+    public function jurnal()
     {
-        $siswa = siswaModel::query()
-            ->where('status', 'active')
-            ->orderBy('nama')
-            ->get(['id', 'nama']);
-        $selectedStudentId = filter_var($request->query('id_siswa'), FILTER_VALIDATE_INT);
-
-        if (! is_int($selectedStudentId) || ! $siswa->contains('id', $selectedStudentId)) {
-            $selectedStudentId = null;
-        }
-
-        $query = jurnalModel::query();
-        if ($selectedStudentId === null) {
-            $query->whereRaw('1 = 0');
-        } else {
-            $query->where('id_siswa', $selectedStudentId);
-        }
-
-        $search = trim((string) $request->query('search', ''));
-        if ($search !== '') {
-            $query->where(function ($query) use ($search) {
-                $query->where('tanggal', 'like', "%{$search}%")
-                    ->orWhere('kegiatan', 'like', "%{$search}%")
-                    ->orWhere('id', 'like', "%{$search}%");
-            });
-        }
-
-        $perPage = (int) $request->query('perPage', 15);
-        if (! in_array($perPage, [15, 25, 50, 100], true)) {
-            $perPage = 15;
-        }
-
-        $jurnal = $query
-            ->orderByDesc('tanggal')
-            ->orderByDesc('id')
-            ->paginate($perPage)
-            ->appends($request->query());
-
-        return view('userSiswa.jurnal.index', compact('siswa', 'selectedStudentId', 'jurnal'));
-    }
-
-    public function addJurnal(Request $request): View
-    {
-        $siswa = siswaModel::query()
-            ->where('status', 'active')
-            ->orderBy('nama')
-            ->get(['id', 'nama']);
-        $selectedStudentId = filter_var($request->query('id_siswa'), FILTER_VALIDATE_INT);
-
-        if (! is_int($selectedStudentId) || ! $siswa->contains('id', $selectedStudentId)) {
-            $selectedStudentId = null;
-        }
-
-        return view('userSiswa.jurnal.add', compact('siswa', 'selectedStudentId'));
-    }
-
-    public function saveJurnal(Request $request): RedirectResponse
-    {
-        $validated = $request->validate([
-            'id_siswa' => [
-                'required',
-                'integer',
-                Rule::exists('tb_siswa', 'id')->whereNull('deleted_at')->where('status', 'active'),
-            ],
-            'tanggal' => ['required', 'date_format:Y-m-d'],
-            'kegiatan' => ['required', 'string', 'max:255'],
-        ]);
-
-        jurnalModel::create($validated);
-
-        return redirect()
-            ->route('userSiswa.jurnal', ['id_siswa' => $validated['id_siswa']])
-            ->with('success', 'Jurnal berhasil ditambahkan.');
-    }
-
-    public function editJurnal(Request $request, string $id): View
-    {
-        $validated = $request->validate([
-            'id_siswa' => [
-                'required',
-                'integer',
-                Rule::exists('tb_siswa', 'id')->whereNull('deleted_at')->where('status', 'active'),
-            ],
-        ]);
-        $siswa = siswaModel::query()->findOrFail($validated['id_siswa']);
-        $jurnal = jurnalModel::query()
-            ->where('id_siswa', $siswa->id)
-            ->findOrFail($id);
-
-        return view('userSiswa.jurnal.edit', compact('siswa', 'jurnal'));
-    }
-
-    public function updateJurnal(Request $request, string $id): RedirectResponse
-    {
-        $validated = $request->validate([
-            'id_siswa' => [
-                'required',
-                'integer',
-                Rule::exists('tb_siswa', 'id')->whereNull('deleted_at')->where('status', 'active'),
-            ],
-            'tanggal' => ['required', 'date_format:Y-m-d'],
-            'kegiatan' => ['required', 'string', 'max:255'],
-        ]);
-        $jurnal = jurnalModel::query()
-            ->where('id_siswa', $validated['id_siswa'])
-            ->findOrFail($id);
-
-        $jurnal->update([
-            'tanggal' => $validated['tanggal'],
-            'kegiatan' => $validated['kegiatan'],
-        ]);
-
-        return redirect()
-            ->route('userSiswa.jurnal', ['id_siswa' => $validated['id_siswa']])
-            ->with('success', 'Jurnal berhasil diperbarui.');
-    }
-
-    public function deleteJurnal(Request $request, string $id): RedirectResponse
-    {
-        $validated = $request->validate([
-            'id_siswa' => [
-                'required',
-                'integer',
-                Rule::exists('tb_siswa', 'id')->whereNull('deleted_at')->where('status', 'active'),
-            ],
-        ]);
-        $jurnal = jurnalModel::query()
-            ->where('id_siswa', $validated['id_siswa'])
-            ->findOrFail($id);
-        $jurnal->delete();
-
-        return redirect()
-            ->route('userSiswa.jurnal', ['id_siswa' => $validated['id_siswa']])
-            ->with('success', 'Jurnal berhasil dihapus.');
+        //
     }
 
     // # ===== TUGAS ===== ##
@@ -350,7 +219,7 @@ class userSiswaController extends Controller
             . '.pdf';
         $oldFile = $pengumpulan->file;
         $newFilePath = Storage::disk('task_attachments')->putFileAs(
-            'assets/static/pengumpulan-tugas',
+            'assets/static/tugas-pengumpulan',
             $request->file('file'),
             $filename,
         );
@@ -368,7 +237,7 @@ class userSiswaController extends Controller
             $oldFile !== null
             && basename($oldFile) !== $filename
             && ! Storage::disk('task_attachments')->delete(
-                'assets/static/pengumpulan-tugas/' . basename($oldFile),
+                'assets/static/tugas-pengumpulan/' . basename($oldFile),
             )
         ) {
             throw new RuntimeException('File tugas lama gagal dihapus saat mengunggah file baru.');
@@ -417,7 +286,7 @@ class userSiswaController extends Controller
         if (
             $oldFile !== null
             && ! Storage::disk('task_attachments')->delete(
-                'assets/static/pengumpulan-tugas/' . basename($oldFile),
+                'assets/static/tugas-pengumpulan/' . basename($oldFile),
             )
         ) {
             throw new RuntimeException('File tugas gagal dihapus saat pengerjaan dibatalkan.');

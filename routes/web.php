@@ -123,11 +123,3 @@ Route::get('/id/siswa/tugas', [userSiswaController::class, 'tugas'])->name('user
 Route::get('/id/siswa/tugas/{id}/kerjakan', [userSiswaController::class, 'tugasKerjakan'])->name('userSiswa.tugas.kerjakan');
 Route::post('/id/siswa/tugas/{id}/kerjakan', [userSiswaController::class, 'attemptTugasKerjakan'])->name('userSiswa.tugas.kerjakan.attempt');
 Route::post('/id/siswa/tugas/{id}/batalkan', [userSiswaController::class, 'cancelTugasKerjakan'])->name('userSiswa.tugas.kerjakan.cancel');
-
-// JURNAL SISWA
-Route::get('/id/siswa/jurnal', [userSiswaController::class, 'jurnal'])->name('userSiswa.jurnal');
-Route::get('/id/siswa/jurnal/add', [userSiswaController::class, 'addJurnal'])->name('userSiswa.jurnal.add');
-Route::post('/id/siswa/jurnal/save', [userSiswaController::class, 'saveJurnal'])->name('userSiswa.jurnal.save');
-Route::get('/id/siswa/jurnal/{id}/edit', [userSiswaController::class, 'editJurnal'])->name('userSiswa.jurnal.edit');
-Route::put('/id/siswa/jurnal/{id}', [userSiswaController::class, 'updateJurnal'])->name('userSiswa.jurnal.update');
-Route::delete('/id/siswa/jurnal/{id}', [userSiswaController::class, 'deleteJurnal'])->name('userSiswa.jurnal.delete');
