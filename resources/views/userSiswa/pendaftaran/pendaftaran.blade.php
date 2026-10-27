@@ -23,9 +23,9 @@
 
     <div class="registration-page">
         <section class="hero">
-            <div class="hero-text"><span class="eyebrow">Siswa · Daftar · PKL</span>
-                <h1 class="hero-title">Pendaftaran Tempat <span class="accent"> PKL</span></h1>
-                <p class="hero-sub">Silahkan isi formulir di bawah ini untuk mendaftar di tempat PKL yang tersedia.</p>
+            <div class="hero-text"><span class="eyebrow">Siswa · Pendaftaran · PKL</span>
+                <h1 class="hero-title">Pendaftaran Lokasi Tempat <span class="accent"> PKL</span></h1>
+                <p class="hero-sub">Silahkan pilih dudi untuk mendaftar di tempat PKL yang tersedia.</p>
             </div>
             {{-- <div class="hero-actions">
                 <a href="{{ route('dudi') }}" class="btn btn--ghost">Cancel</a>
@@ -37,51 +37,27 @@
             <section class="col-12 card">
                 <div class="card-head">
                     <div class="card-title-wrap">
-                        <span class="eyebrow">Pendaftaran Lokasi Tempat PKL</span>
-                        <h2 class="card-title">
-                            {{ isset($pendaftaran) ? 'Ubah Tempat PKL' : 'Pendaftaran Lokasi Tempat PKL' }}
-                        </h2>
+                        <span class="eyebrow">Daftar DUDI Tersedia</span>
+                        <h2 class="card-title">PENDAFTARAN LOKASI TEMPAT PKL</h2>
                     </div>
                 </div>
                 @if (session('success'))
                     <p role="status">{{ session('success') }}</p>
                 @endif
-                <form
-                    action="{{ isset($pendaftaran) ? route('userSiswa.pendaftaran.update') : route('userSiswa.pendaftaran.attempt') }}"
-                    method="POST">
+                <form action="{{ route('userSiswa.pendaftaran.attempt') }}" method="POST">
                     @csrf
-                    @if (isset($pendaftaran))
-                        @method('PUT')
-                    @endif
                     <div class="form-grid">
                         <div class="field">
-                            <label class="field-label" for="nama">Nama Siswa <span class="req">*</span></label>
-                            @php
-                                $namaValue =
-                                    $pendaftaran->nama ?? ($pendaftaran->siswa->nama ?? ($pendaftaran->siswa->id ?? 1));
-                            @endphp
-                            <input id="nama" class="input" name="nama" value="{{ $namaValue }}" type="text"
-                                {{ isset($legacy) && $legacy ? '' : 'readonly' }}>
-                            @error('nama')
-                                <small role="alert">{{ $message }}</small>
-                            @enderror
+                            <label class="field-label" for="nama">NAMA<span class="req">*</span></label>
+                            <input class="input" type="hidden" id="nama" name="nama" value="{{ $siswa->id }}">
+                            <input class="input" type="text" value="{{ strtoupper($siswa->nama) }}" readonly>
                         </div>
                         <div class="field">
-                            <label class="field-label" for="dudi">Nama DUDI <span class="req">*</span></label>
+                            <label class="field-label" for="dudi">DAFTAR DUDI <span class="req">*</span></label>
                             <select id="dudi" class="input" name="dudi" required>
-                                <option value="">Pilih DUDI</option>
+                                <option value="">.:: Pilih DUDI ::.</option>
                                 @foreach ($dudi as $i => $row)
-                                    @php
-                                        $selectedDudi =
-                                            isset($legacy) && $legacy
-                                                ? old('dudi', $pendaftaran->dudi ?? '') === $row->nama ||
-                                                    old('dudi', $pendaftaran->dudi ?? '') === (string) $row->id
-                                                : (string) old('dudi', $pendaftaran->id_dudi ?? '') ===
-                                                    (string) $row->id;
-                                    @endphp
-                                    <option value="{{ $row->id }}" @selected($selectedDudi)>
-                                        {{ $row->nama }}
-                                    </option>
+                                    <option value="{{ $row->id }}">{{ $row->nama }}</option>
                                 @endforeach
                             </select>
                             @error('dudi')
@@ -89,12 +65,7 @@
                             @enderror
                         </div>
                     </div>
-                    @if (isset($pendaftaran))
-                        <a href="{{ route('userSiswa.pendaftaran') }}" class="btn btn--ghost registration-submit">Batal</a>
-                    @endif
-                    <button class="btn btn--primary registration-submit" type="submit">
-                        {{ isset($legacy) && $legacy ? 'Simpan perubahan' : (isset($pendaftaran) ? 'Simpan Perubahan' : 'Daftar') }}
-                    </button>
+                    <button class="btn btn--primary registration-submit" type="submit">DAFTAR</button>
                 </form>
             </section>
         </div>

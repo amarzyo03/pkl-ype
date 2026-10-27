@@ -115,6 +115,13 @@ Route::middleware(['siswaMiddleware'])->group(function () {
     // DASHBOARD
     Route::get('/id/siswa/dashboard', [userSiswaController::class, 'dashboard'])->name('userSiswa.dashboard');
 
+    // PENDAFTARAN
+    Route::get('/id/siswa/pendaftaran', [userSiswaController::class, 'pendaftaran'])->name('userSiswa.pendaftaran');
+    Route::post('/id/siswa/pendaftaran', [userSiswaController::class, 'attemptPendaftaran'])->name('userSiswa.pendaftaran.attempt');
+    Route::get('/id/siswa/pendaftaran/status', [userSiswaController::class, 'statusPendaftaran'])->name('userSiswa.pendaftaran.status');
+    Route::get('/id/siswa/pendaftaran/edit', [userSiswaController::class, 'editPendaftaran'])->name('userSiswa.pendaftaran.edit');
+    Route::put('/id/siswa/pendaftaran/update/{id}', [userSiswaController::class, 'updatePendaftaran'])->name('userSiswa.pendaftaran.update');
+
     // ABSENSI
     Route::get('/id/siswa/absensi', [absensiController::class, 'index'])->name('absensi');
     Route::get('/id/siswa/absensi/add', [absensiController::class, 'addAbsensi'])->name('absensi.add');
@@ -122,12 +129,6 @@ Route::middleware(['siswaMiddleware'])->group(function () {
     Route::get('/id/siswa/absensi/edit/{id}', [absensiController::class, 'editAbsensi'])->name('absensi.edit');
     Route::put('/id/siswa/absensi/update/{id}', [absensiController::class, 'updateAbsensi'])->name('absensi.update');
     Route::delete('/id/siswa/absensi/delete/{id}', [absensiController::class, 'deleteAbsensi'])->name('absensi.delete');
-
-    // PENDAFTARAN
-    Route::get('/id/siswa/pendaftaran', [userSiswaController::class, 'pendaftaran'])->name('userSiswa.pendaftaran');
-    Route::post('/id/siswa/pendaftaran', [userSiswaController::class, 'attemptPendaftaran'])->name('userSiswa.pendaftaran.attempt');
-    Route::get('/id/siswa/pendaftaran/edit', [userSiswaController::class, 'editPendaftaran'])->name('userSiswa.pendaftaran.edit');
-    Route::put('/id/siswa/pendaftaran', [userSiswaController::class, 'updatePendaftaran'])->name('userSiswa.pendaftaran.update');
 
     // TUGAS
     Route::get('/id/siswa/tugas', [userSiswaController::class, 'tugas'])->name('userSiswa.tugas');
