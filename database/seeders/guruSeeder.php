@@ -2,9 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
 use App\Models\guruModel;
+use Illuminate\Database\Seeder;
 
 class guruSeeder extends Seeder
 {
@@ -15,8 +14,6 @@ class guruSeeder extends Seeder
     {
         guruModel::create([
             'nama' => 'guru1',
-            'username' => 'guru1',
-            'password' => bcrypt('guru1'),
         ]);
     }
 }

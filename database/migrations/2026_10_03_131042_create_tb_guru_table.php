@@ -14,8 +14,6 @@ return new class extends Migration
         Schema::create('tb_guru', function (Blueprint $table) {
             $table->id();
             $table->string('nama');
-            $table->string('username')->unique();
-            $table->string('password');
             $table->timestamps();
             $table->softDeletes();
         });

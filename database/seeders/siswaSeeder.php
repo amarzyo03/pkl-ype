@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\kelasModel;
 use App\Models\siswaModel;
 use Illuminate\Database\Seeder;
 
@@ -18,8 +17,6 @@ class siswaSeeder extends Seeder
             'nisn' => '00123',
             'nama' => 'siswa1',
             'id_kelas' => 1,
-            'username' => 'siswa1',
-            'password' => bcrypt('siswa1'),
             'status' => 'active',
         ]);
     }
