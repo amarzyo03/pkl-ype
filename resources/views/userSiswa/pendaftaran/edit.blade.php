@@ -57,14 +57,15 @@
                             <label class="field-label" for="dudi">DAFTAR DUDI <span class="req">*</span></label>
                             <select id="dudi" class="input" name="dudi" required>
                                 <option value="">.:: Pilih DUDI ::.</option>
-                                <option selected value="{{ $pendaftaran->dudi->id }}">
-                                    {{ $pendaftaran->dudi->nama }}
-                                </option>
-                                <optgroup label="Daftar Pilihan DUDI">
-                                    @foreach ($dudi as $i => $row)
-                                        <option value="{{ $row->id }}">{{ $row->nama }}</option>
-                                    @endforeach
-                                </optgroup>
+                                @foreach ($dudi->groupBy('id_jurusan') as $jurusanDudi)
+                                    <optgroup label="{{ $jurusanDudi->first()->jurusan?->nama ?? 'Belum ada jurusan' }}">
+                                        @foreach ($jurusanDudi as $row)
+                                            <option value="{{ $row->id }}" @selected(old('dudi', $pendaftaran->dudi->id) == $row->id)>
+                                                {{ $row->nama }}
+                                            </option>
+                                        @endforeach
+                                    </optgroup>
+                                @endforeach
                             </select>
                             @error('dudi')
                                 <small role="alert">{{ $message }}</small>

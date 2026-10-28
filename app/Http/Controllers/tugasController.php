@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\guruModel;
 use App\Models\tugasModel;
+use App\Models\userModel;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Http\RedirectResponse;
@@ -17,6 +19,16 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class tugasController extends Controller
 {
+    protected $user_id;
+
+    protected $guru;
+
+    public function __construct()
+    {
+        $this->user_id = userModel::find(session('auth_id'))->id_user;
+        $this->guru = guruModel::find($this->user_id);
+    }
+
     public function index(Request $request): View
     {
         $query = tugasModel::query()->with('guru');
@@ -49,7 +61,9 @@ class tugasController extends Controller
 
     public function add(): View
     {
-        return view('tugas.add');
+        $guru = $this->guru;
+
+        return view('tugas.add', compact('guru'));
     }
 
     public function save(Request $request): RedirectResponse

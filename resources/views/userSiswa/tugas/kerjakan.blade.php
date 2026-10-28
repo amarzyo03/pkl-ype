@@ -1,5 +1,81 @@
 @extends('app')
 @section('content')
+    <style>
+        .task-attachment-link {
+            align-items: center;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--t-base);
+            display: flex;
+            gap: 14px;
+            max-width: 420px;
+            padding: 16px;
+            text-decoration: none;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+
+        .task-attachment-link:hover {
+            background-color: var(--bg-hover);
+            border-color: var(--primary-light);
+        }
+
+        .task-attachment-file-icon {
+            align-items: center;
+            background: var(--primary-soft);
+            border-radius: 8px;
+            color: var(--primary);
+            display: flex;
+            flex: 0 0 42px;
+            height: 48px;
+            justify-content: center;
+        }
+
+        .task-attachment-info {
+            display: flex;
+            flex: 1;
+            flex-direction: column;
+            gap: 4px;
+            min-width: 0;
+        }
+
+        .task-attachment-name {
+            font-weight: 600;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .task-attachment-type {
+            color: var(--t-muted);
+            font-size: 0.875rem;
+        }
+
+        .task-attachment-download {
+            color: var(--t-muted);
+            flex: 0 0 22px;
+        }
+
+        .task-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 0.5rem;
+        }
+
+        .task-actions form {
+            margin: 0;
+        }
+
+        @media (max-width: 720px) {
+            .task-actions {
+                flex-direction: column;
+            }
+
+            .task-actions .btn {
+                width: 100%;
+            }
+        }
+    </style>
+
     <section class="hero">
         <div class="hero-text">
             <span class="eyebrow">Siswa · Tugas</span>
@@ -7,7 +83,7 @@
             <p class="hero-sub">Isi nama siswa dan unggah jawaban tugas dalam format PDF.</p>
         </div>
         <div class="hero-actions">
-            <a href="{{ route('userSiswa.tugas', ['id_siswa' => $selectedStudentId]) }}" class="btn btn--ghost">Kembali</a>
+            <a href="#" class="btn btn--ghost">Kembali</a>
         </div>
     </section>
 
@@ -20,92 +96,120 @@
                 </div>
             </div>
 
-            @if (session('success'))
-                <p role="status">{{ session('success') }}</p>
-            @endif
-            @if (session('error'))
-                <p role="alert">{{ session('error') }}</p>
-            @endif
-
-            <form action="{{ route('userSiswa.tugas.kerjakan.attempt', $tugas->id) }}" method="POST"
-                enctype="multipart/form-data">
+            <form id="taskSubmissionForm" action="{{ route('userSiswa.tugas.kerjakan.attempt', $tugas->id) }}"
+                method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="form-grid">
                     <div class="field">
-                        <label class="field-label" for="id_siswa">Nama Siswa <span class="req">*</span></label>
-                        <select id="id_siswa" class="input" name="id_siswa" required
-                            @if ($pengumpulan?->status === 'dikerjakan') disabled @endif>
-                            <option value="">Pilih siswa</option>
-                            @foreach ($siswa as $item)
-                                <option value="{{ $item->id }}" @selected((string) old('id_siswa', $selectedStudentId) === (string) $item->id)>
-                                    {{ $item->nama }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('id_siswa')
-                            <small role="alert">{{ $message }}</small>
-                        @enderror
+                        <label class="field-label" for="nama">Siswa<span class="req">*</span></label>
+                        <input class="input" type="hidden" id="nama" name="nama" value="{{ $siswa->id }}">
+                        <input class="input" type="text" value="{{ ucwords($siswa->nama) }}" readonly>
                     </div>
 
                     <div class="field">
-                        <label class="field-label" for="nama_guru">Nama Guru</label>
-                        <input id="nama_guru" class="input" type="text"
-                            value="{{ $tugas->guru?->nama ?? 'Guru tidak tersedia' }}" readonly>
+                        <label class="field-label" for="nama_guru">Guru</label>
+                        <input class="input" type="hidden" id="nama" name="id_guru" value="{{ $siswa->id }}">
+                        <input class="input" type="text" value="{{ ucwords($tugas->guru->nama) }}" readonly>
                     </div>
 
                     <div class="field">
                         <label class="field-label" for="judul">Judul Tugas</label>
-                        <input id="judul" class="input" type="text" value="{{ $tugas->judul }}" readonly>
+                        <input id="judul" class="input" type="text" value="{{ ucwords($tugas->judul) }}" readonly>
                     </div>
 
                     <div class="field">
-                        <label class="field-label" for="status">Status</label>
+                        <label class="field-label" for="status">Status Tugas</label>
                         <input id="status" class="input" type="text"
-                            value="{{ $pengumpulan?->status === null ? 'Belum dikerjakan' : ucfirst($pengumpulan->status) }}"
+                            value="{{ $tugas_status?->status === 'dikerjakan' ? 'Sudah dikerjakan' : 'Belum dikerjakan' }}"
                             readonly>
                     </div>
 
-                    <div class="field" style="grid-column: 1 / -1">
+                    <div class="field">
                         <label class="field-label" for="deskripsi">Deskripsi Tugas</label>
-                        <textarea id="deskripsi" class="input" rows="5" readonly>{{ $tugas->deskripsi }}</textarea>
+                        <textarea id="deskripsi" class="input" rows="3" readonly>{{ ucfirst($tugas->deskripsi) }}</textarea>
                     </div>
-
-                    <div class="field" style="grid-column: 1 / -1">
-                        <label class="field-label" for="file">File Tugas (PDF) <span class="req">*</span></label>
-                        <input id="file" class="input" type="file" name="file" accept=".pdf,application/pdf"
-                            @if ($pengumpulan?->status === 'dikerjakan') disabled
-                            @else
-                                required @endif>
-                        <small class="text-muted">
-                            {{ $pengumpulan?->status === 'dikerjakan' ? 'Unggahan terkunci. Batalkan pengerjaan untuk mengunggah file kembali.' : 'File harus PDF, maksimal 2 MB.' }}
-                        </small>
-                        @if ($pengumpulan?->file)
-                            <small>
-                                File terkumpul:
-                                <a href="{{ asset('assets/static/pengumpulan-tugas/' . $pengumpulan->file) }}">
-                                    {{ $pengumpulan->file }}
-                                </a>
-                            </small>
-                        @endif
+                    <div class="field">
+                        <span class="field-label">Download Tugas</span>
+                        <a class="task-attachment-link" href="{{ asset('assets/static/tugas/' . $tugas->file) }}"
+                            download="{{ $tugas->file }}" aria-label="Download lampiran tugas">
+                            <span class="task-attachment-file-icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" width="24" height="24" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M6 2.75h8l4 4v14.5H6a2 2 0 0 1-2-2V4.75a2 2 0 0 1 2-2Z" stroke="currentColor"
+                                        stroke-width="1.7" stroke-linejoin="round" />
+                                    <path d="M14 2.75v4h4M7.5 15h9M7.5 18h6" stroke="currentColor" stroke-width="1.7"
+                                        stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                            </span>
+                            <span class="task-attachment-info">
+                                <span class="task-attachment-name">{{ ucwords($tugas->file) }}</span>
+                                <span class="task-attachment-type">File lampiran</span>
+                            </span>
+                            <svg class="task-attachment-download" viewBox="0 0 24 24" width="22" height="22"
+                                fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <path d="M12 3.75v11m0 0 4-4m-4 4-4-4M5 16.75v3.5h14v-3.5" stroke="currentColor"
+                                    stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </a>
+                    </div>
+                    <div class="field">
+                        <label class="field-label" for="file">
+                            Upload File Pengerjaan Tugas (PDF)
+                            <span class="req">*</span>
+                        </label>
+                        <input id="file" class="input" type="file" name="file"
+                            accept=".pdf,application/pdf" style="padding: 1rem 1rem 1rem 1rem"
+                            {{ $tugas_status?->status === 'dikerjakan' ? 'disabled' : '' }}>
+                        <small
+                            class="text-muted">{{ $tugas_status?->status === 'dikerjakan' ? 'Terima kasih telah mengerjakan tugas' : 'File yang diupload max 1 mb' }}</small>
                         @error('file')
                             <small role="alert">{{ $message }}</small>
                         @enderror
                     </div>
-                </div>
 
-                @if ($pengumpulan?->status === 'dikerjakan')
-                    <button class="btn btn--primary" type="submit" disabled>Kirim Tugas</button>
-                @else
-                    <button class="btn btn--primary" type="submit">Kirim Tugas</button>
-                @endif
+                    <div class="field">
+                        <span class="field-label">File yang dikumpulkan</span>
+                        @if ($tugas_status?->file)
+                            <a class="task-attachment-link"
+                                href="{{ asset('assets/static/tugas-pengumpulan/' . $tugas_status->file) }}"
+                                download="{{ $tugas_status->file }}" aria-label="Download lampiran tugas">
+                                <span class="task-attachment-file-icon" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M6 2.75h8l4 4v14.5H6a2 2 0 0 1-2-2V4.75a2 2 0 0 1 2-2Z"
+                                            stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" />
+                                        <path d="M14 2.75v4h4M7.5 15h9M7.5 18h6" stroke="currentColor" stroke-width="1.7"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </span>
+                                <span class="task-attachment-info">
+                                    <span class="task-attachment-name">{{ $tugas_status->file }}</span>
+                                    <span class="task-attachment-type">File lampiran</span>
+                                </span>
+                                <svg class="task-attachment-download" viewBox="0 0 24 24" width="22" height="22"
+                                    fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                    <path d="M12 3.75v11m0 0 4-4m-4 4-4-4M5 16.75v3.5h14v-3.5" stroke="currentColor"
+                                        stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                            </a>
+                        @else
+                            <span class="field-label">.:: <i>Belum ada tugas yang dikirim</i> ::.</span>
+                        @endif
+                    </div>
+                </div>
             </form>
-            @if ($pengumpulan?->status === 'dikerjakan')
-                <form action="{{ route('userSiswa.tugas.kerjakan.cancel', $tugas->id) }}" method="POST">
-                    @csrf
-                    <input type="hidden" name="id_siswa" value="{{ $selectedStudentId }}">
-                    <button class="btn btn--ghost" type="submit">Batalkan pengerjaan tugas</button>
-                </form>
-            @endif
+            <div class="task-actions">
+                @if ($tugas_status?->status !== 'dikerjakan')
+                    <button class="btn btn--primary" type="submit" form="taskSubmissionForm">Kirim Tugas</button>
+                @endif
+                @if ($tugas_status?->status === 'dikerjakan')
+                    <form action="{{ route('userSiswa.tugas.kerjakan.cancel', $tugas->id) }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="id_siswa" value="{{ $siswa->id }}">
+                        <button class="btn btn--danger" type="submit">Batalkan Pengerjaan Tugas</button>
+                    </form>
+                @endif
+            </div>
         </section>
     </div>
 @endsection

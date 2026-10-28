@@ -15,7 +15,7 @@ class guruMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (! session()->has('auth_id') || session('auth_role') !== 'guru') {
+        if (! session()->has('auth_id') || ! in_array(session('auth_role'), ['guru', 'admin'], true)) {
             return redirect()->route('auth')->with('error', 'Anda tidak memiliki akses ke halaman ini');
         }
 

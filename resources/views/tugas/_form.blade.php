@@ -30,11 +30,8 @@
             <div class="form-grid">
                 <div class="field">
                     <label class="field-label" for="id_guru">Guru <span class="req">*</span></label>
-                    <input id="id_guru" class="input" type="text" name="id_guru"
-                        value="{{ old('id_guru', $tugas->id_guru ?? 1) }}" readonly required>
-                    @error('id_guru')
-                        <small role="alert">{{ $message }}</small>
-                    @enderror
+                    <input type="hidden" class="input" id="id_guru" name="id_guru" value="{{ $guru->id }}">
+                    <input type="text" class="input" value="{{ strtoupper($guru->nama) }}" readonly>
                 </div>
                 <div class="field">
                     <label class="field-label" for="tanggal">Tanggal <span class="req">*</span></label>

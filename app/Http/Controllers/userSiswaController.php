@@ -8,12 +8,9 @@ use App\Models\siswaModel;
 use App\Models\tugasModel;
 use App\Models\tugasStatusModel;
 use App\Models\userModel;
-use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
-use Illuminate\Validation\Rule;
 use RuntimeException;
 
 class userSiswaController extends Controller
@@ -24,8 +21,8 @@ class userSiswaController extends Controller
 
     public function __construct()
     {
-        $this->user_id     = userModel::find(session('auth_id'))->id_user;
-        $this->siswa       = siswaModel::with('kelas')->find($this->user_id);
+        $this->user_id = userModel::find(session('auth_id'))->id_user;
+        $this->siswa = siswaModel::with('kelas')->find($this->user_id);
         $this->pendaftaran = pendaftaranModel::with('siswa', 'dudi')->where('id_siswa', $this->user_id)->first();
     }
 
@@ -62,7 +59,9 @@ class userSiswaController extends Controller
             'status'   => 'pending',
         ]);
 
-        return redirect()->route('userSiswa.pendaftaran.status')->with('success', 'Pendaftaran berhasil dikirim.');
+        return redirect()
+            ->route('userSiswa.pendaftaran.status')
+            ->with('success', 'Pendaftaran berhasil dikirim.');
     }
 
     public function statusPendaftaran()
@@ -78,6 +77,7 @@ class userSiswaController extends Controller
         $siswa       = $this->siswa;
         $pendaftaran = $this->pendaftaran;
         $dudi        = dudiModel::all();
+
         return view('userSiswa.pendaftaran.edit', compact('siswa', 'pendaftaran', 'dudi'));
     }
 
@@ -90,12 +90,114 @@ class userSiswaController extends Controller
 
         $pendaftaran = pendaftaranModel::find($id);
 
-        $pendaftaran->id_siswa   = $request->nama;
-        $pendaftaran->id_dudi    = $request->dudi;
-        $pendaftaran->status     = 'pending';
+        $pendaftaran->id_siswa = $request->nama;
+        $pendaftaran->id_dudi  = $request->dudi;
+        $pendaftaran->status   = 'pending';
         $pendaftaran->update();
 
-        return redirect()->route('userSiswa.pendaftaran.status')->with('success', 'Perubahan DUDI Berhasil di Simpan');
+        return redirect()
+            ->route('userSiswa.pendaftaran.status')
+            ->with('success', 'Perubahan DUDI Berhasil di Simpan');
+    }
+
+    // # ===== TUGAS ===== ##
+    public function tugas(Request $request)
+    {
+        if ($this->pendaftaran?->status === 'pending') {
+            return redirect()
+                ->route('userSiswa.pendaftaran.status')
+                ->with('failed', 'Status Peserta PKL masih belum disetujui');
+        }
+
+        $siswa = $this->siswa->id;
+        $tugas = tugasModel::with('guru')->get();
+
+        return view('userSiswa.tugas.index', compact('tugas'));
+    }
+
+    public function tugasKerjakan($id)
+    {
+        $siswa = $this->siswa;
+        $tugas = tugasModel::query()->with('guru')->findOrFail($id);
+        $tugas_status = tugasStatusModel::query()
+            ->where('id_siswa', $siswa->id)
+            ->where('id_tugas', $tugas->id)
+            ->orderByDesc('id')
+            ->first();
+
+        return view('userSiswa.tugas.kerjakan', compact('siswa', 'tugas', 'tugas_status'));
+    }
+
+    public function attemptTugasKerjakan(Request $request, string $id)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:pdf|max:1024',
+        ]);
+
+        $siswa      = $this->siswa->id;
+        $siswa_nama = $this->siswa->nama;
+        $siswa_kelas = $this->siswa->kelas->nama;
+        $tugas      = tugasModel::with('guru')->find($id);
+        $file       = $request->file('file');
+        $tanggal    = now()->toDateString();
+        $nama_file  = $siswa_nama . '_' . $siswa_kelas . '_' . $tanggal . '_' . $tugas->judul . '.' . strtolower($file->getClientOriginalExtension());
+        $path       = Storage::disk('task_attachments')->putFileAs(
+            'assets/static/tugas-pengumpulan',
+            $file,
+            $nama_file,
+        );
+
+        if ($path === false) {
+            throw new RuntimeException('File tugas gagal disimpan.');
+        }
+
+        $data = [
+            'id_siswa' => $siswa,
+            'id_tugas' => $tugas->id,
+            'tanggal'  => $tanggal,
+            'status'   => 'dikerjakan',
+            'file'     => $nama_file,
+        ];
+
+        tugasStatusModel::query()->create($data);
+
+        return redirect()
+            ->route('userSiswa.tugas.kerjakan', $tugas->id)
+            ->with('success', 'Tugas berhasil di kirim');
+    }
+
+    public function cancelTugasKerjakan(string $id): RedirectResponse
+    {
+        $siswa = $this->siswa->id;
+        $tugas = tugasModel::query()->findOrFail($id);
+        $tugas_status = tugasStatusModel::query()
+            ->where('id_siswa', $siswa)
+            ->where('id_tugas', $tugas->id)
+            ->orderByDesc('id')
+            ->firstOrFail();
+
+        if ($tugas_status->status !== 'dikerjakan') {
+            return redirect()
+                ->route('userSiswa.tugas.kerjakan', $tugas->id)
+                ->with('error', 'Tugas belum dikerjakan.');
+        }
+
+        $nama_file = $tugas_status->file;
+        if ($nama_file !== null) {
+            $path = 'assets/static/tugas-pengumpulan/' . basename($nama_file);
+            if (! Storage::disk('task_attachments')->delete($path)) {
+                throw new RuntimeException('File tugas gagal dihapus saat pengerjaan dibatalkan.');
+            }
+        }
+
+        $tugas_status->update([
+            'status' => null,
+            'file'   => null,
+        ]);
+
+        return redirect()
+            ->route('userSiswa.tugas.kerjakan', $tugas->id)
+            ->with('success', 'Pengerjaan tugas dibatalkan. Anda dapat mengunggah file kembali.');
     }
 
     // # ===== ABSENSI ===== ##
@@ -108,161 +210,6 @@ class userSiswaController extends Controller
     public function jurnal()
     {
         //
-    }
-
-    // # ===== TUGAS ===== ##
-    public function tugas(Request $request): View
-    {
-        $selectedStudentId = filter_var(
-            $request->query('id_siswa'),
-            FILTER_VALIDATE_INT,
-        ) ?: null;
-        $tugas = tugasModel::query()
-            ->with('guru')
-            ->orderByDesc('id')
-            ->get();
-        $completedTaskIds = $selectedStudentId === null
-            ? []
-            : tugasStatusModel::query()
-            ->where('id_siswa', $selectedStudentId)
-            ->where('status', 'dikerjakan')
-            ->whereNotNull('file')
-            ->pluck('id_tugas')
-            ->all();
-
-        return view('userSiswa.tugas.index', compact('tugas', 'selectedStudentId', 'completedTaskIds'));
-    }
-
-    public function tugasKerjakan(Request $request, string $id): View
-    {
-        $tugas = tugasModel::query()->with('guru')->findOrFail($id);
-        $siswa = siswaModel::query()->where('status', 'active')->orderBy('nama')->get(['id', 'nama']);
-        $selectedStudentId = filter_var(
-            old('id_siswa', $request->query('id_siswa')),
-            FILTER_VALIDATE_INT,
-        ) ?: null;
-        $selectedStudent = $siswa->firstWhere('id', $selectedStudentId);
-        $pengumpulan = $selectedStudentId === null
-            ? null
-            : tugasStatusModel::query()
-            ->where('id_siswa', $selectedStudentId)
-            ->where('id_tugas', $tugas->id)
-            ->first();
-
-        return view('userSiswa.tugas.kerjakan', compact(
-            'tugas',
-            'siswa',
-            'selectedStudentId',
-            'selectedStudent',
-            'pengumpulan',
-        ));
-    }
-
-    public function attemptTugasKerjakan(Request $request, string $id): RedirectResponse
-    {
-        $tugas = tugasModel::query()->findOrFail($id);
-        $validated = $request->validate([
-            'id_siswa' => [
-                'required',
-                'integer',
-                Rule::exists('tb_siswa', 'id')
-                    ->whereNull('deleted_at')
-                    ->where('status', 'active'),
-            ],
-            'file' => ['required', 'file', 'mimes:pdf', 'max:2048'],
-        ]);
-        $pengumpulan = tugasStatusModel::query()
-            ->firstOrNew([
-                'id_siswa' => $validated['id_siswa'],
-                'id_tugas' => $tugas->id,
-            ]);
-        $siswa = siswaModel::query()->findOrFail($validated['id_siswa']);
-        $filename = (Str::slug($siswa->nama) ?: 'siswa')
-            . '_' . $tugas->id . '_'
-            . (Str::slug($tugas->judul) ?: 'tugas')
-            . '_siswa-' . $siswa->id
-            . '.pdf';
-        $oldFile = $pengumpulan->file;
-        $newFilePath = Storage::disk('task_attachments')->putFileAs(
-            'assets/static/tugas-pengumpulan',
-            $request->file('file'),
-            $filename,
-        );
-
-        if ($newFilePath === false) {
-            throw new RuntimeException('File tugas gagal disimpan.');
-        }
-
-        $pengumpulan->status = 'dikerjakan';
-        $pengumpulan->file = $filename;
-        $pengumpulan->tanggal = now()->toDateString();
-        $pengumpulan->save();
-
-        if (
-            $oldFile !== null
-            && basename($oldFile) !== $filename
-            && ! Storage::disk('task_attachments')->delete(
-                'assets/static/tugas-pengumpulan/' . basename($oldFile),
-            )
-        ) {
-            throw new RuntimeException('File tugas lama gagal dihapus saat mengunggah file baru.');
-        }
-
-        return redirect()
-            ->route('userSiswa.tugas.kerjakan', [
-                'id' => $tugas->id,
-                'id_siswa' => $validated['id_siswa'],
-            ])
-            ->with('success', 'Tugas berhasil dikerjakan dan file berhasil diunggah.');
-    }
-
-    public function cancelTugasKerjakan(Request $request, string $id): RedirectResponse
-    {
-        $tugas = tugasModel::query()->findOrFail($id);
-        $validated = $request->validate([
-            'id_siswa' => [
-                'required',
-                'integer',
-                Rule::exists('tb_siswa', 'id')
-                    ->whereNull('deleted_at')
-                    ->where('status', 'active'),
-            ],
-        ]);
-        $pengumpulan = tugasStatusModel::query()
-            ->where('id_siswa', $validated['id_siswa'])
-            ->where('id_tugas', $tugas->id)
-            ->firstOrFail();
-
-        if ($pengumpulan->status !== 'dikerjakan') {
-            return redirect()
-                ->route('userSiswa.tugas.kerjakan', [
-                    'id' => $tugas->id,
-                    'id_siswa' => $validated['id_siswa'],
-                ])
-                ->with('error', 'Tugas belum dikerjakan.');
-        }
-
-        $oldFile = $pengumpulan->file;
-        $pengumpulan->update([
-            'status' => null,
-            'file' => null,
-        ]);
-
-        if (
-            $oldFile !== null
-            && ! Storage::disk('task_attachments')->delete(
-                'assets/static/tugas-pengumpulan/' . basename($oldFile),
-            )
-        ) {
-            throw new RuntimeException('File tugas gagal dihapus saat pengerjaan dibatalkan.');
-        }
-
-        return redirect()
-            ->route('userSiswa.tugas.kerjakan', [
-                'id' => $tugas->id,
-                'id_siswa' => $validated['id_siswa'],
-            ])
-            ->with('success', 'Pengerjaan tugas dibatalkan. Anda dapat mengunggah file kembali.');
     }
 
     // # ===== PROFIL ===== ##

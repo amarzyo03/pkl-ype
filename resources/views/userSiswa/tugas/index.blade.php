@@ -23,17 +23,16 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse ($tugas as $item)
+                        @forelse ($tugas as $i => $row)
                             <tr class="data-row">
                                 <td>{{ $loop->iteration }}</td>
-                                <td>{{ $item->tanggal->format('d/m/Y') }}</td>
-                                <td>{{ $item->guru?->nama ?? 'Guru tidak tersedia' }}</td>
-                                <td>{{ $item->judul }}</td>
-                                <td>{{ $item->deskripsi }}</td>
+                                <td>{{ $row->tanggal->format('d/m/Y') }}</td>
+                                <td>{{ $row->guru?->nama ?? 'Guru tidak tersedia' }}</td>
+                                <td>{{ $row->judul }}</td>
+                                <td>{{ $row->deskripsi }}</td>
                                 <td>
-                                    <a href="{{ route('userSiswa.tugas.kerjakan', ['id' => $item->id, 'id_siswa' => $selectedStudentId]) }}"
-                                        class="btn btn--primary">
-                                        {{ in_array($item->id, $completedTaskIds, true) ? 'Sudah dikerjakan' : 'Kerjakan' }}
+                                    <a href="{{ route('userSiswa.tugas.kerjakan.attempt', $row->id) }}"
+                                        class="btn btn--primary">Kerjakan
                                     </a>
                                 </td>
                             </tr>

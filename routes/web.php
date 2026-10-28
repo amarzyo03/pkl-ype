@@ -98,8 +98,10 @@ Route::middleware(['adminMiddleware'])->group(function () {
     Route::delete('/user/delete/{id}', [userController::class, 'delete'])->name('user.delete');
     Route::get('/user/import', [userController::class, 'import'])->name('user.import');
     Route::post('/user/import', [userController::class, 'importStore'])->name('user.import.store');
+});
 
-    // ==== ADMIN & GURU ===== ##
+Route::middleware(['guruMiddleware'])->group(function () {
+    // ==== GURU ===== ##
     // TUGAS
     Route::get('/id/guru/tugas', [tugasController::class, 'index'])->name('tugas');
     Route::get('/id/guru/tugas/add', [tugasController::class, 'add'])->name('tugas.add');
@@ -132,7 +134,7 @@ Route::middleware(['siswaMiddleware'])->group(function () {
 
     // TUGAS
     Route::get('/id/siswa/tugas', [userSiswaController::class, 'tugas'])->name('userSiswa.tugas');
-    Route::get('/id/siswa/tugas/{id}/kerjakan', [userSiswaController::class, 'tugasKerjakan'])->name('userSiswa.tugas.kerjakan');
-    Route::post('/id/siswa/tugas/{id}/kerjakan', [userSiswaController::class, 'attemptTugasKerjakan'])->name('userSiswa.tugas.kerjakan.attempt');
-    Route::post('/id/siswa/tugas/{id}/batalkan', [userSiswaController::class, 'cancelTugasKerjakan'])->name('userSiswa.tugas.kerjakan.cancel');
+    Route::get('/id/siswa/tugas/kerjakan/{id}', [userSiswaController::class, 'tugasKerjakan'])->name('userSiswa.tugas.kerjakan');
+    Route::post('/id/siswa/tugas/kerjakan/{id}', [userSiswaController::class, 'attemptTugasKerjakan'])->name('userSiswa.tugas.kerjakan.attempt');
+    Route::post('/id/siswa/tugas/batalkan/{id}', [userSiswaController::class, 'cancelTugasKerjakan'])->name('userSiswa.tugas.kerjakan.cancel');
 });
