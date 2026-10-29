@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\absensiModel;
 use App\Models\dudiModel;
 use App\Models\pendaftaranModel;
 use App\Models\siswaModel;
@@ -11,12 +12,16 @@ use App\Models\userModel;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Illuminate\View\View;
 use RuntimeException;
 
 class userSiswaController extends Controller
 {
     protected $user_id;
+
     protected $siswa;
+
     protected $pendaftaran;
 
     public function __construct()
@@ -35,9 +40,9 @@ class userSiswaController extends Controller
     // # ===== PENDAFTARAN ===== ##
     public function pendaftaran()
     {
-        $siswa       = $this->siswa;
+        $siswa = $this->siswa;
         $pendaftaran = $this->pendaftaran;
-        $dudi        = dudiModel::all();
+        $dudi = dudiModel::all();
 
         if ($pendaftaran) {
             return redirect()->route('userSiswa.pendaftaran.status');
@@ -55,8 +60,8 @@ class userSiswaController extends Controller
 
         pendaftaranModel::create([
             'id_siswa' => $request->nama,
-            'id_dudi'  => $request->dudi,
-            'status'   => 'pending',
+            'id_dudi' => $request->dudi,
+            'status' => 'pending',
         ]);
 
         return redirect()
@@ -66,7 +71,7 @@ class userSiswaController extends Controller
 
     public function statusPendaftaran()
     {
-        $siswa       = $this->siswa;
+        $siswa = $this->siswa;
         $pendaftaran = $this->pendaftaran;
 
         return view('userSiswa.pendaftaran.status', compact('siswa', 'pendaftaran'));
@@ -74,9 +79,9 @@ class userSiswaController extends Controller
 
     public function editPendaftaran()
     {
-        $siswa       = $this->siswa;
+        $siswa = $this->siswa;
         $pendaftaran = $this->pendaftaran;
-        $dudi        = dudiModel::all();
+        $dudi = dudiModel::all();
 
         return view('userSiswa.pendaftaran.edit', compact('siswa', 'pendaftaran', 'dudi'));
     }
@@ -91,8 +96,8 @@ class userSiswaController extends Controller
         $pendaftaran = pendaftaranModel::find($id);
 
         $pendaftaran->id_siswa = $request->nama;
-        $pendaftaran->id_dudi  = $request->dudi;
-        $pendaftaran->status   = 'pending';
+        $pendaftaran->id_dudi = $request->dudi;
+        $pendaftaran->status = 'pending';
         $pendaftaran->update();
 
         return redirect()
@@ -134,14 +139,14 @@ class userSiswaController extends Controller
             'file' => 'required|file|mimes:pdf|max:1024',
         ]);
 
-        $siswa      = $this->siswa->id;
+        $siswa = $this->siswa->id;
         $siswa_nama = $this->siswa->nama;
         $siswa_kelas = $this->siswa->kelas->nama;
-        $tugas      = tugasModel::with('guru')->find($id);
-        $file       = $request->file('file');
-        $tanggal    = now()->toDateString();
-        $nama_file  = $siswa_nama . '_' . $siswa_kelas . '_' . $tanggal . '_' . $tugas->judul . '.' . strtolower($file->getClientOriginalExtension());
-        $path       = Storage::disk('task_attachments')->putFileAs(
+        $tugas = tugasModel::with('guru')->find($id);
+        $tanggal = now()->toDateString();
+        $file = $request->file('file');
+        $nama_file = $siswa_nama . '_' . $siswa_kelas . '_' . $tanggal . '_' . $tugas->judul . '.' . strtolower($file->getClientOriginalExtension());
+        $path = Storage::disk('task_attachments')->putFileAs(
             'assets/static/tugas-pengumpulan',
             $file,
             $nama_file,
@@ -154,9 +159,9 @@ class userSiswaController extends Controller
         $data = [
             'id_siswa' => $siswa,
             'id_tugas' => $tugas->id,
-            'tanggal'  => $tanggal,
-            'status'   => 'dikerjakan',
-            'file'     => $nama_file,
+            'tanggal' => $tanggal,
+            'status' => 'dikerjakan',
+            'file' => $nama_file,
         ];
 
         tugasStatusModel::query()->create($data);
@@ -166,7 +171,7 @@ class userSiswaController extends Controller
             ->with('success', 'Tugas berhasil di kirim');
     }
 
-    public function cancelTugasKerjakan(string $id): RedirectResponse
+    public function cancelTugasKerjakan(string $id)
     {
         $siswa = $this->siswa->id;
         $tugas = tugasModel::query()->findOrFail($id);
@@ -192,7 +197,7 @@ class userSiswaController extends Controller
 
         $tugas_status->update([
             'status' => null,
-            'file'   => null,
+            'file' => null,
         ]);
 
         return redirect()
@@ -203,7 +208,118 @@ class userSiswaController extends Controller
     // # ===== ABSENSI ===== ##
     public function absensi()
     {
-        //
+        $siswa_info = $this->siswa;
+        $dudi = $this->pendaftaran;
+        $absensi = absensiModel::query()
+            ->where('id_siswa', $siswa_info->id)
+            ->latest('tanggal')
+            ->get();
+
+        return view('userSiswa.absensi.index', compact('absensi', 'siswa_info', 'dudi'));
+    }
+
+    public function addAbsensi()
+    {
+        $siswa = $this->siswa;
+        $lokasi = $this->pendaftaran?->dudi?->nama;
+
+        return view('userSiswa.absensi.add', compact('siswa', 'lokasi'));
+    }
+
+    public function saveAbsensi(Request $request)
+    {
+        $request->validate(
+            [
+                'tanggal' => ['required', 'date'],
+                'status' => ['required', 'in:hadir,sakit,izin,alpa,libur'],
+                'keterangan' => ['nullable', 'string', 'max:255'],
+                'foto' => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:5120'],
+            ]
+        );
+
+        $foto = $request->file('foto');
+        $foto_nama = $this->siswa->id . '_' . now()->format('YmdHis') . '_' . Str::random(8) . '.' . $foto->extension();
+        $path = Storage::disk('task_attachments')->putFileAs(
+            'assets/static/absensi',
+            $foto,
+            $foto_nama
+        );
+
+        if ($path === false) {
+            throw new RuntimeException('Foto absensi gagal disimpan.');
+        }
+
+        $data =
+            [
+                'id_siswa' => $this->siswa->id,
+                'tanggal' => $request->tanggal,
+                'status' => $request->status,
+                'foto' => $foto_nama,
+                'keterangan' => $request->keterangan
+            ];
+
+        absensiModel::create($data);
+
+        return redirect()->route('userSiswa.absensi')->with('success', 'Absensi berhasil disimpan.');
+    }
+
+    public function editAbsensi(string $id): View
+    {
+        $absensi = absensiModel::query()
+            ->where('id_siswa', $this->siswa->id)
+            ->findOrFail($id);
+
+        return view('userSiswa.absensi.edit', compact('absensi'));
+    }
+
+    public function updateAbsensi(Request $request, string $id): RedirectResponse
+    {
+        $absensi = absensiModel::query()
+            ->where('id_siswa', $this->siswa->id)
+            ->findOrFail($id);
+        $data = $request->validate($this->absensiRules());
+        $oldPhoto = $absensi->foto;
+
+        if ($request->hasFile('foto')) {
+            $data['foto'] = $this->storeAbsensiPhoto($request);
+        } else {
+            unset($data['foto']);
+        }
+
+        $absensi->update($data);
+
+        if (
+            isset($data['foto']) && $oldPhoto !== null
+            && ! Storage::disk('task_attachments')->delete('assets/static/absensi/' . basename($oldPhoto))
+        ) {
+            throw new RuntimeException('Foto absensi lama gagal dihapus.');
+        }
+
+        return redirect()->route('userSiswa.absensi')->with('success', 'Absensi berhasil diperbarui.');
+    }
+
+    private function absensiRules(): array
+    {
+        return [
+            'tanggal' => ['required', 'date'],
+            'status' => ['required', 'in:hadir,sakit,izin,alpa,libur'],
+            'lokasi' => ['nullable', 'string', 'max:255'],
+            'keterangan' => ['nullable', 'string', 'max:255'],
+            'foto' => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:5120'],
+        ];
+    }
+
+    private function storeAbsensiPhoto(Request $request): string
+    {
+        $file = $request->file('foto');
+        $filename = $this->siswa->id . '_' . now()->format('YmdHis') . '_' . Str::random(8) . '.' . $file->extension();
+        $path = Storage::disk('task_attachments')->putFileAs('assets/static/absensi', $file, $filename);
+
+        if ($path === false) {
+            throw new RuntimeException('Foto absensi gagal disimpan.');
+        }
+
+        return $filename;
     }
 
     // # ===== JURNAL ===== ##

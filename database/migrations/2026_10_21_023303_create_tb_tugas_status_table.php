@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('tb_tugas_status', function (Blueprint $table) {
             $table->id();
-            $table->integer('id_siswa')->unsigned();
             $table->integer('id_tugas')->unsigned();
+            $table->integer('id_siswa')->unsigned();
             $table->date('tanggal');
             $table->string('status')->nullable()->default(null);
             $table->string('file')->nullable();

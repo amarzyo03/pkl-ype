@@ -125,12 +125,11 @@ Route::middleware(['siswaMiddleware'])->group(function () {
     Route::put('/id/siswa/pendaftaran/update/{id}', [userSiswaController::class, 'updatePendaftaran'])->name('userSiswa.pendaftaran.update');
 
     // ABSENSI
-    Route::get('/id/siswa/absensi', [absensiController::class, 'index'])->name('absensi');
-    Route::get('/id/siswa/absensi/add', [absensiController::class, 'addAbsensi'])->name('absensi.add');
-    Route::post('/id/siswa/absensi/save', [absensiController::class, 'saveAbsensi'])->name('absensi.save');
-    Route::get('/id/siswa/absensi/edit/{id}', [absensiController::class, 'editAbsensi'])->name('absensi.edit');
-    Route::put('/id/siswa/absensi/update/{id}', [absensiController::class, 'updateAbsensi'])->name('absensi.update');
-    Route::delete('/id/siswa/absensi/delete/{id}', [absensiController::class, 'deleteAbsensi'])->name('absensi.delete');
+    Route::get('/id/siswa/absensi', [userSiswaController::class, 'absensi'])->name('userSiswa.absensi');
+    Route::get('/id/siswa/absensi/add', [userSiswaController::class, 'addAbsensi'])->name('userSiswa.absensi.add');
+    Route::post('/id/siswa/absensi/save', [userSiswaController::class, 'saveAbsensi'])->name('absensi.save');
+    Route::get('/id/siswa/absensi/edit/{id}', [userSiswaController::class, 'editAbsensi'])->name('absensi.edit');
+    Route::put('/id/siswa/absensi/update/{id}', [userSiswaController::class, 'updateAbsensi'])->name('absensi.update');
 
     // TUGAS
     Route::get('/id/siswa/tugas', [userSiswaController::class, 'tugas'])->name('userSiswa.tugas');

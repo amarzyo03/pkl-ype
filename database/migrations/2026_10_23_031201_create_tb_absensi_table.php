@@ -17,7 +17,6 @@ return new class extends Migration
             $table->date('tanggal');
             $table->enum('status', ['hadir', 'sakit', 'izin', 'alpa', 'libur']);
             $table->string('foto')->nullable();
-            $table->string('lokasi')->nullable();
             $table->string('keterangan')->nullable();
             $table->timestamps();
             $table->softDeletes();

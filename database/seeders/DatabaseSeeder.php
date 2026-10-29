@@ -26,6 +26,7 @@ class DatabaseSeeder extends Seeder
             dudiSeeder::class,
             pendaftaranSeeder::class,
             tugasSeeder::class,
+            absensiSeeder::class
         ]);
     }
 }
