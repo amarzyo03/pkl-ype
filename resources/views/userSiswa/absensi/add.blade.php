@@ -26,7 +26,8 @@
                     <div class="field">
                         <label class="field-label" for="tanggal">Tanggal <span class="req">*</span></label>
                         <input class="input" id="tanggal" type="date" name="tanggal"
-                            value="{{ old('tanggal', now()->toDateString()) }}" required>
+                            value="{{ old('tanggal', now()->toDateString()) }}" max="{{ now()->toDateString() }}"
+                            required>
                         @error('tanggal')
                             <small role="alert">{{ $message }}</small>
                         @enderror

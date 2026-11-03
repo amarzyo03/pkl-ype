@@ -2,6 +2,7 @@
 
 use App\Models\guruModel;
 use App\Models\tugasModel;
+use App\Models\userModel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -11,21 +12,22 @@ uses(RefreshDatabase::class);
 it('can create, update, download, and soft delete a task with its attachment', function () {
     Storage::fake('task_attachments');
 
-    $guruPertama = guruModel::query()->create([
-        'nama' => 'Guru A',
-        'username' => 'guru-a',
+    $guruPertama = guruModel::query()->create(['nama' => 'Guru A']);
+    $guruKedua = guruModel::query()->create(['nama' => 'Guru B']);
+    $user = userModel::query()->create([
+        'id_user' => (string) $guruPertama->id,
+        'username' => 'user-guru-a',
         'password' => bcrypt('password'),
-    ]);
-    $guruKedua = guruModel::query()->create([
-        'nama' => 'Guru B',
-        'username' => 'guru-b',
-        'password' => bcrypt('password'),
+        'role' => 'guru',
+        'status' => 'active',
     ]);
 
-    $this->get(route('tugas.add'))
+    $this->withSession(['auth_id' => $user->id, 'auth_role' => 'guru'])
+        ->get(route('tugas.add'))
         ->assertOk()
-        ->assertSee('type="text" name="id_guru"', false)
-        ->assertSee('value="1" readonly', false);
+        ->assertViewIs('userGuru.tugas.add')
+        ->assertSee('name="id_guru" value="'.$guruPertama->id.'"', false)
+        ->assertSee('value="GURU A" readonly', false);
 
     $this->post(route('tugas.save'), [
         'id_guru' => $guruPertama->id,
@@ -59,7 +61,8 @@ it('can create, update, download, and soft delete a task with its attachment', f
         ->assertSee('Matematika');
     $this->get(route('tugas.edit', $tugas->id))
         ->assertOk()
-        ->assertSee('value="'.$guruPertama->id.'" readonly', false);
+        ->assertViewIs('userGuru.tugas.edit')
+        ->assertSee('value="GURU A" readonly', false);
     $this->get(route('tugas.file', $tugas->id))->assertDownload('2026-10-20_matematika.pdf');
 
     $this->put(route('tugas.update', $tugas->id), [
@@ -86,7 +89,7 @@ it('can create, update, download, and soft delete a task with its attachment', f
 
     $this->assertDatabaseHas('tb_tugas', [
         'id' => $tugas->id,
-        'id_guru' => $guruKedua->id,
+        'id_guru' => $guruPertama->id,
         'tanggal' => '2026-10-22 00:00:00',
         'judul' => 'Matematika Revisi',
         'file' => '2026-10-22_matematika-revisi.pdf',
@@ -101,18 +104,21 @@ it('can create, update, download, and soft delete a task with its attachment', f
 });
 
 it('allows creating a task without an optional attachment', function () {
-    $guru = guruModel::query()->create([
-        'nama' => 'Guru Tanpa Lampiran',
-        'username' => 'guru-tanpa-lampiran',
+    $guru = guruModel::query()->create(['nama' => 'Guru Tanpa Lampiran']);
+    $user = userModel::query()->create([
+        'id_user' => (string) $guru->id,
+        'username' => 'user-guru-tanpa-lampiran',
         'password' => bcrypt('password'),
+        'role' => 'guru',
+        'status' => 'active',
     ]);
 
-    $this->post(route('tugas.save'), [
-        'id_guru' => $guru->id,
-        'tanggal' => '2026-10-20 00:00:00',
-        'judul' => 'Tugas tanpa lampiran',
-        'deskripsi' => 'Lampiran tidak wajib.',
-    ])->assertRedirect(route('tugas'));
+    $this->withSession(['auth_id' => $user->id, 'auth_role' => 'guru'])
+        ->post(route('tugas.save'), [
+            'tanggal' => '2026-10-20 00:00:00',
+            'judul' => 'Tugas tanpa lampiran',
+            'deskripsi' => 'Lampiran tidak wajib.',
+        ])->assertRedirect(route('tugas'));
 
     $this->assertDatabaseHas('tb_tugas', [
         'id_guru' => $guru->id,
@@ -122,33 +128,30 @@ it('allows creating a task without an optional attachment', function () {
     ]);
 });
 
-it('validates required task fields, date, active teacher, and attachment type', function () {
-    guruModel::query()->create([
-        'nama' => 'Guru Aktif',
-        'username' => 'guru-aktif',
+it('validates required task fields, date, and attachment type', function () {
+    $guru = guruModel::query()->create(['nama' => 'Guru Aktif']);
+    $user = userModel::query()->create([
+        'id_user' => (string) $guru->id,
+        'username' => 'user-guru-aktif',
         'password' => bcrypt('password'),
+        'role' => 'guru',
+        'status' => 'active',
     ]);
-    $guruTerhapus = guruModel::query()->create([
-        'nama' => 'Guru Terhapus',
-        'username' => 'guru-terhapus',
-        'password' => bcrypt('password'),
-    ]);
-    $guruTerhapus->delete();
 
-    $this->from(route('tugas.add'))
+    $this->withSession(['auth_id' => $user->id, 'auth_role' => 'guru'])
+        ->from(route('tugas.add'))
         ->post(route('tugas.save'), [
-            'id_guru' => '',
             'tanggal' => 'bukan-tanggal',
             'judul' => '',
             'deskripsi' => '',
             'file' => UploadedFile::fake()->create('script.exe', 10),
         ])
         ->assertRedirect(route('tugas.add'))
-        ->assertSessionHasErrors(['id_guru', 'tanggal', 'judul', 'deskripsi', 'file']);
+        ->assertSessionHasErrors(['tanggal', 'judul', 'deskripsi', 'file']);
 
     $this->from(route('tugas.add'))
         ->post(route('tugas.save'), [
-            'id_guru' => 1,
+            'id_guru' => 999,
             'tanggal' => '2026-10-20',
             'judul' => 'Lampiran bukan PDF',
             'deskripsi' => 'Tipe lampiran tidak sesuai.',
@@ -157,15 +160,5 @@ it('validates required task fields, date, active teacher, and attachment type', 
         ->assertRedirect(route('tugas.add'))
         ->assertSessionHasErrors('file');
 
-    $this->from(route('tugas.add'))
-        ->post(route('tugas.save'), [
-            'id_guru' => $guruTerhapus->id,
-            'tanggal' => '2026-10-20',
-            'judul' => 'Tugas tidak valid',
-            'deskripsi' => 'Guru sudah dihapus.',
-        ])
-        ->assertRedirect(route('tugas.add'))
-        ->assertSessionHasErrors('id_guru');
-    $this->assertDatabaseCount('tb_tugas', 0);
     $this->assertDatabaseCount('tb_tugas', 0);
 });

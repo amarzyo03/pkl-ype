@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\absensiController;
 use App\Http\Controllers\authController;
 use App\Http\Controllers\dashboardController;
 use App\Http\Controllers\dudiController;
@@ -9,8 +8,8 @@ use App\Http\Controllers\jurusanController;
 use App\Http\Controllers\kelasController;
 use App\Http\Controllers\pendaftaranController;
 use App\Http\Controllers\siswaController;
-use App\Http\Controllers\tugasController;
 use App\Http\Controllers\userController;
+use App\Http\Controllers\userGuruController;
 use App\Http\Controllers\userSiswaController;
 use Illuminate\Support\Facades\Route;
 
@@ -100,16 +99,27 @@ Route::middleware(['adminMiddleware'])->group(function () {
     Route::post('/user/import', [userController::class, 'importStore'])->name('user.import.store');
 });
 
+// === GURU ===== ##
 Route::middleware(['guruMiddleware'])->group(function () {
     // ==== GURU ===== ##
+
+    // DASHBOARD
+    Route::get('/id/guru/dashboard', [userGuruController::class, 'dashboard'])->name('userGuru.dashboard');
+
+    // DAFTAR SISWA
+    Route::get('/id/guru/daftar-siswa', [userGuruController::class, 'daftarSiswa'])->name('userGuru.daftarSiswa');
+    // DAFTAR DUDI
+    Route::get('/id/guru/daftar-dudi', [userGuruController::class, 'daftarDudi'])->name('userGuru.daftarDudi');
+    Route::get('/id/guru/absensi', [userGuruController::class, 'absensi'])->name('userGuru.absensi');
     // TUGAS
-    Route::get('/id/guru/tugas', [tugasController::class, 'index'])->name('tugas');
-    Route::get('/id/guru/tugas/add', [tugasController::class, 'add'])->name('tugas.add');
-    Route::post('/id/guru/tugas/save', [tugasController::class, 'save'])->name('tugas.save');
-    Route::get('/id/guru/tugas/edit/{id}', [tugasController::class, 'edit'])->name('tugas.edit');
-    Route::put('/id/guru/tugas/update/{id}', [tugasController::class, 'update'])->name('tugas.update');
-    Route::delete('/id/guru/tugas/delete/{id}', [tugasController::class, 'delete'])->name('tugas.delete');
-    Route::get('/id/guru/tugas/{id}/file', [tugasController::class, 'downloadFile'])->name('tugas.file');
+    Route::get('/id/guru/tugas', [userGuruController::class, 'tugas'])->name('tugas');
+    Route::get('/id/guru/tugas/{id}/status', [userGuruController::class, 'statusTugas'])->name('tugas.status');
+    Route::get('/id/guru/tugas/add', [userGuruController::class, 'addTugas'])->name('tugas.add');
+    Route::post('/id/guru/tugas/save', [userGuruController::class, 'saveTugas'])->name('tugas.save');
+    Route::get('/id/guru/tugas/edit/{id}', [userGuruController::class, 'editTugas'])->name('tugas.edit');
+    Route::put('/id/guru/tugas/update/{id}', [userGuruController::class, 'updateTugas'])->name('tugas.update');
+    Route::delete('/id/guru/tugas/delete/{id}', [userGuruController::class, 'deleteTugas'])->name('tugas.delete');
+    Route::get('/id/guru/tugas/{id}/file', [userGuruController::class, 'downloadTugasFile'])->name('tugas.file');
 });
 
 // ==== SISWA ===== ##
@@ -123,6 +133,7 @@ Route::middleware(['siswaMiddleware'])->group(function () {
     Route::get('/id/siswa/pendaftaran/status', [userSiswaController::class, 'statusPendaftaran'])->name('userSiswa.pendaftaran.status');
     Route::get('/id/siswa/pendaftaran/edit', [userSiswaController::class, 'editPendaftaran'])->name('userSiswa.pendaftaran.edit');
     Route::put('/id/siswa/pendaftaran/update/{id}', [userSiswaController::class, 'updatePendaftaran'])->name('userSiswa.pendaftaran.update');
+    Route::get('/id/siswa/daftar-siswa', [userSiswaController::class, 'daftarSiswa'])->name('userSiswa.daftarSiswa');
 
     // ABSENSI
     Route::get('/id/siswa/absensi', [userSiswaController::class, 'absensi'])->name('userSiswa.absensi');

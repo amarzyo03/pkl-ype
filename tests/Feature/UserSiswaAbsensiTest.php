@@ -117,3 +117,79 @@ it('prevents a student from editing another students attendance', function () {
         'status' => 'izin',
     ])->assertNotFound();
 });
+
+it('shows attendance ordered by newest date first', function () {
+    [$siswa, $user] = createAuthenticatedAbsensiStudent('Siswa Urut Absensi');
+
+    absensiModel::query()->create([
+        'id_siswa' => $siswa->id,
+        'tanggal' => '2026-10-28',
+        'status' => 'hadir',
+    ]);
+    absensiModel::query()->create([
+        'id_siswa' => $siswa->id,
+        'tanggal' => '2026-10-30',
+        'status' => 'izin',
+    ]);
+
+    $this->withSession(['auth_id' => $user->id, 'auth_role' => 'siswa'])
+        ->get(route('userSiswa.absensi'))
+        ->assertOk()
+        ->assertSeeInOrder(['30/10/2026', '28/10/2026']);
+});
+
+it('allows only one attendance per day and rejects future dates', function () {
+    $this->travelTo(now()->startOfDay());
+    Storage::fake('task_attachments');
+    [$siswa, $user] = createAuthenticatedAbsensiStudent('Siswa Satu Absensi');
+    $this->withSession(['auth_id' => $user->id, 'auth_role' => 'siswa']);
+
+    $today = now()->toDateString();
+    $tomorrow = now()->addDay()->toDateString();
+    $yesterday = now()->subDay()->toDateString();
+
+    $this->get(route('userSiswa.absensi.add'))
+        ->assertOk()
+        ->assertSee('max="'.$today.'"', false);
+
+    $this->post(route('absensi.save'), [
+        'tanggal' => $today,
+        'status' => 'hadir',
+        'foto' => UploadedFile::fake()->image('hadir.jpg'),
+    ])->assertRedirect(route('userSiswa.absensi'))
+        ->assertSessionHas('success');
+
+    $this->post(route('absensi.save'), [
+        'tanggal' => $today,
+        'status' => 'izin',
+        'foto' => UploadedFile::fake()->image('izin.jpg'),
+    ])->assertSessionHasErrors('tanggal');
+
+    $this->post(route('absensi.save'), [
+        'tanggal' => $tomorrow,
+        'status' => 'hadir',
+        'foto' => UploadedFile::fake()->image('besok.jpg'),
+    ])->assertSessionHasErrors('tanggal');
+
+    $absensiLain = absensiModel::query()->create([
+        'id_siswa' => $siswa->id,
+        'tanggal' => $yesterday,
+        'status' => 'hadir',
+    ]);
+
+    $this->get(route('absensi.edit', $absensiLain->id))
+        ->assertOk()
+        ->assertSee('max="'.$today.'"', false);
+
+    $this->put(route('absensi.update', $absensiLain->id), [
+        'tanggal' => $today,
+        'status' => 'izin',
+    ])->assertSessionHasErrors('tanggal');
+
+    $this->put(route('absensi.update', $absensiLain->id), [
+        'tanggal' => $tomorrow,
+        'status' => 'izin',
+    ])->assertSessionHasErrors('tanggal');
+
+    $this->assertDatabaseCount('tb_absensi', 2);
+});

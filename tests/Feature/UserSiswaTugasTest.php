@@ -1,8 +1,11 @@
 <?php
 
 use App\Models\guruModel;
+use App\Models\jurusanModel;
+use App\Models\kelasModel;
 use App\Models\siswaModel;
 use App\Models\tugasModel;
+use App\Models\userModel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
@@ -44,6 +47,43 @@ it('shows active tasks with a kerjakan link for each task', function () {
         ->assertDontSee('Tugas Terhapus');
 
     expect(substr_count($response->getContent(), 'Kerjakan'))->toBe(1);
+});
+
+it('orders tasks by newest date first', function () {
+    $jurusan = jurusanModel::query()->create(['kode' => 'SORT', 'nama' => 'Sorting']);
+    $kelas = kelasModel::query()->create(['nama' => 'Kelas Sorting', 'id_jurusan' => $jurusan->id]);
+    $siswa = siswaModel::query()->create([
+        'nis' => 'TUGAS-SORT-1',
+        'nisn' => 'TUGAS-SORT-1',
+        'nama' => 'Siswa Pengurut',
+        'id_kelas' => $kelas->id,
+    ]);
+    $user = userModel::query()->create([
+        'id_user' => (string) $siswa->id,
+        'username' => 'user-pengurut',
+        'password' => 'password',
+        'role' => 'siswa',
+        'status' => 'active',
+    ]);
+    $guru = guruModel::query()->create([
+        'nama' => 'Guru Pengampu',
+    ]);
+
+    foreach ([
+        ['tanggal' => '2026-10-20', 'judul' => 'Tugas Lama'],
+        ['tanggal' => '2026-10-22', 'judul' => 'Tugas Terbaru'],
+    ] as $tugasData) {
+        tugasModel::query()->create([
+            'id_guru' => $guru->id,
+            ...$tugasData,
+            'deskripsi' => 'Deskripsi tugas.',
+        ]);
+    }
+
+    $this->withSession(['auth_id' => $user->id, 'auth_role' => 'siswa'])
+        ->get(route('userSiswa.tugas'))
+        ->assertOk()
+        ->assertSeeInOrder(['22/10/2026', 'Tugas Terbaru', '20/10/2026', 'Tugas Lama']);
 });
 
 it('allows a student to submit a PDF and marks the task as completed', function () {

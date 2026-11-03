@@ -9,6 +9,7 @@ use App\Models\siswaModel;
 use App\Models\tugasModel;
 use App\Models\tugasStatusModel;
 use App\Models\userModel;
+use Closure;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -105,6 +106,19 @@ class userSiswaController extends Controller
             ->with('success', 'Perubahan DUDI Berhasil di Simpan');
     }
 
+    // Daftar siswa
+    public function daftarSiswa(): View
+    {
+        $daftarSiswa = pendaftaranModel::query()
+            ->with(['siswa.kelas', 'dudi'])
+            ->where('id_dudi', $this->pendaftaran?->id_dudi)
+            ->where('status', 'disetujui')
+            ->orderBy('id')
+            ->get();
+
+        return view('userSiswa.daftar-siswa.index', compact('daftarSiswa'));
+    }
+
     // # ===== TUGAS ===== ##
     public function tugas(Request $request)
     {
@@ -115,7 +129,11 @@ class userSiswaController extends Controller
         }
 
         $siswa = $this->siswa->id;
-        $tugas = tugasModel::with('guru')->get();
+        $tugas = tugasModel::query()
+            ->with('guru')
+            ->orderByDesc('tanggal')
+            ->orderByDesc('id')
+            ->get();
 
         return view('userSiswa.tugas.index', compact('tugas'));
     }
@@ -145,7 +163,7 @@ class userSiswaController extends Controller
         $tugas = tugasModel::with('guru')->find($id);
         $tanggal = now()->toDateString();
         $file = $request->file('file');
-        $nama_file = $siswa_nama . '_' . $siswa_kelas . '_' . $tanggal . '_' . $tugas->judul . '.' . strtolower($file->getClientOriginalExtension());
+        $nama_file = $siswa_nama.'_'.$siswa_kelas.'_'.$tanggal.'_'.$tugas->judul.'.'.strtolower($file->getClientOriginalExtension());
         $path = Storage::disk('task_attachments')->putFileAs(
             'assets/static/tugas-pengumpulan',
             $file,
@@ -189,7 +207,7 @@ class userSiswaController extends Controller
 
         $nama_file = $tugas_status->file;
         if ($nama_file !== null) {
-            $path = 'assets/static/tugas-pengumpulan/' . basename($nama_file);
+            $path = 'assets/static/tugas-pengumpulan/'.basename($nama_file);
             if (! Storage::disk('task_attachments')->delete($path)) {
                 throw new RuntimeException('File tugas gagal dihapus saat pengerjaan dibatalkan.');
             }
@@ -212,7 +230,8 @@ class userSiswaController extends Controller
         $dudi = $this->pendaftaran;
         $absensi = absensiModel::query()
             ->where('id_siswa', $siswa_info->id)
-            ->latest('tanggal')
+            ->orderByDesc('tanggal')
+            ->orderByDesc('id')
             ->get();
 
         return view('userSiswa.absensi.index', compact('absensi', 'siswa_info', 'dudi'));
@@ -228,17 +247,10 @@ class userSiswaController extends Controller
 
     public function saveAbsensi(Request $request)
     {
-        $request->validate(
-            [
-                'tanggal' => ['required', 'date'],
-                'status' => ['required', 'in:hadir,sakit,izin,alpa,libur'],
-                'keterangan' => ['nullable', 'string', 'max:255'],
-                'foto' => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:5120'],
-            ]
-        );
+        $request->validate($this->absensiRules(), $this->absensiMessages());
 
         $foto = $request->file('foto');
-        $foto_nama = $this->siswa->id . '_' . now()->format('YmdHis') . '_' . Str::random(8) . '.' . $foto->extension();
+        $foto_nama = $this->siswa->id.'_'.now()->format('YmdHis').'_'.Str::random(8).'.'.$foto->extension();
         $path = Storage::disk('task_attachments')->putFileAs(
             'assets/static/absensi',
             $foto,
@@ -255,7 +267,7 @@ class userSiswaController extends Controller
                 'tanggal' => $request->tanggal,
                 'status' => $request->status,
                 'foto' => $foto_nama,
-                'keterangan' => $request->keterangan
+                'keterangan' => $request->keterangan,
             ];
 
         absensiModel::create($data);
@@ -277,7 +289,7 @@ class userSiswaController extends Controller
         $absensi = absensiModel::query()
             ->where('id_siswa', $this->siswa->id)
             ->findOrFail($id);
-        $data = $request->validate($this->absensiRules());
+        $data = $request->validate($this->absensiRules($absensi), $this->absensiMessages());
         $oldPhoto = $absensi->foto;
 
         if ($request->hasFile('foto')) {
@@ -290,7 +302,7 @@ class userSiswaController extends Controller
 
         if (
             isset($data['foto']) && $oldPhoto !== null
-            && ! Storage::disk('task_attachments')->delete('assets/static/absensi/' . basename($oldPhoto))
+            && ! Storage::disk('task_attachments')->delete('assets/static/absensi/'.basename($oldPhoto))
         ) {
             throw new RuntimeException('Foto absensi lama gagal dihapus.');
         }
@@ -298,10 +310,27 @@ class userSiswaController extends Controller
         return redirect()->route('userSiswa.absensi')->with('success', 'Absensi berhasil diperbarui.');
     }
 
-    private function absensiRules(): array
+    private function absensiRules(?absensiModel $absensi = null): array
     {
         return [
-            'tanggal' => ['required', 'date'],
+            'tanggal' => [
+                'required',
+                'date',
+                'before_or_equal:today',
+                function (string $attribute, mixed $value, Closure $fail) use ($absensi): void {
+                    $query = absensiModel::query()
+                        ->where('id_siswa', $this->siswa->id)
+                        ->whereDate('tanggal', $value);
+
+                    if ($absensi !== null) {
+                        $query->where('id', '!=', $absensi->id);
+                    }
+
+                    if ($query->exists()) {
+                        $fail('Absensi untuk tanggal ini sudah pernah diisi.');
+                    }
+                },
+            ],
             'status' => ['required', 'in:hadir,sakit,izin,alpa,libur'],
             'lokasi' => ['nullable', 'string', 'max:255'],
             'keterangan' => ['nullable', 'string', 'max:255'],
@@ -309,10 +338,17 @@ class userSiswaController extends Controller
         ];
     }
 
+    private function absensiMessages(): array
+    {
+        return [
+            'tanggal.before_or_equal' => 'Tanggal absensi tidak boleh melebihi hari ini.',
+        ];
+    }
+
     private function storeAbsensiPhoto(Request $request): string
     {
         $file = $request->file('foto');
-        $filename = $this->siswa->id . '_' . now()->format('YmdHis') . '_' . Str::random(8) . '.' . $file->extension();
+        $filename = $this->siswa->id.'_'.now()->format('YmdHis').'_'.Str::random(8).'.'.$file->extension();
         $path = Storage::disk('task_attachments')->putFileAs('assets/static/absensi', $file, $filename);
 
         if ($path === false) {

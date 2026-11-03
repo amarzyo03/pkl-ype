@@ -20,6 +20,12 @@
                             icon: '<path d="M9 4h6l1 2h3v14H5V6h3z"/><path d="M9 11h6M9 15h6"/>',
                         },
                         {
+                            key: "daftar-siswa",
+                            text: "Daftar Siswa",
+                            href: "/id/siswa/daftar-siswa",
+                            icon: '<circle cx="12" cy="8" r="3"/><path d="M5 21a7 7 0 0 1 14 0"/>',
+                        },
+                        {
                             key: "tugas-siswa",
                             text: "Tugas",
                             href: "/id/siswa/tugas",
@@ -127,10 +133,35 @@
                         (section) => "Monitoring" === section.label,
                     );
                     if (dashboard && monitoring) {
+                        const teacherNavigationItems = [
+                            {
+                                key: "daftar-dudi",
+                                text: "Daftar DUDI",
+                                href: "/id/guru/daftar-dudi",
+                                icon: '<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 12h18M10 12v2h4v-2"/>',
+                            },
+                            {
+                                key: "daftar-siswa",
+                                text: "Daftar Siswa",
+                                href: "/id/guru/daftar-siswa",
+                                icon: '<circle cx="12" cy="8" r="3"/><path d="M5 21a7 7 0 0 1 14 0"/>',
+                            },
+                        ];
+
                         return [
                             {
                                 ...monitoring,
-                                items: [dashboard, ...monitoring.items],
+                                items: [
+                                    dashboard,
+                                    ...teacherNavigationItems,
+                                    ...["tugas-guru", "absensi-guru", "jurnal-guru"]
+                                        .map((key) =>
+                                            monitoring.items.find(
+                                                (item) => item.key === key,
+                                            ),
+                                        )
+                                        .filter(Boolean),
+                                ],
                             },
                         ];
                     }

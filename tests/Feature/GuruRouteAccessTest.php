@@ -1,21 +1,45 @@
 <?php
 
+use App\Models\guruModel;
+use App\Models\userModel;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+
+uses(RefreshDatabase::class);
+
 test('admin can access guru task routes', function () {
+    $guru = guruModel::query()->create(['nama' => 'Guru Admin']);
+    $user = userModel::query()->create([
+        'id_user' => (string) $guru->id,
+        'username' => 'admin-guru-routes',
+        'password' => 'password',
+        'role' => 'admin',
+        'status' => 'active',
+    ]);
+
     $this->withSession([
-        'auth_id' => 1,
+        'auth_id' => $user->id,
         'auth_role' => 'admin',
     ])->get(route('tugas.add'))
         ->assertOk()
-        ->assertViewIs('tugas.add');
+        ->assertViewIs('userGuru.tugas.add');
 });
 
 test('guru can access guru task routes', function () {
+    $guru = guruModel::query()->create(['nama' => 'Guru Route']);
+    $user = userModel::query()->create([
+        'id_user' => (string) $guru->id,
+        'username' => 'guru-routes',
+        'password' => 'password',
+        'role' => 'guru',
+        'status' => 'active',
+    ]);
+
     $this->withSession([
-        'auth_id' => 2,
+        'auth_id' => $user->id,
         'auth_role' => 'guru',
     ])->get(route('tugas.add'))
         ->assertOk()
-        ->assertViewIs('tugas.add');
+        ->assertViewIs('userGuru.tugas.add');
 });
 
 test('other roles cannot access guru task routes', function () {

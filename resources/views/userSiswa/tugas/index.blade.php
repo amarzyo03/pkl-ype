@@ -18,7 +18,6 @@
                             <th>Tanggal</th>
                             <th>Guru</th>
                             <th>Judul</th>
-                            <th>Deskripsi</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
@@ -29,7 +28,6 @@
                                 <td>{{ $row->tanggal->format('d/m/Y') }}</td>
                                 <td>{{ $row->guru?->nama ?? 'Guru tidak tersedia' }}</td>
                                 <td>{{ $row->judul }}</td>
-                                <td>{{ $row->deskripsi }}</td>
                                 <td>
                                     <a href="{{ route('userSiswa.tugas.kerjakan.attempt', $row->id) }}"
                                         class="btn btn--primary">Kerjakan
