@@ -26,9 +26,6 @@
                     <h2 class="card-title">{{ isset($pendaftaran) ? 'Ubah Pendaftaran' : 'Pendaftaran Baru' }}</h2>
                 </div>
             </div>
-            @if (session('success'))
-                <p role="status">{{ session('success') }}</p>
-            @endif
             <div class="form-grid">
                 <div class="field">
                     <label class="field-label" for="id_siswa">Siswa <span class="req">*</span></label>

@@ -15,10 +15,7 @@
 
     <div class="grid">
         <section class="col-12 card">
-            @if (session('success'))
-                <p role="status">{{ session('success') }}</p>
-            @endif
-            <div class="table-responsive">
+            <div class="table-responsive" tabindex="0" role="region" aria-label="Tabel absensi siswa">
                 <table class="data-table">
                     <thead>
                         <tr>

@@ -21,7 +21,10 @@
     <script defer="defer" src="/assets/vendor-chartjs.js"></script>
     <script defer="defer" src="/assets/vendors.js"></script>
     <script defer="defer" src="/assets/2026.js"></script>
+    <script defer="defer" src="/assets/toasts.js"></script>
     <link href="/assets/style.css" rel="stylesheet">
+    <link href="/assets/responsive.css" rel="stylesheet">
+    <link href="/assets/toasts.css" rel="stylesheet">
 </head>
 
 <body
@@ -38,6 +41,7 @@
             <div data-shell-footer></div>
         </div>
     </div>
+    @include('partials.toasts')
 </body>
 
 </html>

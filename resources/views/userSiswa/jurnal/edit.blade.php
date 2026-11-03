@@ -3,16 +3,15 @@
     <form action="{{ route('userSiswa.jurnal.update', $jurnal->id) }}" method="post">
         @csrf
         @method('PUT')
-        <input type="hidden" name="id_siswa" value="{{ $siswa->id }}">
 
         <section class="hero">
             <div class="hero-text">
                 <span class="eyebrow">Siswa · Jurnal · Edit</span>
                 <h1 class="hero-title">Edit <span class="accent">Jurnal</span></h1>
-                <p class="hero-sub">Perbarui catatan kegiatan {{ $siswa->nama }}.</p>
+                <p class="hero-sub">Perbarui catatan kegiatan Anda.</p>
             </div>
             <div class="hero-actions">
-                <a href="{{ route('userSiswa.jurnal', ['id_siswa' => $siswa->id]) }}" class="btn btn--ghost">Batal</a>
+                <a href="{{ route('userSiswa.jurnal') }}" class="btn btn--ghost">Batal</a>
                 <button class="btn btn--primary" type="submit">Simpan perubahan</button>
             </div>
         </section>
@@ -29,16 +28,16 @@
                     <div class="field">
                         <label class="field-label" for="tanggal">Tanggal <span class="req">*</span></label>
                         <input class="input" id="tanggal" type="date" name="tanggal"
-                            value="{{ old('tanggal', $jurnal->tanggal) }}" required>
+                            value="{{ old('tanggal', $jurnal->tanggal) }}" max="{{ now()->toDateString() }}" required>
                         @error('tanggal')
-                            <small class="text-muted">{{ $message }}</small>
+                            <small role="alert">{{ $message }}</small>
                         @enderror
                     </div>
                     <div class="field" style="grid-column:1 / -1">
                         <label class="field-label" for="kegiatan">Kegiatan <span class="req">*</span></label>
                         <textarea class="input" id="kegiatan" name="kegiatan" rows="5" maxlength="255" required>{{ old('kegiatan', $jurnal->kegiatan) }}</textarea>
                         @error('kegiatan')
-                            <small class="text-muted">{{ $message }}</small>
+                            <small role="alert">{{ $message }}</small>
                         @enderror
                     </div>
                 </div>

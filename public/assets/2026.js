@@ -123,12 +123,24 @@
                     "";
                 if ("admin" === role) return n;
                 if ("siswa" === role) {
-                    return n.filter((section) => "Workspace" === section.label);
+                    return n
+                        .filter((section) => "Workspace" === section.label)
+                        .map((section) => ({
+                            ...section,
+                            items: section.items.map((item) =>
+                                "dashboard" === item.key
+                                    ? { ...item, href: "/id/siswa/dashboard" }
+                                    : item,
+                            ),
+                        }));
                 }
                 if ("guru" === role) {
-                    const dashboard = n[0].items.find(
+                    const dashboardItem = n[0].items.find(
                         (item) => "dashboard" === item.key,
                     );
+                    const dashboard = dashboardItem
+                        ? { ...dashboardItem, href: "/id/guru/dashboard" }
+                        : null;
                     const monitoring = n.find(
                         (section) => "Monitoring" === section.label,
                     );

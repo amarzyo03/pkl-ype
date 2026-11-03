@@ -38,3 +38,45 @@ it('allows a student to open the dashboard on first login when user and student 
 
     $this->get(route('userSiswa.dashboard'))->assertOk();
 });
+
+it('redirects authenticated users from the login page to their role dashboard', function (
+    string $role,
+    string $routeName,
+) {
+    $user = userModel::query()->create([
+        'id_user' => '1',
+        'username' => 'authenticated-'.$role,
+        'password' => Hash::make('secret123'),
+        'role' => $role,
+        'status' => 'active',
+    ]);
+
+    $this->withSession([
+        'auth_id' => $user->id,
+        'auth_role' => $role,
+    ])->get(route('auth'))
+        ->assertRedirect(route($routeName));
+})->with([
+    'admin' => ['admin', 'dashboard'],
+    'guru' => ['guru', 'userGuru.dashboard'],
+    'siswa' => ['siswa', 'userSiswa.dashboard'],
+]);
+
+it('redirects each role to its own dashboard after login', function (string $role, string $routeName) {
+    userModel::query()->create([
+        'id_user' => '1',
+        'username' => 'login-'.$role,
+        'password' => Hash::make('secret123'),
+        'role' => $role,
+        'status' => 'active',
+    ]);
+
+    $this->post(route('auth.login'), [
+        'username' => 'login-'.$role,
+        'password' => 'secret123',
+    ])->assertRedirect(route($routeName));
+})->with([
+    'admin' => ['admin', 'dashboard'],
+    'guru' => ['guru', 'userGuru.dashboard'],
+    'siswa' => ['siswa', 'userSiswa.dashboard'],
+]);

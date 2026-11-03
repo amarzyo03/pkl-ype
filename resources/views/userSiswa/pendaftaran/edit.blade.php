@@ -41,9 +41,6 @@
                         <h2 class="card-title">PENDAFTARAN LOKASI TEMPAT PKL</h2>
                     </div>
                 </div>
-                @if (session('success'))
-                    <p role="status">{{ session('success') }}</p>
-                @endif
                 <form action="{{ route('userSiswa.pendaftaran.update', $pendaftaran->id) }}" method="POST">
                     @csrf
                     @method('PUT')

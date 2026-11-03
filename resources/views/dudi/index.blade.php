@@ -28,7 +28,7 @@
                 </div>
             </div>
 
-            <div class="table-responsive">
+            <div class="table-responsive" tabindex="0" role="region" aria-label="Tabel data DUDI">
                 <table class="data-table">
                     <thead>
                         <tr>
@@ -103,6 +103,7 @@
                 })
                 .catch(error => {
                     console.error(error);
+                    window.showToast('Gagal memuat data DUDI. Silakan coba lagi.', 'error');
                 });
         }
 

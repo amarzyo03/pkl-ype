@@ -15,13 +15,15 @@ class DashboardAccessMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (
-            ! $request->session()->has('auth_id')
-            || ! in_array($request->session()->get('auth_role'), ['admin', 'guru'], true)
-        ) {
+        if (! $request->session()->has('auth_id')) {
             return redirect()->route('auth')->with('error', 'Anda tidak memiliki akses ke halaman ini');
         }
 
-        return $next($request);
+        return match ($request->session()->get('auth_role')) {
+            'admin' => $next($request),
+            'guru' => redirect()->route('userGuru.dashboard'),
+            'siswa' => redirect()->route('userSiswa.dashboard'),
+            default => redirect()->route('auth')->with('error', 'Anda tidak memiliki akses ke halaman ini'),
+        };
     }
 }

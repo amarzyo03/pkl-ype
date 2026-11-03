@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\absensiModel;
 use App\Models\dudiModel;
 use App\Models\guruModel;
+use App\Models\jurnalModel;
+use App\Models\pendaftaranModel;
 use App\Models\siswaModel;
 use App\Models\tugasModel;
 use App\Models\tugasStatusModel;
@@ -32,9 +34,52 @@ class userGuruController extends Controller
         $this->guru = guruModel::find($this->user_id);
     }
 
-    public function dashboard()
+    public function dashboard(): View
     {
-        return view('userGuru.dashboard.index');
+        $guru = $this->guru;
+        $dudi = dudiModel::query()
+            ->where('id_guru', $guru->id)
+            ->orderBy('nama')
+            ->get(['id', 'nama']);
+        $totalDudi = $dudi->count();
+        $studentIds = pendaftaranModel::query()
+            ->where('status', 'disetujui')
+            ->whereHas('dudi', function (Builder $query) use ($guru): void {
+                $query->where('id_guru', $guru->id);
+            })
+            ->pluck('id_siswa');
+        $totalSiswa = $studentIds->unique()->count();
+        $totalAbsensi = absensiModel::query()
+            ->whereIn('id_siswa', $studentIds)
+            ->count();
+        $totalTugas = $this->ownedTasks()->count();
+        $totalPengumpulan = tugasStatusModel::query()
+            ->whereIn('id_siswa', $studentIds)
+            ->whereIn('id_tugas', $this->ownedTasks()->select('id'))
+            ->where('status', 'dikerjakan')
+            ->count();
+        $absensiTerbaru = absensiModel::query()
+            ->with(['siswa.kelas'])
+            ->whereIn('id_siswa', $studentIds)
+            ->orderByDesc('tanggal')
+            ->orderByDesc('id')
+            ->first();
+        $tugasTerbaru = $this->ownedTasks()
+            ->orderByDesc('tanggal')
+            ->orderByDesc('id')
+            ->first();
+
+        return view('userGuru.dashboard', compact(
+            'guru',
+            'dudi',
+            'totalDudi',
+            'totalSiswa',
+            'totalAbsensi',
+            'totalTugas',
+            'totalPengumpulan',
+            'absensiTerbaru',
+            'tugasTerbaru',
+        ));
     }
 
     public function daftarSiswa(): View
@@ -231,9 +276,21 @@ class userGuruController extends Controller
         return view('userGuru.absensi.index', compact('absensi', 'tanggal'));
     }
 
-    public function jurnal()
+    public function jurnal(): View
     {
-        return view('userGuru.jurnal.index');
+        $jurnal = jurnalModel::query()
+            ->with(['siswa.kelas', 'siswa.pendaftaran.dudi'])
+            ->whereHas('siswa.pendaftaran', function (Builder $query): void {
+                $query->where('status', 'disetujui')
+                    ->whereHas('dudi', function (Builder $dudiQuery): void {
+                        $dudiQuery->where('id_guru', $this->guru->id);
+                    });
+            })
+            ->orderByDesc('tanggal')
+            ->orderByDesc('id')
+            ->get();
+
+        return view('userGuru.jurnal.index', compact('jurnal'));
     }
 
     private function ownedTasks(): Builder

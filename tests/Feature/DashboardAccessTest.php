@@ -9,22 +9,20 @@ test('admin can access the dashboard', function () {
         ->assertViewIs('dashboard.index');
 });
 
-test('guru can access the dashboard', function () {
+test('guru is redirected to the guru dashboard', function () {
     $this->withSession([
         'auth_id' => 2,
         'auth_role' => 'guru',
     ])->get(route('dashboard'))
-        ->assertOk()
-        ->assertViewIs('dashboard.index')
-        ->assertSee('data-role="guru"', false);
+        ->assertRedirect(route('userGuru.dashboard'));
 });
 
-test('siswa cannot access the admin and guru dashboard', function () {
+test('siswa is redirected to the student dashboard', function () {
     $this->withSession([
         'auth_id' => 3,
         'auth_role' => 'siswa',
     ])->get(route('dashboard'))
-        ->assertRedirect(route('auth'));
+        ->assertRedirect(route('userSiswa.dashboard'));
 });
 
 test('guest cannot access the admin and guru dashboard', function () {

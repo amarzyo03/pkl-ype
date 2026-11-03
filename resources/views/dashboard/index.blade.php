@@ -239,60 +239,62 @@
                 </div>
                 <div class="sales-summary-total"><sup>$</sup>6,000</div>
             </div>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Status</th>
-                        <th>Date</th>
-                        <th style="text-align:right">Price</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td class="cell-name">Item #1</td>
-                        <td><span class="tag t-unavail">Unavailable</span></td>
-                        <td class="cell-date">Apr 18</td>
-                        <td class="cell-price pos">$12</td>
-                    </tr>
-                    <tr>
-                        <td class="cell-name">Item #2</td>
-                        <td><span class="tag t-new">New</span></td>
-                        <td class="cell-date">Apr 19</td>
-                        <td class="cell-price pos">$34</td>
-                    </tr>
-                    <tr>
-                        <td class="cell-name">Item #3</td>
-                        <td><span class="tag t-new">New</span></td>
-                        <td class="cell-date">Apr 20</td>
-                        <td class="cell-price neg">−$45</td>
-                    </tr>
-                    <tr>
-                        <td class="cell-name">Item #4</td>
-                        <td><span class="tag t-unavail">Unavailable</span></td>
-                        <td class="cell-date">Apr 21</td>
-                        <td class="cell-price pos">$65</td>
-                    </tr>
-                    <tr>
-                        <td class="cell-name">Item #5</td>
-                        <td><span class="tag t-used">Used</span></td>
-                        <td class="cell-date">Apr 22</td>
-                        <td class="cell-price pos">$78</td>
-                    </tr>
-                    <tr>
-                        <td class="cell-name">Item #6</td>
-                        <td><span class="tag t-used">Used</span></td>
-                        <td class="cell-date">Apr 23</td>
-                        <td class="cell-price neg">−$88</td>
-                    </tr>
-                    <tr>
-                        <td class="cell-name">Item #7</td>
-                        <td><span class="tag t-old">Old</span></td>
-                        <td class="cell-date">Apr 22</td>
-                        <td class="cell-price pos">$56</td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="table-responsive" tabindex="0" role="region" aria-label="Sales report">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th style="text-align:right">Price</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="cell-name">Item #1</td>
+                            <td><span class="tag t-unavail">Unavailable</span></td>
+                            <td class="cell-date">Apr 18</td>
+                            <td class="cell-price pos">$12</td>
+                        </tr>
+                        <tr>
+                            <td class="cell-name">Item #2</td>
+                            <td><span class="tag t-new">New</span></td>
+                            <td class="cell-date">Apr 19</td>
+                            <td class="cell-price pos">$34</td>
+                        </tr>
+                        <tr>
+                            <td class="cell-name">Item #3</td>
+                            <td><span class="tag t-new">New</span></td>
+                            <td class="cell-date">Apr 20</td>
+                            <td class="cell-price neg">−$45</td>
+                        </tr>
+                        <tr>
+                            <td class="cell-name">Item #4</td>
+                            <td><span class="tag t-unavail">Unavailable</span></td>
+                            <td class="cell-date">Apr 21</td>
+                            <td class="cell-price pos">$65</td>
+                        </tr>
+                        <tr>
+                            <td class="cell-name">Item #5</td>
+                            <td><span class="tag t-used">Used</span></td>
+                            <td class="cell-date">Apr 22</td>
+                            <td class="cell-price pos">$78</td>
+                        </tr>
+                        <tr>
+                            <td class="cell-name">Item #6</td>
+                            <td><span class="tag t-used">Used</span></td>
+                            <td class="cell-date">Apr 23</td>
+                            <td class="cell-price neg">−$88</td>
+                        </tr>
+                        <tr>
+                            <td class="cell-name">Item #7</td>
+                            <td><span class="tag t-old">Old</span></td>
+                            <td class="cell-date">Apr 22</td>
+                            <td class="cell-price pos">$56</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
             <div class="sales-all"><a href="#">Check all sales <svg viewBox="0 0 24 24">
                         <path d="M5 12h14M13 5l7 7-7 7" />
                     </svg></a></div>

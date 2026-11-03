@@ -4,12 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\absensiModel;
 use App\Models\dudiModel;
+use App\Models\jurnalModel;
 use App\Models\pendaftaranModel;
 use App\Models\siswaModel;
 use App\Models\tugasModel;
 use App\Models\tugasStatusModel;
 use App\Models\userModel;
 use Closure;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -27,15 +29,48 @@ class userSiswaController extends Controller
 
     public function __construct()
     {
-        $this->user_id = userModel::find(session('auth_id'))->id_user;
-        $this->siswa = siswaModel::with('kelas')->find($this->user_id);
-        $this->pendaftaran = pendaftaranModel::with('siswa', 'dudi')->where('id_siswa', $this->user_id)->first();
+        $user = userModel::query()->findOrFail(session('auth_id'));
+        $this->user_id = $user->id_user;
+        $this->siswa = siswaModel::query()
+            ->with(['kelas', 'pendaftaran.dudi'])
+            ->findOrFail($this->user_id);
+        $this->pendaftaran = $this->siswa->pendaftaran;
     }
 
     // # ===== DASHBOARD ===== #
-    public function dashboard()
+    public function dashboard(): View
     {
-        return view('userSiswa.dashboard');
+        $siswa = $this->siswa;
+        $pendaftaran = $this->pendaftaran;
+        $totalAbsensi = absensiModel::query()->where('id_siswa', $siswa->id)->count();
+        $totalJurnal = jurnalModel::query()->where('id_siswa', $siswa->id)->count();
+        $totalTugas = tugasModel::query()->count();
+        $tugasSelesai = tugasStatusModel::query()
+            ->where('id_siswa', $siswa->id)
+            ->where('status', 'dikerjakan')
+            ->distinct()
+            ->count('id_tugas');
+        $absensiTerbaru = absensiModel::query()
+            ->where('id_siswa', $siswa->id)
+            ->orderByDesc('tanggal')
+            ->orderByDesc('id')
+            ->first(['id', 'tanggal', 'status', 'keterangan']);
+        $jurnalTerbaru = jurnalModel::query()
+            ->where('id_siswa', $siswa->id)
+            ->orderByDesc('tanggal')
+            ->orderByDesc('id')
+            ->first(['id', 'tanggal', 'kegiatan']);
+
+        return view('userSiswa.dashboard', compact(
+            'siswa',
+            'pendaftaran',
+            'totalAbsensi',
+            'totalJurnal',
+            'totalTugas',
+            'tugasSelesai',
+            'absensiTerbaru',
+            'jurnalTerbaru',
+        ));
     }
 
     // # ===== PENDAFTARAN ===== ##
@@ -43,7 +78,7 @@ class userSiswaController extends Controller
     {
         $siswa = $this->siswa;
         $pendaftaran = $this->pendaftaran;
-        $dudi = dudiModel::all();
+        $dudi = $this->availableDudi();
 
         if ($pendaftaran) {
             return redirect()->route('userSiswa.pendaftaran.status');
@@ -82,7 +117,7 @@ class userSiswaController extends Controller
     {
         $siswa = $this->siswa;
         $pendaftaran = $this->pendaftaran;
-        $dudi = dudiModel::all();
+        $dudi = $this->availableDudi();
 
         return view('userSiswa.pendaftaran.edit', compact('siswa', 'pendaftaran', 'dudi'));
     }
@@ -101,16 +136,15 @@ class userSiswaController extends Controller
         $pendaftaran->status = 'pending';
         $pendaftaran->update();
 
-        return redirect()
-            ->route('userSiswa.pendaftaran.status')
-            ->with('success', 'Perubahan DUDI Berhasil di Simpan');
+        return redirect()->route('userSiswa.pendaftaran.status')->with('success', 'Perubahan DUDI Berhasil di Simpan');
     }
 
-    // Daftar siswa
-    public function daftarSiswa(): View
+    // # ===== DAFTAR SISWA ===== ##
+    public function daftarSiswa()
     {
         $daftarSiswa = pendaftaranModel::query()
-            ->with(['siswa.kelas', 'dudi'])
+            ->select(['id', 'id_siswa'])
+            ->with(['siswa:id,nama,id_kelas', 'siswa.kelas:id,nama'])
             ->where('id_dudi', $this->pendaftaran?->id_dudi)
             ->where('status', 'disetujui')
             ->orderBy('id')
@@ -123,14 +157,13 @@ class userSiswaController extends Controller
     public function tugas(Request $request)
     {
         if ($this->pendaftaran?->status === 'pending') {
-            return redirect()
-                ->route('userSiswa.pendaftaran.status')
-                ->with('failed', 'Status Peserta PKL masih belum disetujui');
+            return redirect()->route('userSiswa.pendaftaran.status')->with('failed', 'Status Peserta PKL masih belum disetujui');
         }
 
         $siswa = $this->siswa->id;
         $tugas = tugasModel::query()
-            ->with('guru')
+            ->select(['id', 'id_guru', 'tanggal', 'judul'])
+            ->with('guru:id,nama')
             ->orderByDesc('tanggal')
             ->orderByDesc('id')
             ->get();
@@ -141,12 +174,8 @@ class userSiswaController extends Controller
     public function tugasKerjakan($id)
     {
         $siswa = $this->siswa;
-        $tugas = tugasModel::query()->with('guru')->findOrFail($id);
-        $tugas_status = tugasStatusModel::query()
-            ->where('id_siswa', $siswa->id)
-            ->where('id_tugas', $tugas->id)
-            ->orderByDesc('id')
-            ->first();
+        $tugas = tugasModel::query()->with('guru:id,nama')->find($id);
+        $tugas_status = tugasStatusModel::where('id_siswa', $siswa->id)->where('id_tugas', $tugas->id)->orderByDesc('id')->first();
 
         return view('userSiswa.tugas.kerjakan', compact('siswa', 'tugas', 'tugas_status'));
     }
@@ -160,7 +189,7 @@ class userSiswaController extends Controller
         $siswa = $this->siswa->id;
         $siswa_nama = $this->siswa->nama;
         $siswa_kelas = $this->siswa->kelas->nama;
-        $tugas = tugasModel::with('guru')->find($id);
+        $tugas = tugasModel::query()->find($id);
         $tanggal = now()->toDateString();
         $file = $request->file('file');
         $nama_file = $siswa_nama.'_'.$siswa_kelas.'_'.$tanggal.'_'.$tugas->judul.'.'.strtolower($file->getClientOriginalExtension());
@@ -182,7 +211,7 @@ class userSiswaController extends Controller
             'file' => $nama_file,
         ];
 
-        tugasStatusModel::query()->create($data);
+        tugasStatusModel::create($data);
 
         return redirect()
             ->route('userSiswa.tugas.kerjakan', $tugas->id)
@@ -192,7 +221,7 @@ class userSiswaController extends Controller
     public function cancelTugasKerjakan(string $id)
     {
         $siswa = $this->siswa->id;
-        $tugas = tugasModel::query()->findOrFail($id);
+        $tugas = tugasModel::query()->find($id);
         $tugas_status = tugasStatusModel::query()
             ->where('id_siswa', $siswa)
             ->where('id_tugas', $tugas->id)
@@ -229,6 +258,7 @@ class userSiswaController extends Controller
         $siswa_info = $this->siswa;
         $dudi = $this->pendaftaran;
         $absensi = absensiModel::query()
+            ->select(['id', 'tanggal', 'foto', 'keterangan', 'status'])
             ->where('id_siswa', $siswa_info->id)
             ->orderByDesc('tanggal')
             ->orderByDesc('id')
@@ -359,19 +389,77 @@ class userSiswaController extends Controller
     }
 
     // # ===== JURNAL ===== ##
-    public function jurnal()
+    public function jurnal(): View
     {
-        //
+        $jurnal = jurnalModel::query()
+            ->select(['id', 'tanggal', 'kegiatan'])
+            ->where('id_siswa', $this->siswa->id)
+            ->orderByDesc('tanggal')
+            ->orderByDesc('id')
+            ->get();
+
+        return view('userSiswa.jurnal.index', compact('jurnal'));
     }
 
-    // # ===== PROFIL ===== ##
-    public function profile()
+    public function addJurnal(): View
     {
-        //
+        $siswa = $this->siswa;
+
+        return view('userSiswa.jurnal.add', compact('siswa'));
     }
 
-    public function updateProfile(Request $request)
+    public function saveJurnal(Request $request): RedirectResponse
     {
-        //
+        $data = $request->validate($this->jurnalRules());
+        $data['id_siswa'] = $this->siswa->id;
+
+        jurnalModel::query()->create($data);
+
+        return redirect()->route('userSiswa.jurnal')->with('success', 'Jurnal berhasil disimpan.');
+    }
+
+    public function editJurnal(string $id): View
+    {
+        $jurnal = jurnalModel::query()
+            ->where('id_siswa', $this->siswa->id)
+            ->findOrFail($id);
+
+        return view('userSiswa.jurnal.edit', compact('jurnal'));
+    }
+
+    public function updateJurnal(Request $request, string $id): RedirectResponse
+    {
+        $jurnal = jurnalModel::query()
+            ->where('id_siswa', $this->siswa->id)
+            ->findOrFail($id);
+        $jurnal->update($request->validate($this->jurnalRules()));
+
+        return redirect()->route('userSiswa.jurnal')->with('success', 'Jurnal berhasil diperbarui.');
+    }
+
+    public function deleteJurnal(string $id): RedirectResponse
+    {
+        $jurnal = jurnalModel::query()
+            ->where('id_siswa', $this->siswa->id)
+            ->findOrFail($id);
+        $jurnal->delete();
+
+        return redirect()->route('userSiswa.jurnal')->with('success', 'Jurnal berhasil dihapus.');
+    }
+
+    private function jurnalRules(): array
+    {
+        return [
+            'tanggal' => ['required', 'date', 'before_or_equal:today'],
+            'kegiatan' => ['required', 'string', 'max:255'],
+        ];
+    }
+
+    private function availableDudi(): EloquentCollection
+    {
+        return dudiModel::query()
+            ->select(['id', 'nama', 'id_jurusan'])
+            ->with('jurusan:id,nama')
+            ->get();
     }
 }

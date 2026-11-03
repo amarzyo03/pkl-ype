@@ -1,4 +1,4 @@
-<div class="table-responsive">
+<div class="table-responsive" tabindex="0" role="region" aria-label="Tabel daftar tugas">
     <table class="data-table">
         <thead>
             <tr>

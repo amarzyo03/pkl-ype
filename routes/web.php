@@ -111,6 +111,7 @@ Route::middleware(['guruMiddleware'])->group(function () {
     // DAFTAR DUDI
     Route::get('/id/guru/daftar-dudi', [userGuruController::class, 'daftarDudi'])->name('userGuru.daftarDudi');
     Route::get('/id/guru/absensi', [userGuruController::class, 'absensi'])->name('userGuru.absensi');
+    Route::get('/id/guru/jurnal', [userGuruController::class, 'jurnal'])->name('userGuru.jurnal');
     // TUGAS
     Route::get('/id/guru/tugas', [userGuruController::class, 'tugas'])->name('tugas');
     Route::get('/id/guru/tugas/{id}/status', [userGuruController::class, 'statusTugas'])->name('tugas.status');
@@ -135,16 +136,26 @@ Route::middleware(['siswaMiddleware'])->group(function () {
     Route::put('/id/siswa/pendaftaran/update/{id}', [userSiswaController::class, 'updatePendaftaran'])->name('userSiswa.pendaftaran.update');
     Route::get('/id/siswa/daftar-siswa', [userSiswaController::class, 'daftarSiswa'])->name('userSiswa.daftarSiswa');
 
-    // ABSENSI
-    Route::get('/id/siswa/absensi', [userSiswaController::class, 'absensi'])->name('userSiswa.absensi');
-    Route::get('/id/siswa/absensi/add', [userSiswaController::class, 'addAbsensi'])->name('userSiswa.absensi.add');
-    Route::post('/id/siswa/absensi/save', [userSiswaController::class, 'saveAbsensi'])->name('absensi.save');
-    Route::get('/id/siswa/absensi/edit/{id}', [userSiswaController::class, 'editAbsensi'])->name('absensi.edit');
-    Route::put('/id/siswa/absensi/update/{id}', [userSiswaController::class, 'updateAbsensi'])->name('absensi.update');
+    Route::middleware(['approvedPendaftaranMiddleware'])->group(function () {
+        // ABSENSI
+        Route::get('/id/siswa/absensi', [userSiswaController::class, 'absensi'])->name('userSiswa.absensi');
+        Route::get('/id/siswa/absensi/add', [userSiswaController::class, 'addAbsensi'])->name('userSiswa.absensi.add');
+        Route::post('/id/siswa/absensi/save', [userSiswaController::class, 'saveAbsensi'])->name('absensi.save');
+        Route::get('/id/siswa/absensi/edit/{id}', [userSiswaController::class, 'editAbsensi'])->name('absensi.edit');
+        Route::put('/id/siswa/absensi/update/{id}', [userSiswaController::class, 'updateAbsensi'])->name('absensi.update');
 
-    // TUGAS
-    Route::get('/id/siswa/tugas', [userSiswaController::class, 'tugas'])->name('userSiswa.tugas');
-    Route::get('/id/siswa/tugas/kerjakan/{id}', [userSiswaController::class, 'tugasKerjakan'])->name('userSiswa.tugas.kerjakan');
-    Route::post('/id/siswa/tugas/kerjakan/{id}', [userSiswaController::class, 'attemptTugasKerjakan'])->name('userSiswa.tugas.kerjakan.attempt');
-    Route::post('/id/siswa/tugas/batalkan/{id}', [userSiswaController::class, 'cancelTugasKerjakan'])->name('userSiswa.tugas.kerjakan.cancel');
+        // JURNAL
+        Route::get('/id/siswa/jurnal', [userSiswaController::class, 'jurnal'])->name('userSiswa.jurnal');
+        Route::get('/id/siswa/jurnal/add', [userSiswaController::class, 'addJurnal'])->name('userSiswa.jurnal.add');
+        Route::post('/id/siswa/jurnal/save', [userSiswaController::class, 'saveJurnal'])->name('userSiswa.jurnal.save');
+        Route::get('/id/siswa/jurnal/edit/{id}', [userSiswaController::class, 'editJurnal'])->name('userSiswa.jurnal.edit');
+        Route::put('/id/siswa/jurnal/update/{id}', [userSiswaController::class, 'updateJurnal'])->name('userSiswa.jurnal.update');
+        Route::delete('/id/siswa/jurnal/delete/{id}', [userSiswaController::class, 'deleteJurnal'])->name('userSiswa.jurnal.delete');
+
+        // TUGAS
+        Route::get('/id/siswa/tugas', [userSiswaController::class, 'tugas'])->name('userSiswa.tugas');
+        Route::get('/id/siswa/tugas/kerjakan/{id}', [userSiswaController::class, 'tugasKerjakan'])->name('userSiswa.tugas.kerjakan');
+        Route::post('/id/siswa/tugas/kerjakan/{id}', [userSiswaController::class, 'attemptTugasKerjakan'])->name('userSiswa.tugas.kerjakan.attempt');
+        Route::post('/id/siswa/tugas/batalkan/{id}', [userSiswaController::class, 'cancelTugasKerjakan'])->name('userSiswa.tugas.kerjakan.cancel');
+    });
 });

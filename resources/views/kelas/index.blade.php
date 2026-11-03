@@ -37,7 +37,7 @@
                 </div>
             </div>
 
-            <div class="table-responsive">
+            <div class="table-responsive" tabindex="0" role="region" aria-label="Tabel data kelas">
                 <table class="data-table">
                     <thead>
                         <tr>
@@ -108,6 +108,7 @@
                 })
                 .catch(error => {
                     console.error(error);
+                    window.showToast('Gagal memuat data kelas. Silakan coba lagi.', 'error');
                 });
         }
 

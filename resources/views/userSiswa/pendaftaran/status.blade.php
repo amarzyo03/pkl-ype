@@ -19,9 +19,6 @@
                     <h2 class="card-title">Informasi Status Pendaftaran</h2>
                 </div>
             </div>
-            @if (session('success'))
-                <p role="status">{{ session('success') }}</p>
-            @endif
             <div class="form-grid">
                 <div class="field">
                     <span class="field-label">NAMA</span>
@@ -38,7 +35,15 @@
                 <div class="field">
                     <span class="field-label">Status Pendaftaran</span>
                     <p>
-                        <span class="badge {{ $pendaftaran->status === 'pending' ? 'danger' : 'success' }} dot">
+                        @php
+                            $statusClass = match ($pendaftaran->status) {
+                                'pending' => 'warning',
+                                'disetujui' => 'success',
+                                'ditolak' => 'danger',
+                                default => 'info',
+                            };
+                        @endphp
+                        <span class="badge {{ $statusClass }} dot">
                             {{ strtoupper($pendaftaran->status) }}
                         </span>
                     </p>

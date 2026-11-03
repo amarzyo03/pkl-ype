@@ -13,10 +13,6 @@
 
     <div class="grid">
         <section class="col-12 card">
-            @if (session('success'))
-                <p role="status">{{ session('success') }}</p>
-            @endif
-
             <form action="{{ route('tugas') }}" method="GET" class="data-toolbar">
                 <div class="data-toolbar-left">
                     <div class="input-icon" style="flex:1;max-width:420px">
@@ -102,6 +98,7 @@
                     console.error('Gagal memuat daftar tugas.', error);
                     errorMessage.textContent = 'Gagal memuat data tugas. Silakan coba lagi.';
                     errorMessage.hidden = false;
+                    window.showToast(errorMessage.textContent, 'error');
                 } finally {
                     if (activeRequest === request) {
                         activeRequest = null;

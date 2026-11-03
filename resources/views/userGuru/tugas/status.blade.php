@@ -23,7 +23,7 @@
                 <span class="badge dot success">Sudah mengerjakan: {{ $jumlahSelesai }} siswa</span>
                 <span class="badge dot warning">Belum mengerjakan: {{ $jumlahBelum }} siswa</span>
             </div>
-            <div class="table-responsive">
+            <div class="table-responsive" tabindex="0" role="region" aria-label="Tabel status tugas siswa">
                 <table class="data-table">
                     <thead>
                         <tr>

@@ -12,12 +12,10 @@ class authController extends Controller
     public function auth()
     {
         if (session()->has('auth_id')) {
-            if (session('auth_role') === 'admin') {
-                return redirect()->route('dashboard');
-            } elseif (session('auth_role') === 'guru') {
-                return redirect()->route('dashboard');
-            } elseif (session('auth_role') === 'siswa') {
-                return redirect()->route('userSiswa.dashboard');
+            $dashboardRoute = $this->dashboardRoute(session('auth_role'));
+
+            if ($dashboardRoute !== null) {
+                return redirect()->route($dashboardRoute);
             }
         }
 
@@ -33,27 +31,23 @@ class authController extends Controller
 
         $auth = userModel::where('username', $request->username)->first();
 
-        if ($auth && Hash::check($request->password, $auth->password)) {
-
-            Session::put('auth_id', $auth->id);
-            Session::put('auth_username', $auth->username);
-
-            if ($auth->role === 'admin') {
-                Session::put('auth_role', 'admin');
-
-                return redirect()->route('dashboard')->with('success', 'Login Admin berhasil');
-            } elseif ($auth->role === 'guru') {
-                Session::put('auth_role', 'guru');
-
-                return redirect()->route('dashboard')->with('success', 'Login Guru berhasil');
-            } else {
-                Session::put('auth_role', 'siswa');
-
-                return redirect()->route('userSiswa.dashboard')->with('success', 'Login Siswa berhasil');
-            }
-        } else {
+        if (! $auth || ! Hash::check($request->password, $auth->password)) {
             return redirect()->route('auth')->with('error', 'Username atau password salah');
         }
+
+        $dashboardRoute = $this->dashboardRoute($auth->role);
+
+        if ($dashboardRoute === null) {
+            return redirect()->route('auth')->with('error', 'Role pengguna tidak valid.');
+        }
+
+        Session::put('auth_id', $auth->id);
+        Session::put('auth_username', $auth->username);
+        Session::put('auth_role', $auth->role);
+
+        return redirect()
+            ->route($dashboardRoute)
+            ->with('success', 'Login '.ucfirst($auth->role).' berhasil');
     }
 
     public function logout()
@@ -61,5 +55,15 @@ class authController extends Controller
         Session::flush();
 
         return redirect()->route('auth')->with('success', 'Logout berhasil');
+    }
+
+    private function dashboardRoute(?string $role): ?string
+    {
+        return match ($role) {
+            'admin' => 'dashboard',
+            'guru' => 'userGuru.dashboard',
+            'siswa' => 'userSiswa.dashboard',
+            default => null,
+        };
     }
 }

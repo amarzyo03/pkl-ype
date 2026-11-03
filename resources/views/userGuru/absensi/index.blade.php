@@ -75,6 +75,7 @@
                     console.error('Gagal memuat daftar absensi.', error);
                     errorMessage.textContent = 'Gagal memuat data absensi. Silakan coba lagi.';
                     errorMessage.hidden = false;
+                    window.showToast(errorMessage.textContent, 'error');
                 } finally {
                     if (activeRequest === request) {
                         activeRequest = null;

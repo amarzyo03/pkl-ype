@@ -13,13 +13,6 @@
 
     <div class="grid">
         <section class="col-12 card">
-            @if (session('success'))
-                <p role="status">{{ session('success') }}</p>
-            @endif
-            @if (session('error'))
-                <p role="alert">{{ session('error') }}</p>
-            @endif
-
             <form action="{{ route('pendaftaran') }}" method="GET" class="data-toolbar">
                 <div class="data-toolbar-left">
                     <div class="input-icon" style="flex:1;max-width:420px">
@@ -36,7 +29,7 @@
                 </div>
             </form>
 
-            <div class="table-responsive">
+            <div class="table-responsive" tabindex="0" role="region" aria-label="Tabel data pendaftaran">
                 <table class="data-table">
                     <thead>
                         <tr>

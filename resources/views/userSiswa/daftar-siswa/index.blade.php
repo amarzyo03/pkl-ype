@@ -10,7 +10,7 @@
 
     <div class="grid">
         <section class="col-12 card">
-            <div class="table-responsive">
+            <div class="table-responsive" tabindex="0" role="region" aria-label="Tabel siswa satu DUDI">
                 <table class="data-table">
                     <thead>
                         <tr>
