@@ -23,12 +23,43 @@
                     </div>
                 </div>
                 <div class="form-grid">
-                    <div class="field">
-                        <label class="field-label" for="nama">Name
+                    @if ($errors->any())
+                        <div class="col-12" role="alert">
+                            @foreach ($errors->all() as $error)
+                                <div>{{ $error }}</div>
+                            @endforeach
+                        </div>
+                    @endif
+                    <div class="field" id="guru-profile-field">
+                        <label class="field-label" for="id_guru">Guru
                             <span class="req">*</span>
                         </label>
-                        <input id="nama" class="input" type="text" name="nama"
-                            value="{{ old('nama', $user->nama) }}" placeholder="Nama Lengkap" autofocus required>
+                        <select id="id_guru" class="select" name="id_guru">
+                            <option value="">Pilih guru</option>
+                            @foreach ($gurus as $guru)
+                                <option value="{{ $guru->id }}"
+                                    @selected(old('id_guru', $user->role !== 'siswa' ? $user->id_user : '') == $guru->id)>
+                                    {{ $guru->nama }} —
+                                    {{ $guru->jurusan
+                                        ? $guru->jurusan->kode . ' - ' . $guru->jurusan->nama
+                                        : 'Jurusan tidak tersedia' }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="field" id="siswa-profile-field" hidden>
+                        <label class="field-label" for="id_siswa">Siswa
+                            <span class="req">*</span>
+                        </label>
+                        <select id="id_siswa" class="select" name="id_siswa" disabled>
+                            <option value="">Pilih siswa</option>
+                            @foreach ($siswas as $siswa)
+                                <option value="{{ $siswa->id }}"
+                                    @selected(old('id_siswa', $user->role === 'siswa' ? $user->id_user : '') == $siswa->id)>
+                                    {{ $siswa->nama }} — {{ $siswa->nis }}
+                                </option>
+                            @endforeach
+                        </select>
                     </div>
                     <div class="field">
                         <label class="field-label" for="username">Username
@@ -51,12 +82,10 @@
                         <label class="field-label" for="role">Role
                             <span class="req">*</span>
                         </label>
-                        <select id="role" class="select" name="role">
-                            <option value="admin" {{ old('role', $user->role) == 'admin' ? 'selected' : '' }}>Admin
-                            </option>
-                            <option value="guru" {{ old('role', $user->role) == 'guru' ? 'selected' : '' }}>Guru</option>
-                            <option value="siswa" {{ old('role', $user->role) == 'siswa' ? 'selected' : '' }}>Siswa
-                            </option>
+                        <select id="role" class="select" name="role" required>
+                            <option value="admin" @selected(old('role', $user->role) === 'admin')>Admin</option>
+                            <option value="guru" @selected(old('role', $user->role) === 'guru')>Guru</option>
+                            <option value="siswa" @selected(old('role', $user->role) === 'siswa')>Siswa</option>
                         </select>
                     </div>
                     <div class="field">
@@ -79,4 +108,24 @@
             </section>
         </div>
     </form>
+    <script>
+        const roleSelect = document.getElementById('role');
+        const guruField = document.getElementById('guru-profile-field');
+        const siswaField = document.getElementById('siswa-profile-field');
+        const guruSelect = document.getElementById('id_guru');
+        const siswaSelect = document.getElementById('id_siswa');
+
+        function updateProfileFields() {
+            const isStudent = roleSelect.value === 'siswa';
+            guruField.hidden = isStudent;
+            guruSelect.disabled = isStudent;
+            guruSelect.required = !isStudent;
+            siswaField.hidden = !isStudent;
+            siswaSelect.disabled = !isStudent;
+            siswaSelect.required = isStudent;
+        }
+
+        roleSelect.addEventListener('change', updateProfileFields);
+        updateProfileFields();
+    </script>
 @endsection

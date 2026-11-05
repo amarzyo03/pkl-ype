@@ -1,12 +1,18 @@
 <?php
 
-test('admin can access the dashboard', function () {
-    $this->withSession([
-        'auth_id' => 1,
-        'auth_role' => 'admin',
-    ])->get(route('dashboard'))
-        ->assertOk()
-        ->assertViewIs('dashboard.index');
+use Illuminate\Foundation\Testing\RefreshDatabase;
+
+describe('admin dashboard access', function () {
+    uses(RefreshDatabase::class);
+
+    test('admin can access the dashboard', function () {
+        $this->withSession([
+            'auth_id' => 1,
+            'auth_role' => 'admin',
+        ])->get(route('dashboard'))
+            ->assertOk()
+            ->assertViewIs('dashboard.index');
+    });
 });
 
 test('guru is redirected to the guru dashboard', function () {

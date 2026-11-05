@@ -1,7 +1,6 @@
 <?php
 
 use App\Models\dudiModel;
-use App\Models\guruModel;
 use App\Models\jurnalModel;
 use App\Models\jurusanModel;
 use App\Models\kelasModel;
@@ -21,8 +20,8 @@ it('allows a teacher to monitor journals of approved students from their own dud
         'nama' => 'XI RPL 1',
         'id_jurusan' => $jurusan->id,
     ]);
-    $guru = guruModel::query()->create(['nama' => 'Guru Jurnal']);
-    $otherGuru = guruModel::query()->create(['nama' => 'Guru Lain']);
+    $guru = createGuruForTest(['nama' => 'Guru Jurnal']);
+    $otherGuru = createGuruForTest(['nama' => 'Guru Lain']);
     $dudi = dudiModel::query()->create([
         'nama' => 'DUDI Bimbingan',
         'alamat' => 'Jl. Industri',

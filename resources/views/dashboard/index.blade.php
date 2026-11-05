@@ -1,430 +1,531 @@
 @extends('app')
+
 @section('content')
-    <section class="hero">
-        <div class="hero-text"><span class="eyebrow" id="heroDate">Thursday · April 23 · 2026</span>
-            <h1 class="hero-title">Welcome back, <span class="accent">SMK YPE Kroya</span></h1>
-            <p class="hero-sub">Total visits are <strong>+10%</strong> week over week, unique visitors
-                steady, and bounce rate holding at 33%. Two new regions came online overnight.</p>
-        </div>
-        <div class="hero-actions"><button class="btn btn--ghost"><svg viewBox="0 0 24 24">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                    <path d="M7 10l5 5 5-5" />
-                    <path d="M12 15V3" />
-                </svg> Export</button> <button class="btn btn--primary"><svg viewBox="0 0 24 24">
-                    <path d="M12 5v14M5 12h14" />
-                </svg> New report</button></div>
-    </section>
-    <section class="kpi-grid" aria-label="Key metrics">
-        <article class="kpi-card c-success">
-            <div class="kpi-top">
-                <div class="kpi-identity">
-                    <div class="kpi-icon success"><svg viewBox="0 0 24 24">
-                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                            <circle cx="12" cy="12" r="3" />
-                        </svg></div>
-                    <div class="kpi-label">Total visits</div>
-                </div><span class="kpi-pill up"><svg viewBox="0 0 24 24">
-                        <path d="M7 17l10-10M7 7h10v10" />
-                    </svg> +10%</span>
-            </div>
-            <div class="kpi-value">1.24<sup>M</sup></div>
-            <div class="kpi-compare"><svg class="up" viewBox="0 0 24 24">
-                    <path d="M7 17l10-10M7 7h10v10" />
-                </svg> up from <strong>1.12M</strong> <span class="sep">·</span> last week</div>
-        </article>
-        <article class="kpi-card c-danger">
-            <div class="kpi-top">
-                <div class="kpi-identity">
-                    <div class="kpi-icon danger"><svg viewBox="0 0 24 24">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                            <path d="M14 2v6h6M8 13h8M8 17h8M8 9h2" />
-                        </svg></div>
-                    <div class="kpi-label">Page views</div>
-                </div><span class="kpi-pill down"><svg viewBox="0 0 24 24">
-                        <path d="M7 7l10 10M7 17h10V7" />
-                    </svg> −7%</span>
-            </div>
-            <div class="kpi-value">4.08<sup>M</sup></div>
-            <div class="kpi-compare"><svg class="down" viewBox="0 0 24 24">
-                    <path d="M7 7l10 10M7 17h10V7" />
-                </svg> down from <strong>4.39M</strong> <span class="sep">·</span> last week</div>
-        </article>
-        <article class="kpi-card c-purple">
-            <div class="kpi-top">
-                <div class="kpi-identity">
-                    <div class="kpi-icon purple"><svg viewBox="0 0 24 24">
-                            <circle cx="12" cy="8" r="4" />
-                            <path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8" />
-                        </svg></div>
-                    <div class="kpi-label">Unique visitors</div>
-                </div><span class="kpi-pill flat"><svg viewBox="0 0 24 24">
-                        <path d="M5 12h14" />
-                    </svg> ~12%</span>
-            </div>
-            <div class="kpi-value">842<sup>K</sup></div>
-            <div class="kpi-compare"><svg class="flat" viewBox="0 0 24 24">
-                    <path d="M5 12h14" />
-                </svg> holding around <strong>835K</strong> <span class="sep">·</span> last week</div>
-        </article>
-        <article class="kpi-card c-primary">
-            <div class="kpi-top">
-                <div class="kpi-identity">
-                    <div class="kpi-icon primary"><svg viewBox="0 0 24 24">
-                            <path d="M12 20V10M18 20V4M6 20v-4" />
-                        </svg></div>
-                    <div class="kpi-label">Bounce rate</div>
-                </div><span class="kpi-pill info"><svg viewBox="0 0 24 24">
-                        <path d="M5 12h14" />
-                    </svg> steady</span>
-            </div>
-            <div class="kpi-value">33<sup>%</sup></div>
-            <div class="kpi-compare"><svg class="info" viewBox="0 0 24 24">
-                    <path d="M5 12h14" />
-                </svg> matching <strong>33%</strong> <span class="sep">·</span> last week</div>
-        </article>
-    </section>
-    <div class="grid">
-        <section class="col-12 card">
-            <div class="card-head">
-                <div class="card-title-wrap"><span class="eyebrow">Geography</span>
-                    <h2 class="card-title">Site visits</h2>
-                </div><a class="card-action" href="#">View report <svg viewBox="0 0 24 24">
-                        <path d="M5 12h14M13 5l7 7-7 7" />
-                    </svg></a>
-            </div>
-            <div class="sv-regions">
-                <div class="sv-region">
-                    <div class="sv-region-head"><span class="marker" style="background:var(--purple)"></span> United States
-                    </div>
-                    <div class="sv-region-value">100K<span class="pct">50%</span></div>
-                    <div class="sv-region-bar">
-                        <div class="sv-region-bar-fill" style="width:50%;background:var(--purple)"></div>
-                    </div>
-                </div>
-                <div class="sv-region">
-                    <div class="sv-region-head"><span class="marker" style="background:var(--success)"></span> Europe</div>
-                    <div class="sv-region-value">1M<span class="pct">80%</span></div>
-                    <div class="sv-region-bar">
-                        <div class="sv-region-bar-fill" style="width:80%;background:var(--success)"></div>
-                    </div>
-                </div>
-                <div class="sv-region">
-                    <div class="sv-region-head"><span class="marker" style="background:var(--info)"></span> Australia
-                    </div>
-                    <div class="sv-region-value">450K<span class="pct">40%</span></div>
-                    <div class="sv-region-bar">
-                        <div class="sv-region-bar-fill" style="width:40%;background:var(--info)"></div>
-                    </div>
-                </div>
-                <div class="sv-region">
-                    <div class="sv-region-head"><span class="marker" style="background:#64748b"></span>
-                        India</div>
-                    <div class="sv-region-value">1B<span class="pct">90%</span></div>
-                    <div class="sv-region-bar">
-                        <div class="sv-region-bar-fill" style="width:90%;background:#64748b"></div>
-                    </div>
-                </div>
-            </div>
-            <div class="sv-divider"></div>
-            <div class="sv-radials">
-                <div class="sv-radial">
-                    <div class="sv-radial-chart"><svg viewBox="0 0 80 80">
-                            <circle class="radial-track" cx="40" cy="40" r="32" />
-                            <circle class="radial-fill danger" cx="40" cy="40" r="32"
-                                stroke-dasharray="201.06" stroke-dashoffset="50.27" />
-                        </svg> <span class="pct">75%</span></div>
-                    <div class="sv-radial-text">
-                        <div class="sv-radial-name">New users</div>
-                        <div class="sv-radial-caption">first-time visitors</div>
-                    </div>
-                </div>
-                <div class="sv-radial">
-                    <div class="sv-radial-chart"><svg viewBox="0 0 80 80">
-                            <circle class="radial-track" cx="40" cy="40" r="32" />
-                            <circle class="radial-fill info" cx="40" cy="40" r="32"
-                                stroke-dasharray="201.06" stroke-dashoffset="100.53" />
-                        </svg> <span class="pct">50%</span></div>
-                    <div class="sv-radial-text">
-                        <div class="sv-radial-name">New purchases</div>
-                        <div class="sv-radial-caption">from new visits</div>
-                    </div>
-                </div>
-                <div class="sv-radial">
-                    <div class="sv-radial-chart"><svg viewBox="0 0 80 80">
-                            <circle class="radial-track" cx="40" cy="40" r="32" />
-                            <circle class="radial-fill warning" cx="40" cy="40" r="32"
-                                stroke-dasharray="201.06" stroke-dashoffset="20.11" />
-                        </svg> <span class="pct">90%</span></div>
-                    <div class="sv-radial-text">
-                        <div class="sv-radial-name">Bounce rate</div>
-                        <div class="sv-radial-caption">avg engagement</div>
-                    </div>
-                </div>
+    <style>
+        .school-dashboard {
+            --dashboard-border: var(--border, #e5e7eb);
+            --dashboard-muted: var(--t-muted, #64748b);
+            --dashboard-surface: var(--bg-card, #fff);
+            --dashboard-text: var(--t-base, #0f172a);
+            color: var(--dashboard-text);
+        }
+
+        .dashboard-heading {
+            align-items: flex-end;
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .dashboard-heading h1 {
+            font-size: clamp(1.5rem, 3vw, 2rem);
+            letter-spacing: -.03em;
+            margin: .25rem 0;
+        }
+
+        .dashboard-heading p,
+        .dashboard-caption {
+            color: var(--dashboard-muted);
+            margin: 0;
+        }
+
+        .dashboard-eyebrow {
+            color: var(--dashboard-muted);
+            font-size: .75rem;
+            font-weight: 700;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+        }
+
+        .dashboard-link {
+            align-items: center;
+            color: var(--primary, #4f46e5);
+            display: inline-flex;
+            font-size: .875rem;
+            font-weight: 650;
+            gap: .4rem;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .dashboard-link:hover {
+            text-decoration: underline;
+        }
+
+        .dashboard-link svg {
+            height: 1rem;
+            width: 1rem;
+        }
+
+        .dashboard-stats {
+            display: grid;
+            gap: 1rem;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            margin-bottom: 1rem;
+        }
+
+        .dashboard-card {
+            background: var(--dashboard-surface);
+            border: 1px solid var(--dashboard-border);
+            border-radius: 1rem;
+            min-width: 0;
+            padding: 1.25rem;
+        }
+
+        .dashboard-stat {
+            overflow: hidden;
+            position: relative;
+        }
+
+        .dashboard-stat::after {
+            background: var(--stat-color, #4f46e5);
+            border-radius: 50%;
+            content: "";
+            height: 5rem;
+            opacity: .08;
+            position: absolute;
+            right: -1.5rem;
+            top: -1.5rem;
+            width: 5rem;
+        }
+
+        .dashboard-stat-head {
+            align-items: center;
+            color: var(--dashboard-muted);
+            display: flex;
+            font-size: .875rem;
+            font-weight: 600;
+            gap: .65rem;
+        }
+
+        .dashboard-stat-icon {
+            align-items: center;
+            background: color-mix(in srgb, var(--stat-color, #4f46e5) 12%, transparent);
+            border-radius: .7rem;
+            color: var(--stat-color, #4f46e5);
+            display: inline-flex;
+            height: 2.4rem;
+            justify-content: center;
+            width: 2.4rem;
+        }
+
+        .dashboard-stat-icon svg {
+            height: 1.25rem;
+            width: 1.25rem;
+        }
+
+        .dashboard-stat-value {
+            font-size: clamp(1.8rem, 3vw, 2.25rem);
+            font-weight: 750;
+            letter-spacing: -.04em;
+            line-height: 1.15;
+            margin: 1rem 0 .45rem;
+        }
+
+        .dashboard-stat-note {
+            color: var(--dashboard-muted);
+            font-size: .8rem;
+        }
+
+        .dashboard-stat-note strong {
+            color: var(--dashboard-text);
+        }
+
+        .dashboard-panels {
+            display: grid;
+            gap: 1rem;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+            margin-bottom: 1rem;
+        }
+
+        .dashboard-card-heading {
+            align-items: center;
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .dashboard-card-heading h2 {
+            font-size: 1.05rem;
+            letter-spacing: -.015em;
+            margin: .25rem 0 0;
+        }
+
+        .registration-status-list {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .registration-status {
+            display: grid;
+            gap: .5rem;
+        }
+
+        .registration-status-top {
+            align-items: center;
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .registration-status-label {
+            align-items: center;
+            display: inline-flex;
+            font-size: .875rem;
+            font-weight: 600;
+            gap: .55rem;
+        }
+
+        .registration-status-dot {
+            background: var(--status-color);
+            border-radius: 50%;
+            height: .55rem;
+            width: .55rem;
+        }
+
+        .registration-status-count {
+            font-size: .875rem;
+            font-weight: 700;
+        }
+
+        .registration-status-track {
+            background: color-mix(in srgb, var(--dashboard-muted) 13%, transparent);
+            border-radius: 999px;
+            height: .45rem;
+            overflow: hidden;
+        }
+
+        .registration-status-fill {
+            background: var(--status-color);
+            border-radius: inherit;
+            height: 100%;
+            min-width: 0;
+        }
+
+        .dashboard-status-summary {
+            border-top: 1px solid var(--dashboard-border);
+            color: var(--dashboard-muted);
+            display: flex;
+            font-size: .8rem;
+            justify-content: space-between;
+            margin-top: 1.2rem;
+            padding-top: 1rem;
+        }
+
+        .dashboard-status-summary strong {
+            color: var(--dashboard-text);
+        }
+
+        .dashboard-activity-grid {
+            display: grid;
+            gap: .75rem;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .dashboard-activity-item {
+            background: color-mix(in srgb, var(--dashboard-muted) 6%, transparent);
+            border-radius: .8rem;
+            padding: .9rem;
+        }
+
+        .dashboard-activity-label {
+            color: var(--dashboard-muted);
+            font-size: .8rem;
+        }
+
+        .dashboard-activity-value {
+            font-size: 1.4rem;
+            font-weight: 720;
+            letter-spacing: -.025em;
+            margin-top: .3rem;
+        }
+
+        .dashboard-table-wrap {
+            overflow-x: auto;
+        }
+
+        .dashboard-table {
+            border-collapse: collapse;
+            min-width: 34rem;
+            text-align: left;
+            width: 100%;
+        }
+
+        .dashboard-table th {
+            color: var(--dashboard-muted);
+            font-size: .72rem;
+            font-weight: 700;
+            letter-spacing: .06em;
+            padding: 0 .75rem .75rem;
+            text-transform: uppercase;
+        }
+
+        .dashboard-table td {
+            border-top: 1px solid var(--dashboard-border);
+            font-size: .875rem;
+            padding: .85rem .75rem;
+            vertical-align: middle;
+        }
+
+        .dashboard-table th:first-child,
+        .dashboard-table td:first-child {
+            padding-left: 0;
+        }
+
+        .dashboard-table th:last-child,
+        .dashboard-table td:last-child {
+            padding-right: 0;
+        }
+
+        .dashboard-student-name {
+            font-weight: 650;
+        }
+
+        .dashboard-table-subtext {
+            color: var(--dashboard-muted);
+            display: block;
+            font-size: .78rem;
+            margin-top: .2rem;
+        }
+
+        .dashboard-badge {
+            border-radius: 999px;
+            display: inline-flex;
+            font-size: .73rem;
+            font-weight: 700;
+            padding: .3rem .6rem;
+            white-space: nowrap;
+        }
+
+        .dashboard-badge.is-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .dashboard-badge.is-approved {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .dashboard-badge.is-rejected {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .dashboard-empty {
+            color: var(--dashboard-muted);
+            padding: 1.5rem 0;
+            text-align: center;
+        }
+
+        @media (max-width: 900px) {
+            .dashboard-stats {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 640px) {
+            .dashboard-heading {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .dashboard-panels {
+                grid-template-columns: 1fr;
+            }
+
+            .dashboard-card {
+                padding: 1rem;
+            }
+
+            .dashboard-activity-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+
+    <div class="school-dashboard">
+        <section class="hero">
+            <div class="hero-text">
+                <span class="eyebrow">{{ now()->format('l, d F Y') }}</span>
+                <h1 class="hero-title">Selamat datang, <span class="accent">SMK YPE Kroya</span></h1>
+                <p class="hero-sub">Ringkasan data siswa, mitra industri, dan kegiatan praktik kerja.</p>
             </div>
         </section>
-        <section class="col-6 card">
-            <div class="card-head">
-                <div class="card-title-wrap"><span class="eyebrow">Performance</span>
-                    <h2 class="card-title">Monthly stats</h2>
-                </div><span class="card-action">April 2026</span>
-            </div>
-            <div class="chart-canvas-wrap" style="height:240px"><canvas data-chart-key="dashboard-monthly"></canvas>
-            </div>
-            <div class="monthly-footer">
-                <div class="stat-cell">
-                    <div class="stat-cell-label">Sales growth</div>
-                    <div class="stat-cell-value">54% <svg class="trend-ic" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2.5">
-                            <path d="M7 17l10-10M7 7h10v10" />
-                        </svg></div>
+
+        <section class="dashboard-stats" aria-label="Ringkasan data sekolah">
+            <article class="dashboard-card dashboard-stat" style="--stat-color:#2563eb">
+                <div class="dashboard-stat-head">
+                    <span class="dashboard-stat-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                            <path
+                                d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M10 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM20 8v6m3-3h-6" />
+                        </svg>
+                    </span>
+                    Jumlah siswa
                 </div>
-                <div class="stat-cell">
-                    <div class="stat-cell-label">Dec sales</div>
-                    <div class="stat-cell-value">$185K <svg class="trend-ic" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2.5">
-                            <path d="M7 17l10-10M7 7h10v10" />
-                        </svg></div>
+                <div class="dashboard-stat-value">{{ number_format($totalSiswa, 0, ',', '.') }}</div>
+                <div class="dashboard-stat-note"><strong>{{ number_format($siswaAktif, 0, ',', '.') }}</strong> siswa aktif
                 </div>
-                <div class="stat-cell">
-                    <div class="stat-cell-label">Profit growth</div>
-                    <div class="stat-cell-value">60% <svg class="trend-ic" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2.5">
-                            <path d="M7 17l10-10M7 7h10v10" />
-                        </svg></div>
+            </article>
+
+            <article class="dashboard-card dashboard-stat" style="--stat-color:#7c3aed">
+                <div class="dashboard-stat-head">
+                    <span class="dashboard-stat-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                            <path
+                                d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4M9 9v.01M9 12v.01M9 15v.01M9 18v.01M15 13v.01M15 16v.01M15 19v.01" />
+                        </svg>
+                    </span>
+                    Jumlah guru
                 </div>
-                <div class="stat-cell">
-                    <div class="stat-cell-label">Dec profit</div>
-                    <div class="stat-cell-value">$72K <svg class="trend-ic" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2.5">
-                            <path d="M7 17l10-10M7 7h10v10" />
-                        </svg></div>
+                <div class="dashboard-stat-value">{{ number_format($jumlahGuru, 0, ',', '.') }}</div>
+                <div class="dashboard-stat-note">Guru terdaftar di sekolah</div>
+            </article>
+
+            <article class="dashboard-card dashboard-stat" style="--stat-color:#0891b2">
+                <div class="dashboard-stat-head">
+                    <span class="dashboard-stat-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                            <path d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6M9 9h.01M15 9h.01" />
+                        </svg>
+                    </span>
+                    Jumlah DUDI
                 </div>
-            </div>
+                <div class="dashboard-stat-value">{{ number_format($jumlahDudi, 0, ',', '.') }}</div>
+                <div class="dashboard-stat-note">Mitra dunia usaha dan industri</div>
+            </article>
+
+            <article class="dashboard-card dashboard-stat" style="--stat-color:#db2777">
+                <div class="dashboard-stat-head">
+                    <span class="dashboard-stat-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                            <path d="M8 4h8l4 4v12H4V4h4ZM8 12h8M8 16h8M14 4v5h5" />
+                        </svg>
+                    </span>
+                    Jumlah pendaftaran
+                </div>
+                <div class="dashboard-stat-value">{{ number_format($totalPendaftaran, 0, ',', '.') }}</div>
+                <div class="dashboard-stat-note"><strong>{{ number_format($pendaftaranDisetujui, 0, ',', '.') }}</strong>
+                    telah disetujui</div>
+            </article>
         </section>
-        <section class="col-6 card">
-            <div class="card-head">
-                <div class="card-title-wrap"><span class="eyebrow">Personal</span>
-                    <h2 class="card-title">Todo list</h2>
-                </div><a class="card-action" href="#">Add task <svg viewBox="0 0 24 24">
-                        <path d="M12 5v14M5 12h14" />
-                    </svg></a>
-            </div>
-            <ul class="todo-list">
-                <li class="todo-item"><input type="checkbox" class="todo-check" id="td1"> <label for="td1"
-                        class="todo-text">Call John for dinner</label> <span class="todo-badge low">ANYTIME</span></li>
-                <li class="todo-item"><input type="checkbox" class="todo-check" id="td2"> <label for="td2"
-                        class="todo-text">Book boss flight</label> <span class="todo-badge upcoming">2 DAYS</span></li>
-                <li class="todo-item"><input type="checkbox" class="todo-check" id="td3"> <label for="td3"
-                        class="todo-text">Hit the gym</label> <span class="todo-badge urgent">3 MIN</span></li>
-                <li class="todo-item"><input type="checkbox" class="todo-check" id="td4"> <label for="td4"
-                        class="todo-text">Give purchase report</label> <span class="todo-badge warn">LOW PRIORITY</span>
-                </li>
-                <li class="todo-item"><input type="checkbox" class="todo-check" id="td5"> <label for="td5"
-                        class="todo-text">Watch Foundation S03E04</label> <span
-                        class="todo-badge upcoming">TOMORROW</span></li>
-                <li class="todo-item is-done"><input type="checkbox" class="todo-check" id="td6"
-                        checked="checked"> <label for="td6" class="todo-text">Give purchase
-                        report</label> <span class="todo-badge done">DONE</span></li>
-            </ul>
-        </section>
-        <section class="col-6 card">
-            <div class="card-head">
-                <div class="card-title-wrap"><span class="eyebrow">Commerce</span>
-                    <h2 class="card-title">Sales report</h2>
-                </div>
-            </div>
-            <div class="sales-summary">
-                <div class="sales-summary-label"><span class="eyebrow">Period</span>
-                    <h4>April 2026</h4>
-                </div>
-                <div class="sales-summary-total"><sup>$</sup>6,000</div>
-            </div>
-            <div class="table-responsive" tabindex="0" role="region" aria-label="Sales report">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Status</th>
-                            <th>Date</th>
-                            <th style="text-align:right">Price</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="cell-name">Item #1</td>
-                            <td><span class="tag t-unavail">Unavailable</span></td>
-                            <td class="cell-date">Apr 18</td>
-                            <td class="cell-price pos">$12</td>
-                        </tr>
-                        <tr>
-                            <td class="cell-name">Item #2</td>
-                            <td><span class="tag t-new">New</span></td>
-                            <td class="cell-date">Apr 19</td>
-                            <td class="cell-price pos">$34</td>
-                        </tr>
-                        <tr>
-                            <td class="cell-name">Item #3</td>
-                            <td><span class="tag t-new">New</span></td>
-                            <td class="cell-date">Apr 20</td>
-                            <td class="cell-price neg">−$45</td>
-                        </tr>
-                        <tr>
-                            <td class="cell-name">Item #4</td>
-                            <td><span class="tag t-unavail">Unavailable</span></td>
-                            <td class="cell-date">Apr 21</td>
-                            <td class="cell-price pos">$65</td>
-                        </tr>
-                        <tr>
-                            <td class="cell-name">Item #5</td>
-                            <td><span class="tag t-used">Used</span></td>
-                            <td class="cell-date">Apr 22</td>
-                            <td class="cell-price pos">$78</td>
-                        </tr>
-                        <tr>
-                            <td class="cell-name">Item #6</td>
-                            <td><span class="tag t-used">Used</span></td>
-                            <td class="cell-date">Apr 23</td>
-                            <td class="cell-price neg">−$88</td>
-                        </tr>
-                        <tr>
-                            <td class="cell-name">Item #7</td>
-                            <td><span class="tag t-old">Old</span></td>
-                            <td class="cell-date">Apr 22</td>
-                            <td class="cell-price pos">$56</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <div class="sales-all"><a href="#">Check all sales <svg viewBox="0 0 24 24">
-                        <path d="M5 12h14M13 5l7 7-7 7" />
-                    </svg></a></div>
-        </section>
-        <section class="col-6 card">
-            <div class="card-head">
-                <div class="card-title-wrap"><span class="eyebrow">Today</span>
-                    <h2 class="card-title">Weather</h2>
-                </div><span class="card-action">Rīga, LV</span>
-            </div>
-            <div class="wx-hero">
-                <div class="wx-temp-block">
-                    <div class="wx-icon"><svg viewBox="0 0 64 64">
-                            <circle cx="22" cy="22" r="8" />
-                            <path d="M22 6v4M22 34v4M6 22h4M34 22h4M10 10l3 3M31 31l3 3M34 10l-3 3M13 31l-3 3" />
-                            <path d="M18 44a10 10 0 0 1 10-10 10 10 0 0 1 9.5 7 8 8 0 0 1-1.5 16H20a8 8 0 0 1-2-13z" />
-                        </svg></div>
+
+        <div class="dashboard-panels">
+            <section class="dashboard-card" aria-labelledby="registration-status-title">
+                <div class="dashboard-card-heading">
                     <div>
-                        <div class="wx-temp">32<sup>°F</sup></div>
-                        <div class="wx-condition">Partly <strong>cloudy</strong> · light breeze</div>
+                        <span class="dashboard-eyebrow">Proses PKL</span>
+                        <h2 id="registration-status-title">Status pendaftaran</h2>
                     </div>
+                    <a class="dashboard-link" href="{{ route('pendaftaran') }}">
+                        Kelola
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14m-7-7 7 7-7 7" />
+                        </svg>
+                    </a>
                 </div>
-                <div class="wx-date">
-                    <h5>Thursday</h5>
-                    <p>APR 23, 2026</p>
-                </div>
-            </div>
-            <div class="wx-stats">
-                <div>
-                    <div class="wx-stat-label">Wind</div>
-                    <div class="wx-stat-value">10<span class="unit">km/h</span></div>
-                </div>
-                <div>
-                    <div class="wx-stat-label">Sunrise</div>
-                    <div class="wx-stat-value">05:32<span class="unit">am</span></div>
-                </div>
-                <div>
-                    <div class="wx-stat-label">Pressure</div>
-                    <div class="wx-stat-value">1013<span class="unit">hPa</span></div>
-                </div>
-            </div>
-            <div class="wx-forecast">
-                <div class="wx-day is-today">
-                    <div class="wx-day-name">THU</div>
-                    <div class="wx-day-icon"><svg viewBox="0 0 24 24">
-                            <path d="M7 18a5 5 0 1 1 1-9.9A6 6 0 0 1 20 11.5 4.5 4.5 0 0 1 19 20.5" />
-                        </svg></div>
-                    <div class="wx-day-temp">32°</div>
-                </div>
-                <div class="wx-day">
-                    <div class="wx-day-name">FRI</div>
-                    <div class="wx-day-icon"><svg viewBox="0 0 24 24">
-                            <circle cx="12" cy="12" r="4" />
-                            <path
-                                d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
-                        </svg></div>
-                    <div class="wx-day-temp">30°</div>
-                </div>
-                <div class="wx-day">
-                    <div class="wx-day-name">SAT</div>
-                    <div class="wx-day-icon"><svg viewBox="0 0 24 24">
-                            <path d="M7 18a5 5 0 1 1 1-9.9A6 6 0 0 1 20 11.5 4.5 4.5 0 0 1 19 20.5" />
-                        </svg></div>
-                    <div class="wx-day-temp">28°</div>
-                </div>
-                <div class="wx-day">
-                    <div class="wx-day-name">SUN</div>
-                    <div class="wx-day-icon"><svg viewBox="0 0 24 24">
-                            <path d="M18 10a6 6 0 0 0-12 0 5 5 0 0 0 0 10h12a5 5 0 0 0 0-10" />
-                        </svg></div>
-                    <div class="wx-day-temp">32°</div>
-                </div>
-                <div class="wx-day">
-                    <div class="wx-day-name">MON</div>
-                    <div class="wx-day-icon"><svg viewBox="0 0 24 24">
-                            <path
-                                d="M8 19v-9M8 14l3 3M8 14l-3 3M16 19v-9M16 14l3 3M16 14l-3 3M20 6a6 6 0 0 0-12 0 5 5 0 0 0 0 10" />
-                        </svg></div>
-                    <div class="wx-day-temp">24°</div>
-                </div>
-                <div class="wx-day">
-                    <div class="wx-day-name">TUE</div>
-                    <div class="wx-day-icon"><svg viewBox="0 0 24 24">
-                            <path d="M17.7 7.7a6 6 0 1 0-9.1 7.3M3 12h4M15 8h5M18 16h-6M9.5 20h7" />
-                        </svg></div>
-                    <div class="wx-day-temp">28°</div>
-                </div>
-                <div class="wx-day">
-                    <div class="wx-day-name">WED</div>
-                    <div class="wx-day-icon"><svg viewBox="0 0 24 24">
-                            <path d="M7 18a5 5 0 1 1 1-9.9A6 6 0 0 1 20 11.5 4.5 4.5 0 0 1 19 20.5" />
-                        </svg></div>
-                    <div class="wx-day-temp">32°</div>
-                </div>
-            </div>
-        </section>
-        <section class="col-12 card">
-            <div class="card-head">
-                <div class="card-title-wrap"><span class="eyebrow">Conversations</span>
-                    <h2 class="card-title">Quick chat</h2>
-                </div><a class="card-action" href="#">Open chat <svg viewBox="0 0 24 24">
-                        <path d="M5 12h14M13 5l7 7-7 7" />
-                    </svg></a>
-            </div>
-            <div class="chat-frame">
-                <div class="chat-messages">
-                    <div class="chat-row">
-                        <div class="chat-avatar">LK</div>
-                        <div class="chat-stack">
-                            <div class="chat-bubble">Morning — just pushed the dependency bump to master.
-                            </div>
-                            <div class="chat-bubble">All 10 stale Dependabot PRs are closed 🎉</div>
-                            <div class="chat-ts">10:04 AM</div>
+
+                <div class="registration-status-list">
+                    <div class="registration-status">
+                        <div class="registration-status-top">
+                            <span class="registration-status-label">
+                                <span class="registration-status-dot" style="--status-color:#d97706"></span>
+                                Pending
+                            </span>
+                            <span class="registration-status-count">{{ number_format($pendaftaranPending, 0, ',', '.') }}
+                                <span class="dashboard-caption">({{ $persentasePending }}%)</span></span>
+                        </div>
+                        <div class="registration-status-track" role="progressbar" aria-label="Pendaftaran pending"
+                            aria-valuenow="{{ $persentasePending }}" aria-valuemin="0" aria-valuemax="100">
+                            <div class="registration-status-fill"
+                                style="--status-color:#d97706;width:{{ $persentasePending }}%"></div>
                         </div>
                     </div>
-                    <div class="chat-row me">
-                        <div class="chat-avatar me">JD</div>
-                        <div class="chat-stack">
-                            <div class="chat-bubble">Nice work. Any breaking changes?</div>
-                            <div class="chat-ts">10:06 AM</div>
+
+                    <div class="registration-status">
+                        <div class="registration-status-top">
+                            <span class="registration-status-label">
+                                <span class="registration-status-dot" style="--status-color:#16a34a"></span>
+                                Disetujui
+                            </span>
+                            <span class="registration-status-count">{{ number_format($pendaftaranDisetujui, 0, ',', '.') }}
+                                <span class="dashboard-caption">({{ $persentaseDisetujui }}%)</span></span>
+                        </div>
+                        <div class="registration-status-track" role="progressbar" aria-label="Pendaftaran disetujui"
+                            aria-valuenow="{{ $persentaseDisetujui }}" aria-valuemin="0" aria-valuemax="100">
+                            <div class="registration-status-fill"
+                                style="--status-color:#16a34a;width:{{ $persentaseDisetujui }}%"></div>
+                        </div>
+                    </div>
+
+                    <div class="registration-status">
+                        <div class="registration-status-top">
+                            <span class="registration-status-label">
+                                <span class="registration-status-dot" style="--status-color:#dc2626"></span>
+                                Ditolak
+                            </span>
+                            <span class="registration-status-count">{{ number_format($pendaftaranDitolak, 0, ',', '.') }}
+                                <span class="dashboard-caption">({{ $persentaseDitolak }}%)</span></span>
+                        </div>
+                        <div class="registration-status-track" role="progressbar" aria-label="Pendaftaran ditolak"
+                            aria-valuenow="{{ $persentaseDitolak }}" aria-valuemin="0" aria-valuemax="100">
+                            <div class="registration-status-fill"
+                                style="--status-color:#dc2626;width:{{ $persentaseDitolak }}%"></div>
                         </div>
                     </div>
                 </div>
-                <div class="chat-input-row"><input class="chat-input" type="text" placeholder="Reply to Leo…">
-                    <button class="chat-send" aria-label="Send"><svg viewBox="0 0 24 24">
-                            <path d="m22 2-7 20-4-9-9-4z" />
-                            <path d="M22 2 11 13" />
-                        </svg></button>
+
+                <div class="dashboard-status-summary">
+                    <span>Total pendaftaran</span>
+                    <strong>{{ number_format($totalPendaftaran, 0, ',', '.') }} data</strong>
                 </div>
-            </div>
-        </section>
+            </section>
+
+            <section class="dashboard-card" aria-labelledby="school-activity-title">
+                <div class="dashboard-card-heading">
+                    <div>
+                        <span class="dashboard-eyebrow">Data pendukung</span>
+                        <h2 id="school-activity-title">Aktivitas sekolah</h2>
+                    </div>
+                </div>
+
+                <div class="dashboard-activity-grid">
+                    <div class="dashboard-activity-item">
+                        <div class="dashboard-activity-label">Tugas dikerjakan</div>
+                        <div class="dashboard-activity-value">
+                            {{ number_format($jumlahTugasDikerjakan, 0, ',', '.') }}
+                        </div>
+                        <div class="dashboard-caption">
+                            Belum dikerjakan:
+                            <strong>{{ number_format($jumlahTugasBelumDikerjakan, 0, ',', '.') }}</strong>
+                            dari {{ number_format($jumlahTugas * $siswaAktif, 0, ',', '.') }} tugas
+                        </div>
+                    </div>
+                    <div class="dashboard-activity-item">
+                        <div class="dashboard-activity-label">Jurnal terkumpul bulan ini</div>
+                        <div class="dashboard-activity-value">
+                            {{ number_format($jumlahJurnalBulanIni, 0, ',', '.') }}
+                        </div>
+                        <div class="dashboard-caption">
+                            Belum mengumpulkan:
+                            <strong>{{ number_format($jumlahSiswaBelumMengumpulkanJurnal, 0, ',', '.') }}</strong>
+                            siswa
+                        </div>
+                    </div>
+                    <div class="dashboard-activity-item">
+                        <div class="dashboard-activity-label">Absensi siswa</div>
+                        <div class="dashboard-activity-value">
+                            {{ number_format($jumlahAbsensi, 0, ',', '.') }}
+                        </div>
+                        <div class="dashboard-caption">
+                            {{ number_format($jumlahAbsensiHariIni, 0, ',', '.') }} dicatat hari ini
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
     </div>
 @endsection

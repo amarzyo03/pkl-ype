@@ -2,7 +2,6 @@
 
 use App\Models\absensiModel;
 use App\Models\dudiModel;
-use App\Models\guruModel;
 use App\Models\jurnalModel;
 use App\Models\jurusanModel;
 use App\Models\kelasModel;
@@ -31,7 +30,7 @@ it('shows student information and activity summaries on the dashboard', function
         'role' => 'siswa',
         'status' => 'active',
     ]);
-    $guru = guruModel::query()->create(['nama' => 'Guru Dashboard']);
+    $guru = createGuruForTest(['nama' => 'Guru Dashboard']);
     $dudi = dudiModel::query()->create([
         'nama' => 'DUDI Dashboard',
         'alamat' => 'Jl. Dashboard',

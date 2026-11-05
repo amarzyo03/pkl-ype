@@ -3,8 +3,8 @@
 namespace App\Imports;
 
 use App\Models\guruModel;
+use App\Models\jurusanModel;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
@@ -19,27 +19,26 @@ class GuruImport implements ToCollection, WithHeadingRow
     {
         foreach ($rows as $row) {
             $nama = trim((string) ($row['nama'] ?? ''));
-            $username = strtolower(trim((string) ($row['username'] ?? '')));
-            $password = trim((string) ($row['password'] ?? ''));
+            $kodeJurusan = trim((string) ($row['kode_jurusan'] ?? ''));
 
-            if ($nama === '' || $username === '') {
+            if ($nama === '' || $kodeJurusan === '') {
                 continue;
             }
 
-            $guru = guruModel::withTrashed()->firstOrNew(['username' => $username]);
-            $guru->nama = $nama;
+            $jurusan = jurusanModel::query()->where('kode', $kodeJurusan)->first();
 
-            if ($password !== '') {
-                $guru->password = Hash::make($password);
-            } elseif (! $guru->exists) {
+            if ($jurusan === null) {
                 continue;
             }
+
+            $guru = guruModel::withTrashed()->firstOrNew(['nama' => $nama]);
+            $guru->id_jurusan = $jurusan->id;
 
             if ($guru->trashed()) {
                 $guru->restore();
+            } else {
+                $guru->save();
             }
-
-            $guru->save();
         }
     }
 }

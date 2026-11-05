@@ -58,31 +58,10 @@
                         </select>
                     </div>
                     <div class="field">
-                        <label class="field-label" for="username">Username
-                            <span class="req">*</span>
-                        </label>
-                        <input id="username" class="input" type="text" name="username" value="{{ old('username') }}"
-                            placeholder="Username" required>
-                    </div>
-                    <div class="field">
-                        <label class="field-label" for="password">Password
-                            <span class="req">*</span>
-                        </label>
-                        <input id="password" class="input" type="password" name="password" placeholder="Password"
-                            required>
-                    </div>
-                    <div class="field">
-                        <label class="field-label" for="password_confirmation">Confirm Password
-                            <span class="req">*</span>
-                        </label>
-                        <input id="password_confirmation" class="input" type="password" name="password_confirmation"
-                            placeholder="Confirm Password" required>
-                    </div>
-                    <div class="field">
                         <label class="field-label" for="status">Status
                             <span class="req">*</span>
                         </label>
-                        <select id="status" class="select" name="status">
+                        <select id="status" class="select" name="status" required>
                             <option value="active" {{ old('status') == 'active' ? 'selected' : '' }}>Active</option>
                             <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
                         </select>

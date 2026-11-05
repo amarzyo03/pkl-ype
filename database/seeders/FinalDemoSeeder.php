@@ -35,9 +35,10 @@ class FinalDemoSeeder extends Seeder
      * | Siswa | final.siswa05        | Siswa Demo Eka; pendaftaran disetujui          |
      * | Siswa | final.siswa06        | Siswa Demo Farah; pendaftaran pending          |
      * | Siswa | final.siswa07        | Siswa Demo Gilang; pendaftaran ditolak         |
+     * | Siswa | final.siswa08        | Siswa Demo Hana; belum mendaftar               |
      *
-     * Seeder juga membuat 3 jurusan, 3 kelas, 5 DUDI, 5 absensi,
-     * 14 jurnal, 6 tugas, dan 10 status pengumpulan. Aman dijalankan ulang.
+     * Seeder juga membuat 3 jurusan, 3 kelas, 5 DUDI, 8 siswa (7 pendaftaran),
+     * 5 absensi, 16 jurnal, 6 tugas, dan 10 status pengumpulan. Aman dijalankan ulang.
      * Jangan gunakan akun/password demo di lingkungan produksi.
      */
     public function run(): void
@@ -63,13 +64,13 @@ class FinalDemoSeeder extends Seeder
         ));
 
         $gurus = collect([
-            'guru1' => 'Guru Demo Andi',
-            'guru2' => 'Guru Demo Budi',
-            'guru3' => 'Guru Demo Citra',
-        ])->map(fn (string $nama): guruModel => $this->upsertDemoRecord(
+            ['nama' => 'Guru Demo Andi', 'jurusan' => 0],
+            ['nama' => 'Guru Demo Budi', 'jurusan' => 1],
+            ['nama' => 'Guru Demo Citra', 'jurusan' => 2],
+        ])->map(fn (array $data): guruModel => $this->upsertDemoRecord(
             guruModel::class,
-            ['nama' => $nama],
-            [],
+            ['nama' => $data['nama']],
+            ['id_jurusan' => $jurusans[$data['jurusan']]->id],
         ))->values();
 
         foreach ($gurus as $index => $guru) {
@@ -83,8 +84,14 @@ class FinalDemoSeeder extends Seeder
             ]);
         }
 
+        $adminGuru = $this->upsertDemoRecord(guruModel::class, [
+            'nama' => 'Admin Demo',
+        ], [
+            'id_jurusan' => $jurusans[0]->id,
+        ]);
+
         $this->upsertDemoRecord(userModel::class, ['username' => 'final.admin'], [
-            'id_user' => '1',
+            'id_user' => (string) $adminGuru->id,
             'password' => Hash::make('password'),
             'role' => 'admin',
             'status' => 'active',
@@ -117,6 +124,7 @@ class FinalDemoSeeder extends Seeder
             ['nis' => 'DEMO005', 'nisn' => 'DEMONSN005', 'nama' => 'Siswa Demo Eka', 'kelas' => 2, 'dudi' => 3, 'status' => 'disetujui'],
             ['nis' => 'DEMO006', 'nisn' => 'DEMONSN006', 'nama' => 'Siswa Demo Farah', 'kelas' => 0, 'dudi' => 1, 'status' => 'pending'],
             ['nis' => 'DEMO007', 'nisn' => 'DEMONSN007', 'nama' => 'Siswa Demo Gilang', 'kelas' => 2, 'dudi' => 4, 'status' => 'ditolak'],
+            ['nis' => 'DEMO008', 'nisn' => 'DEMONSN008', 'nama' => 'Siswa Demo Hana', 'kelas' => 1, 'dudi' => null, 'status' => null],
         ];
 
         $siswas = collect($studentData)->map(function (array $data, int $index) use ($kelas, $dudis): siswaModel {
@@ -137,12 +145,14 @@ class FinalDemoSeeder extends Seeder
                 'role' => 'siswa',
                 'status' => 'active',
             ]);
-            $this->upsertDemoRecord(pendaftaranModel::class, [
-                'id_siswa' => (string) $siswa->id,
-            ], [
-                'id_dudi' => (string) $dudis[$data['dudi']]->id,
-                'status' => $data['status'],
-            ]);
+            if ($data['dudi'] !== null) {
+                $this->upsertDemoRecord(pendaftaranModel::class, [
+                    'id_siswa' => (string) $siswa->id,
+                ], [
+                    'id_dudi' => (string) $dudis[$data['dudi']]->id,
+                    'status' => $data['status'],
+                ]);
+            }
 
             return $siswa;
         });

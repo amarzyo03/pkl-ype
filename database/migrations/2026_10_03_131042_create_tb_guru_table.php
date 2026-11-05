@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('tb_guru', function (Blueprint $table) {
             $table->id();
             $table->string('nama');
+            $table->integer('id_jurusan')->unsigned();
             $table->timestamps();
             $table->softDeletes();
         });

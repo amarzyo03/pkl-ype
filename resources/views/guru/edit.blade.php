@@ -7,7 +7,7 @@
         <section class="hero">
             <div class="hero-text"><span class="eyebrow">Master · Guru · Edit</span>
                 <h1 class="hero-title">Edit <span class="accent">Guru</span></h1>
-                <p class="hero-sub">Perbarui informasi akun guru.</p>
+                <p class="hero-sub">Perbarui nama dan jurusan guru.</p>
             </div>
             <div class="hero-actions">
                 <a href="{{ route('guru') }}" class="btn btn--ghost">Cancel</a>
@@ -19,7 +19,7 @@
             <section class="col-12 card">
                 <div class="card-head">
                     <div class="card-title-wrap">
-                        <span class="eyebrow">Akun guru</span>
+                        <span class="eyebrow">Data guru</span>
                         <h2 class="card-title">Edit Guru</h2>
                     </div>
                 </div>
@@ -30,19 +30,15 @@
                             maxlength="255" required>
                     </div>
                     <div class="field">
-                        <label class="field-label" for="username">Username <span class="req">*</span></label>
-                        <input id="username" class="input" name="username" value="{{ old('username', $guru->username) }}"
-                            maxlength="255" required>
-                    </div>
-                    <div class="field">
-                        <label class="field-label" for="password">Password baru</label>
-                        <input id="password" class="input" type="password" name="password" minlength="3"
-                            placeholder="Kosongkan untuk mempertahankan password">
-                    </div>
-                    <div class="field">
-                        <label class="field-label" for="password_confirmation">Konfirmasi Password Baru</label>
-                        <input id="password_confirmation" class="input" type="password" name="password_confirmation"
-                            minlength="3">
+                        <label class="field-label" for="id_jurusan">Jurusan <span class="req">*</span></label>
+                        <select id="id_jurusan" class="select" name="id_jurusan" required>
+                            <option value="">Pilih jurusan</option>
+                            @foreach ($jurusans as $jurusan)
+                                <option value="{{ $jurusan->id }}" @selected((string) old('id_jurusan', $guru->id_jurusan) === (string) $jurusan->id)>
+                                    {{ $jurusan->kode }} - {{ $jurusan->nama }}
+                                </option>
+                            @endforeach
+                        </select>
                     </div>
                 </div>
             </section>

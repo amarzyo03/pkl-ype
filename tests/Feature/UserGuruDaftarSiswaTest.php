@@ -1,7 +1,6 @@
 <?php
 
 use App\Models\dudiModel;
-use App\Models\guruModel;
 use App\Models\jurusanModel;
 use App\Models\kelasModel;
 use App\Models\pendaftaranModel;
@@ -20,8 +19,8 @@ it('shows only students registered with the current teachers dudi', function () 
         'nama' => 'XI RPL 1',
         'id_jurusan' => $jurusan->id,
     ]);
-    $guru = guruModel::query()->create(['nama' => 'Guru Pembimbing']);
-    $otherGuru = guruModel::query()->create(['nama' => 'Guru Lain']);
+    $guru = createGuruForTest(['nama' => 'Guru Pembimbing']);
+    $otherGuru = createGuruForTest(['nama' => 'Guru Lain']);
     $dudi = dudiModel::query()->create([
         'nama' => 'PT Mitra Guru',
         'alamat' => 'Jl. Industri No. 1',
@@ -83,7 +82,7 @@ it('shows only students registered with the current teachers dudi', function () 
 });
 
 it('shows an empty state when no students are registered with the teachers dudi', function () {
-    $guru = guruModel::query()->create(['nama' => 'Guru Tanpa Siswa']);
+    $guru = createGuruForTest(['nama' => 'Guru Tanpa Siswa']);
     $user = userModel::query()->create([
         'id_user' => (string) $guru->id,
         'username' => 'guru-tanpa-siswa',

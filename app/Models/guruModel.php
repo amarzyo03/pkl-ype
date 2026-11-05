@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class guruModel extends Model
@@ -16,9 +17,13 @@ class guruModel extends Model
 
     protected $fillable = [
         'nama',
-        'username',
-        'password',
+        'id_jurusan',
     ];
+
+    public function jurusan(): BelongsTo
+    {
+        return $this->belongsTo(jurusanModel::class, 'id_jurusan');
+    }
 
     public function tugas()
     {

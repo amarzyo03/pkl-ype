@@ -1,13 +1,12 @@
 <?php
 
-use App\Models\guruModel;
 use App\Models\userModel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
 test('admin can access guru task routes', function () {
-    $guru = guruModel::query()->create(['nama' => 'Guru Admin']);
+    $guru = createGuruForTest(['nama' => 'Guru Admin']);
     $user = userModel::query()->create([
         'id_user' => (string) $guru->id,
         'username' => 'admin-guru-routes',
@@ -25,7 +24,7 @@ test('admin can access guru task routes', function () {
 });
 
 test('guru can access guru task routes', function () {
-    $guru = guruModel::query()->create(['nama' => 'Guru Route']);
+    $guru = createGuruForTest(['nama' => 'Guru Route']);
     $user = userModel::query()->create([
         'id_user' => (string) $guru->id,
         'username' => 'guru-routes',

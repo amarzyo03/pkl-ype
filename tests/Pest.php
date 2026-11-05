@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\guruModel;
+use App\Models\jurusanModel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -47,4 +49,18 @@ expect()->extend('toBeOne', function () {
 function something()
 {
     // ..
+}
+
+function createGuruForTest(array $attributes): guruModel
+{
+    $jurusan = jurusanModel::query()->first()
+        ?? jurusanModel::query()->create([
+            'kode' => 'TEST-GURU',
+            'nama' => 'Jurusan Guru Test',
+        ]);
+
+    return guruModel::query()->create([
+        ...$attributes,
+        'id_jurusan' => $attributes['id_jurusan'] ?? $jurusan->id,
+    ]);
 }

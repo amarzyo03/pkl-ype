@@ -2,7 +2,6 @@
 
 use App\Models\absensiModel;
 use App\Models\dudiModel;
-use App\Models\guruModel;
 use App\Models\jurusanModel;
 use App\Models\kelasModel;
 use App\Models\pendaftaranModel;
@@ -31,7 +30,7 @@ function createAuthenticatedAbsensiStudent(string $name): array
         'role' => 'siswa',
         'status' => 'active',
     ]);
-    $guru = guruModel::query()->create(['nama' => 'Guru Absensi']);
+    $guru = createGuruForTest(['nama' => 'Guru Absensi']);
     $dudi = dudiModel::query()->create([
         'nama' => 'PT DUDI',
         'alamat' => 'Jl. Contoh',

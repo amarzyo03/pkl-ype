@@ -6,7 +6,6 @@ use App\Models\kelasModel;
 use App\Models\siswaModel;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
@@ -25,10 +24,15 @@ class SiswaImport implements ToCollection, WithHeadingRow
             $nisn = trim((string) ($row['nisn'] ?? ''));
             $nama = trim((string) ($row['nama'] ?? ''));
             $kelas = trim((string) ($row['kelas'] ?? ''));
-            $username = strtolower(trim((string) ($row['username'] ?? '')));
 
-            if ($nama === '' || $username === '') {
+            if ($nis === '' && $nisn === '' && $nama === '' && $kelas === '') {
                 continue;
+            }
+
+            if ($nis === '' || $nisn === '' || $nama === '' || $kelas === '') {
+                throw ValidationException::withMessages([
+                    'file' => 'Setiap baris siswa harus memiliki NIS, NISN, nama, dan kelas.',
+                ]);
             }
 
             $kelasRecord = kelasModel::query()
@@ -67,20 +71,16 @@ class SiswaImport implements ToCollection, WithHeadingRow
                 }
             }
 
-            $password = trim((string) ($row['password'] ?? ''));
-
             $payload = [
                 'nis' => $nis,
                 'nisn' => $nisn,
                 'nama' => $nama,
                 'id_kelas' => $kelasRecord->id,
-                'username' => $username,
                 'status' => $status,
-                'password' => Hash::make($password !== '' ? $password : 'password123'),
             ];
 
             siswaModel::updateOrCreate(
-                ['username' => $username],
+                ['nis' => $nis],
                 $payload
             );
         }

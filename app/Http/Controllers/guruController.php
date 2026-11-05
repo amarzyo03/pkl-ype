@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Imports\GuruImport;
 use App\Models\guruModel;
+use App\Models\jurusanModel;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -13,14 +13,17 @@ class guruController extends Controller
 {
     public function index(Request $request)
     {
-        $query = guruModel::query();
+        $query = guruModel::query()->with('jurusan');
         $search = trim((string) $request->input('search', ''));
 
         if ($search !== '') {
             $query->where(function ($q) use ($search) {
                 $q->where('nama', 'like', "%{$search}%")
-                    ->orWhere('username', 'like', "%{$search}%")
-                    ->orWhere('id', 'like', "%{$search}%");
+                    ->orWhere('id', 'like', "%{$search}%")
+                    ->orWhereHas('jurusan', function ($jurusanQuery) use ($search) {
+                        $jurusanQuery->where('nama', 'like', "%{$search}%")
+                            ->orWhere('kode', 'like', "%{$search}%");
+                    });
             });
         }
 
@@ -47,18 +50,22 @@ class guruController extends Controller
 
     public function add()
     {
-        return view('guru.add');
+        $jurusans = jurusanModel::query()->orderBy('nama')->get();
+
+        return view('guru.add', compact('jurusans'));
     }
 
     public function save(Request $request)
     {
         $validated = $request->validate([
             'nama' => ['required', 'string', 'max:255'],
-            'username' => ['required', 'string', 'max:255', 'unique:tb_guru,username'],
-            'password' => ['required', 'string', 'min:3', 'confirmed'],
+            'id_jurusan' => [
+                'required',
+                'integer',
+                Rule::exists('tb_jurusan', 'id')->whereNull('deleted_at'),
+            ],
         ]);
 
-        $validated['password'] = Hash::make($validated['password']);
         guruModel::create($validated);
 
         return redirect()->route('guru')->with('success', 'Data guru berhasil ditambahkan.');
@@ -67,8 +74,9 @@ class guruController extends Controller
     public function edit(string $id)
     {
         $guru = guruModel::findOrFail($id);
+        $jurusans = jurusanModel::query()->orderBy('nama')->get();
 
-        return view('guru.edit', compact('guru'));
+        return view('guru.edit', compact('guru', 'jurusans'));
     }
 
     public function update(Request $request, string $id)
@@ -77,15 +85,12 @@ class guruController extends Controller
 
         $validated = $request->validate([
             'nama' => ['required', 'string', 'max:255'],
-            'username' => ['required', 'string', 'max:255', Rule::unique('tb_guru', 'username')->ignore($guru->id)],
-            'password' => ['nullable', 'string', 'min:3', 'confirmed'],
+            'id_jurusan' => [
+                'required',
+                'integer',
+                Rule::exists('tb_jurusan', 'id')->whereNull('deleted_at'),
+            ],
         ]);
-
-        if ($request->filled('password')) {
-            $validated['password'] = Hash::make($validated['password']);
-        } else {
-            unset($validated['password']);
-        }
 
         $guru->update($validated);
 

@@ -1,7 +1,6 @@
 <?php
 
 use App\Models\dudiModel;
-use App\Models\guruModel;
 use App\Models\jurusanModel;
 use App\Models\kelasModel;
 use App\Models\pendaftaranModel;
@@ -21,7 +20,7 @@ function createStudentWithRegistrationStatus(string $status): userModel
         'nama' => 'Kelas Akses',
         'id_jurusan' => $jurusan->id,
     ]);
-    $guru = guruModel::query()->create(['nama' => 'Guru Akses']);
+    $guru = createGuruForTest(['nama' => 'Guru Akses']);
     $dudi = dudiModel::query()->create([
         'nama' => 'DUDI Akses',
         'alamat' => 'Jl. Akses',

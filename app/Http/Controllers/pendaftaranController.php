@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\dudiModel;
 use App\Models\pendaftaranModel;
+use App\Models\siswaModel;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
@@ -41,18 +43,19 @@ class pendaftaranController extends Controller
     public function add(): View
     {
         $dudis = dudiModel::query()->orderBy('nama')->get();
+        $siswas = siswaModel::query()
+            ->whereDoesntHave('pendaftaran', fn (Builder $query) => $query->withTrashed())
+            ->orderBy('nama')
+            ->get();
 
-        return view('pendaftaran.add', compact('dudis'));
+        return view('pendaftaran.add', compact('dudis', 'siswas'));
     }
 
     public function save(Request $request): RedirectResponse
     {
         $validated = $request->validate($this->rules());
 
-        pendaftaranModel::query()->create([
-            ...$validated,
-            'status' => 'pending',
-        ]);
+        pendaftaranModel::query()->create($validated);
 
         return redirect()->route('pendaftaran')->with('success', 'Pendaftaran berhasil ditambahkan.');
     }
@@ -61,8 +64,18 @@ class pendaftaranController extends Controller
     {
         $pendaftaran = pendaftaranModel::query()->findOrFail($id);
         $dudis = dudiModel::query()->orderBy('nama')->get();
+        $siswas = siswaModel::query()
+            ->where(function (Builder $query) use ($pendaftaran): void {
+                $query->whereDoesntHave('pendaftaran', fn (Builder $query) => $query->withTrashed());
 
-        return view('pendaftaran.edit', compact('pendaftaran', 'dudis'));
+                if ($pendaftaran->siswa !== null) {
+                    $query->orWhereKey($pendaftaran->id_siswa);
+                }
+            })
+            ->orderBy('nama')
+            ->get();
+
+        return view('pendaftaran.edit', compact('pendaftaran', 'dudis', 'siswas'));
     }
 
     public function update(Request $request, string $id): RedirectResponse
@@ -114,6 +127,46 @@ class pendaftaranController extends Controller
         return redirect()->route('pendaftaran')->with('success', $message);
     }
 
+    public function updateSelectedStatuses(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'pendaftaran_ids' => ['required', 'array', 'min:1'],
+            'pendaftaran_ids.*' => [
+                'required',
+                'integer',
+                'distinct',
+                Rule::exists('tb_pendaftaran', 'id')->whereNull('deleted_at'),
+            ],
+            'status' => ['required', Rule::in(['pending', 'disetujui', 'ditolak'])],
+        ]);
+
+        $updated = DB::transaction(function () use ($validated): bool {
+            $pendaftaranIds = $validated['pendaftaran_ids'];
+            $pendaftarans = pendaftaranModel::query()
+                ->whereIn('id', $pendaftaranIds)
+                ->lockForUpdate()
+                ->get(['id']);
+
+            if ($pendaftarans->count() !== count($pendaftaranIds)) {
+                return false;
+            }
+
+            pendaftaranModel::query()
+                ->whereIn('id', $pendaftaranIds)
+                ->update(['status' => $validated['status']]);
+
+            return true;
+        });
+
+        if (! $updated) {
+            return redirect()->route('pendaftaran')
+                ->with('error', 'Data pendaftaran berubah. Muat ulang halaman dan coba lagi.');
+        }
+
+        return redirect()->route('pendaftaran')
+            ->with('success', 'Status pendaftaran yang dipilih berhasil diperbarui.');
+    }
+
     private function rules(?pendaftaranModel $current = null): array
     {
         $uniqueStudent = Rule::unique('tb_pendaftaran', 'id_siswa');
@@ -134,6 +187,7 @@ class pendaftaranController extends Controller
                 'integer',
                 Rule::exists('tb_dudi', 'id')->whereNull('deleted_at'),
             ],
+            'status' => ['required', Rule::in(['pending', 'disetujui', 'ditolak'])],
         ];
     }
 }

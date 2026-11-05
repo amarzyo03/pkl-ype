@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\guruModel;
 use App\Models\jurusanModel;
 use App\Models\kelasModel;
 use App\Models\siswaModel;
@@ -14,7 +13,7 @@ use Illuminate\Support\Facades\Storage;
 uses(RefreshDatabase::class);
 
 it('shows active tasks with a kerjakan link for each task', function () {
-    $guru = guruModel::query()->create([
+    $guru = createGuruForTest([
         'nama' => 'Guru Tugas',
         'username' => 'guru-tugas',
         'password' => bcrypt('password'),
@@ -65,7 +64,7 @@ it('orders tasks by newest date first', function () {
         'role' => 'siswa',
         'status' => 'active',
     ]);
-    $guru = guruModel::query()->create([
+    $guru = createGuruForTest([
         'nama' => 'Guru Pengampu',
     ]);
 
@@ -89,7 +88,7 @@ it('orders tasks by newest date first', function () {
 it('allows a student to submit a PDF and marks the task as completed', function () {
     Storage::fake('task_attachments');
 
-    $guru = guruModel::query()->create([
+    $guru = createGuruForTest([
         'nama' => 'Guru Pengampu',
         'username' => 'guru-pengampu',
         'password' => bcrypt('password'),

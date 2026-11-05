@@ -13,7 +13,8 @@ class guruSeeder extends Seeder
     public function run(): void
     {
         guruModel::create([
-            'nama' => 'guru1',
+            'nama' => 'mikaela kusjanto',
+            'id_jurusan' => 1,
         ]);
     }
 }

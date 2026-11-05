@@ -32,7 +32,7 @@
                             </svg>
                         </span>
                         <input id="guru-search" class="input" type="search" name="search"
-                            placeholder="Cari nama, username, atau ID..." value="{{ request('search', '') }}">
+                            placeholder="Cari nama guru atau jurusan..." value="{{ request('search', '') }}">
                     </div>
                 </div>
             </div>
@@ -43,7 +43,7 @@
                         <tr>
                             <th style="width:32px">#</th>
                             <th>Nama Guru</th>
-                            <th>Username</th>
+                            <th>Jurusan</th>
                             <th></th>
                         </tr>
                     </thead>

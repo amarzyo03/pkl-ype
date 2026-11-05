@@ -13,7 +13,7 @@ $spreadsheet = new Spreadsheet;
 $sheet = $spreadsheet->getActiveSheet();
 $sheet->setTitle('Template Guru');
 
-$sheet->mergeCells('A1:C1');
+$sheet->mergeCells('A1:B1');
 $sheet->setCellValue('A1', 'TEMPLATE IMPORT DATA GURU');
 $sheet->getStyle('A1')->applyFromArray([
     'font' => [
@@ -29,8 +29,8 @@ $sheet->getStyle('A1')->applyFromArray([
 ]);
 $sheet->getRowDimension(1)->setRowHeight(26);
 
-$sheet->mergeCells('A2:C2');
-$sheet->setCellValue('A2', 'Isi nama, username unik, dan password akun guru.');
+$sheet->mergeCells('A2:B2');
+$sheet->setCellValue('A2', 'Isi nama guru dan kode jurusan yang sudah terdaftar.');
 $sheet->getStyle('A2')->applyFromArray([
     'font' => [
         'name' => 'Cambria',
@@ -45,7 +45,7 @@ $sheet->getStyle('A2')->applyFromArray([
 ]);
 $sheet->getRowDimension(2)->setRowHeight(22);
 
-$headers = ['nama', 'username', 'password'];
+$headers = ['nama', 'kode_jurusan'];
 $sheet->fromArray([$headers], null, 'A4');
 
 $headerStyle = [
@@ -71,14 +71,14 @@ $headerStyle = [
     ],
 ];
 
-$sheet->getStyle('A4:C4')->applyFromArray($headerStyle);
+$sheet->getStyle('A4:B4')->applyFromArray($headerStyle);
 $sheet->getRowDimension(4)->setRowHeight(22);
 
 $sheet->fromArray([
-    ['Nama Guru Contoh', 'nama.guru', 'GantiPassword123!'],
-    ['Guru Contoh Dua', 'guru.contoh2', 'GantiPassword456!'],
+    ['Nama Guru Contoh', 'JRS-001'],
+    ['Guru Contoh Dua', 'JRS-002'],
 ], null, 'A5');
-$sheet->getStyle('A5:C6')->applyFromArray([
+$sheet->getStyle('A5:B6')->applyFromArray([
     'font' => [
         'name' => 'Cambria',
         'size' => 11,
@@ -100,8 +100,8 @@ for ($row = 5; $row <= 6; $row++) {
     $sheet->getRowDimension($row)->setRowHeight(22);
 }
 
-$sheet->mergeCells('A8:C8');
-$sheet->setCellValue('A8', 'Ganti password contoh sebelum import. Password pada file akan disimpan dalam bentuk hash.');
+$sheet->mergeCells('A8:B8');
+$sheet->setCellValue('A8', 'Pastikan kode jurusan pada file sudah terdaftar.');
 $sheet->getStyle('A8')->applyFromArray([
     'font' => [
         'name' => 'Cambria',
@@ -115,11 +115,11 @@ $sheet->getStyle('A8')->applyFromArray([
 ]);
 $sheet->getRowDimension(8)->setRowHeight(30);
 
-foreach (['A' => 30, 'B' => 26, 'C' => 30] as $column => $width) {
+foreach (['A' => 30, 'B' => 26] as $column => $width) {
     $sheet->getColumnDimension($column)->setWidth($width);
 }
 
-$sheet->getStyle('A1:C8')->getFont()->setName('Cambria');
+$sheet->getStyle('A1:B8')->getFont()->setName('Cambria');
 
 $writer = new Xlsx($spreadsheet);
 $writer->save(__DIR__.'/../public/assets/static/template/guru-import-template.xlsx');

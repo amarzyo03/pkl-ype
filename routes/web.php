@@ -21,15 +21,14 @@ Route::get('/auth', [authController::class, 'auth'])->name('auth');
 Route::post('/auth/login', [authController::class, 'authLogin'])->name('auth.login');
 Route::get('/auth/logout', [authController::class, 'logout'])->name('auth.logout');
 
-Route::get('/dashboard', [dashboardController::class, 'index'])
-    ->middleware('dashboardAccessMiddleware')
-    ->name('dashboard');
-
 // ===== ADMIN ===== ##
 Route::middleware(['adminMiddleware'])->group(function () {
-    // ==== MASTER ===== ##
+    // ==== WORKSPACE ===== ##
+    // ==== DASHBOARD ===== ##
+    Route::get('/dashboard', [dashboardController::class, 'index'])->name('dashboard');
 
-    // PENDAFTARAN
+    // ==== MASTER ===== ##
+    // ==== PENDAFTARAN ===== ##
     Route::get('/pendaftaran', [pendaftaranController::class, 'index'])->name('pendaftaran');
     Route::get('/pendaftaran/add', [pendaftaranController::class, 'add'])->name('pendaftaran.add');
     Route::post('/pendaftaran/save', [pendaftaranController::class, 'save'])->name('pendaftaran.save');
@@ -37,8 +36,9 @@ Route::middleware(['adminMiddleware'])->group(function () {
     Route::put('/pendaftaran/update/{id}', [pendaftaranController::class, 'update'])->name('pendaftaran.update');
     Route::delete('/pendaftaran/delete/{id}', [pendaftaranController::class, 'delete'])->name('pendaftaran.delete');
     Route::patch('/pendaftaran/{id}/status', [pendaftaranController::class, 'updateStatus'])->name('pendaftaran.status');
+    Route::patch('/pendaftaran/status', [pendaftaranController::class, 'updateSelectedStatuses'])->name('pendaftaran.status.bulk');
 
-    // DUDI
+    // ==== DUDI ===== ##
     Route::get('/dudi', [dudiController::class, 'index'])->name('dudi');
     Route::get('/dudi/add', [dudiController::class, 'add'])->name('dudi.add');
     Route::post('/dudi/save', [dudiController::class, 'save'])->name('dudi.save');
@@ -48,7 +48,7 @@ Route::middleware(['adminMiddleware'])->group(function () {
     Route::get('/dudi/import', [dudiController::class, 'import'])->name('dudi.import');
     Route::post('/dudi/import', [dudiController::class, 'importStore'])->name('dudi.import.store');
 
-    // SISWA
+    // ==== SISWA ===== ##
     Route::get('/siswa', [siswaController::class, 'index'])->name('siswa');
     Route::get('/siswa/add', [siswaController::class, 'add'])->name('siswa.add');
     Route::post('/siswa/save', [siswaController::class, 'save'])->name('siswa.save');
@@ -58,7 +58,7 @@ Route::middleware(['adminMiddleware'])->group(function () {
     Route::get('/siswa/import', [siswaController::class, 'import'])->name('siswa.import');
     Route::post('/siswa/import', [siswaController::class, 'importStore'])->name('siswa.import.store');
 
-    // KELAS
+    // ==== KELAS ===== ##
     Route::get('/kelas', [kelasController::class, 'index'])->name('kelas');
     Route::get('/kelas/add', [kelasController::class, 'add'])->name('kelas.add');
     Route::post('/kelas/save', [kelasController::class, 'save'])->name('kelas.save');
@@ -68,7 +68,7 @@ Route::middleware(['adminMiddleware'])->group(function () {
     Route::get('/kelas/import', [kelasController::class, 'import'])->name('kelas.import');
     Route::post('/kelas/import', [kelasController::class, 'importStore'])->name('kelas.import.store');
 
-    // JURUSAN
+    // ==== JURUSAN ===== ##
     Route::get('/jurusan', [jurusanController::class, 'index'])->name('jurusan');
     Route::get('/jurusan/add', [jurusanController::class, 'add'])->name('jurusan.add');
     Route::post('/jurusan/save', [jurusanController::class, 'save'])->name('jurusan.save');
@@ -78,7 +78,7 @@ Route::middleware(['adminMiddleware'])->group(function () {
     Route::get('/jurusan/import', [jurusanController::class, 'import'])->name('jurusan.import');
     Route::post('/jurusan/import', [jurusanController::class, 'importStore'])->name('jurusan.import.store');
 
-    // GURU
+    // ==== GURU ===== ##
     Route::get('/guru', [guruController::class, 'index'])->name('guru');
     Route::get('/guru/add', [guruController::class, 'add'])->name('guru.add');
     Route::post('/guru/save', [guruController::class, 'save'])->name('guru.save');
@@ -88,7 +88,7 @@ Route::middleware(['adminMiddleware'])->group(function () {
     Route::get('/guru/import', [guruController::class, 'import'])->name('guru.import');
     Route::post('/guru/import', [guruController::class, 'importStore'])->name('guru.import.store');
 
-    // USER
+    // ==== USER ===== ##
     Route::get('/user', [userController::class, 'index'])->name('user');
     Route::get('/user/add', [userController::class, 'add'])->name('user.add');
     Route::post('/user/save', [userController::class, 'save'])->name('user.save');
@@ -101,18 +101,17 @@ Route::middleware(['adminMiddleware'])->group(function () {
 
 // === GURU ===== ##
 Route::middleware(['guruMiddleware'])->group(function () {
-    // ==== GURU ===== ##
-
-    // DASHBOARD
+    // ==== MONITORING ===== ##
+    // ==== DASHBOARD ===== ##
     Route::get('/id/guru/dashboard', [userGuruController::class, 'dashboard'])->name('userGuru.dashboard');
 
-    // DAFTAR SISWA
-    Route::get('/id/guru/daftar-siswa', [userGuruController::class, 'daftarSiswa'])->name('userGuru.daftarSiswa');
-    // DAFTAR DUDI
+    // ==== DAFTAR DUDI ===== ##
     Route::get('/id/guru/daftar-dudi', [userGuruController::class, 'daftarDudi'])->name('userGuru.daftarDudi');
-    Route::get('/id/guru/absensi', [userGuruController::class, 'absensi'])->name('userGuru.absensi');
-    Route::get('/id/guru/jurnal', [userGuruController::class, 'jurnal'])->name('userGuru.jurnal');
-    // TUGAS
+
+    // ==== DAFTAR SISWA ===== ##
+    Route::get('/id/guru/daftar-siswa', [userGuruController::class, 'daftarSiswa'])->name('userGuru.daftarSiswa');
+
+    // ==== TUGAS ===== ##
     Route::get('/id/guru/tugas', [userGuruController::class, 'tugas'])->name('tugas');
     Route::get('/id/guru/tugas/{id}/status', [userGuruController::class, 'statusTugas'])->name('tugas.status');
     Route::get('/id/guru/tugas/add', [userGuruController::class, 'addTugas'])->name('tugas.add');
@@ -121,41 +120,48 @@ Route::middleware(['guruMiddleware'])->group(function () {
     Route::put('/id/guru/tugas/update/{id}', [userGuruController::class, 'updateTugas'])->name('tugas.update');
     Route::delete('/id/guru/tugas/delete/{id}', [userGuruController::class, 'deleteTugas'])->name('tugas.delete');
     Route::get('/id/guru/tugas/{id}/file', [userGuruController::class, 'downloadTugasFile'])->name('tugas.file');
+
+    // ==== ABSENSI ===== ##
+    Route::get('/id/guru/absensi', [userGuruController::class, 'absensi'])->name('userGuru.absensi');
+
+    // ==== JURNAL ===== ##
+    Route::get('/id/guru/jurnal', [userGuruController::class, 'jurnal'])->name('userGuru.jurnal');
 });
 
 // ==== SISWA ===== ##
 Route::middleware(['siswaMiddleware'])->group(function () {
-    // DASHBOARD
+    // === WORKSPACE ===== ##
+    // === DASHBOARD ===== ##
     Route::get('/id/siswa/dashboard', [userSiswaController::class, 'dashboard'])->name('userSiswa.dashboard');
 
-    // PENDAFTARAN
+    // === PENDAFTARAN ===== ##
     Route::get('/id/siswa/pendaftaran', [userSiswaController::class, 'pendaftaran'])->name('userSiswa.pendaftaran');
     Route::post('/id/siswa/pendaftaran', [userSiswaController::class, 'attemptPendaftaran'])->name('userSiswa.pendaftaran.attempt');
     Route::get('/id/siswa/pendaftaran/status', [userSiswaController::class, 'statusPendaftaran'])->name('userSiswa.pendaftaran.status');
     Route::get('/id/siswa/pendaftaran/edit', [userSiswaController::class, 'editPendaftaran'])->name('userSiswa.pendaftaran.edit');
     Route::put('/id/siswa/pendaftaran/update/{id}', [userSiswaController::class, 'updatePendaftaran'])->name('userSiswa.pendaftaran.update');
+
+    // === DAFTAR SISWA ===== ##
     Route::get('/id/siswa/daftar-siswa', [userSiswaController::class, 'daftarSiswa'])->name('userSiswa.daftarSiswa');
 
-    Route::middleware(['approvedPendaftaranMiddleware'])->group(function () {
-        // ABSENSI
-        Route::get('/id/siswa/absensi', [userSiswaController::class, 'absensi'])->name('userSiswa.absensi');
-        Route::get('/id/siswa/absensi/add', [userSiswaController::class, 'addAbsensi'])->name('userSiswa.absensi.add');
-        Route::post('/id/siswa/absensi/save', [userSiswaController::class, 'saveAbsensi'])->name('absensi.save');
-        Route::get('/id/siswa/absensi/edit/{id}', [userSiswaController::class, 'editAbsensi'])->name('absensi.edit');
-        Route::put('/id/siswa/absensi/update/{id}', [userSiswaController::class, 'updateAbsensi'])->name('absensi.update');
+    // === TUGAS ===== ##
+    Route::get('/id/siswa/tugas', [userSiswaController::class, 'tugas'])->name('userSiswa.tugas');
+    Route::get('/id/siswa/tugas/kerjakan/{id}', [userSiswaController::class, 'tugasKerjakan'])->name('userSiswa.tugas.kerjakan');
+    Route::post('/id/siswa/tugas/kerjakan/{id}', [userSiswaController::class, 'attemptTugasKerjakan'])->name('userSiswa.tugas.kerjakan.attempt');
+    Route::post('/id/siswa/tugas/batalkan/{id}', [userSiswaController::class, 'cancelTugasKerjakan'])->name('userSiswa.tugas.kerjakan.cancel');
 
-        // JURNAL
-        Route::get('/id/siswa/jurnal', [userSiswaController::class, 'jurnal'])->name('userSiswa.jurnal');
-        Route::get('/id/siswa/jurnal/add', [userSiswaController::class, 'addJurnal'])->name('userSiswa.jurnal.add');
-        Route::post('/id/siswa/jurnal/save', [userSiswaController::class, 'saveJurnal'])->name('userSiswa.jurnal.save');
-        Route::get('/id/siswa/jurnal/edit/{id}', [userSiswaController::class, 'editJurnal'])->name('userSiswa.jurnal.edit');
-        Route::put('/id/siswa/jurnal/update/{id}', [userSiswaController::class, 'updateJurnal'])->name('userSiswa.jurnal.update');
-        Route::delete('/id/siswa/jurnal/delete/{id}', [userSiswaController::class, 'deleteJurnal'])->name('userSiswa.jurnal.delete');
+    // === ABSENSI ===== ##
+    Route::get('/id/siswa/absensi', [userSiswaController::class, 'absensi'])->name('userSiswa.absensi');
+    Route::get('/id/siswa/absensi/add', [userSiswaController::class, 'addAbsensi'])->name('userSiswa.absensi.add');
+    Route::post('/id/siswa/absensi/save', [userSiswaController::class, 'saveAbsensi'])->name('absensi.save');
+    Route::get('/id/siswa/absensi/edit/{id}', [userSiswaController::class, 'editAbsensi'])->name('absensi.edit');
+    Route::put('/id/siswa/absensi/update/{id}', [userSiswaController::class, 'updateAbsensi'])->name('absensi.update');
 
-        // TUGAS
-        Route::get('/id/siswa/tugas', [userSiswaController::class, 'tugas'])->name('userSiswa.tugas');
-        Route::get('/id/siswa/tugas/kerjakan/{id}', [userSiswaController::class, 'tugasKerjakan'])->name('userSiswa.tugas.kerjakan');
-        Route::post('/id/siswa/tugas/kerjakan/{id}', [userSiswaController::class, 'attemptTugasKerjakan'])->name('userSiswa.tugas.kerjakan.attempt');
-        Route::post('/id/siswa/tugas/batalkan/{id}', [userSiswaController::class, 'cancelTugasKerjakan'])->name('userSiswa.tugas.kerjakan.cancel');
-    });
+    // === JURNAL ===== ##
+    Route::get('/id/siswa/jurnal', [userSiswaController::class, 'jurnal'])->name('userSiswa.jurnal');
+    Route::get('/id/siswa/jurnal/add', [userSiswaController::class, 'addJurnal'])->name('userSiswa.jurnal.add');
+    Route::post('/id/siswa/jurnal/save', [userSiswaController::class, 'saveJurnal'])->name('userSiswa.jurnal.save');
+    Route::get('/id/siswa/jurnal/edit/{id}', [userSiswaController::class, 'editJurnal'])->name('userSiswa.jurnal.edit');
+    Route::put('/id/siswa/jurnal/update/{id}', [userSiswaController::class, 'updateJurnal'])->name('userSiswa.jurnal.update');
+    Route::delete('/id/siswa/jurnal/delete/{id}', [userSiswaController::class, 'deleteJurnal'])->name('userSiswa.jurnal.delete');
 });

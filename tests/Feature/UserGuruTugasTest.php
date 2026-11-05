@@ -1,7 +1,6 @@
 <?php
 
 use App\Models\dudiModel;
-use App\Models\guruModel;
 use App\Models\jurusanModel;
 use App\Models\kelasModel;
 use App\Models\pendaftaranModel;
@@ -15,8 +14,8 @@ use Illuminate\Support\Facades\Storage;
 uses(RefreshDatabase::class);
 
 it('paginates only the signed-in teachers tasks', function () {
-    $guru = guruModel::query()->create(['nama' => 'Guru Penguji']);
-    $otherGuru = guruModel::query()->create(['nama' => 'Guru Lain']);
+    $guru = createGuruForTest(['nama' => 'Guru Penguji']);
+    $otherGuru = createGuruForTest(['nama' => 'Guru Lain']);
     $user = userModel::query()->create([
         'id_user' => (string) $guru->id,
         'username' => 'guru-penguji',
@@ -53,8 +52,8 @@ it('paginates only the signed-in teachers tasks', function () {
 });
 
 it('returns matching tasks as an ajax paginated fragment', function () {
-    $guru = guruModel::query()->create(['nama' => 'Guru Pencari']);
-    $otherGuru = guruModel::query()->create(['nama' => 'Guru Lain']);
+    $guru = createGuruForTest(['nama' => 'Guru Pencari']);
+    $otherGuru = createGuruForTest(['nama' => 'Guru Lain']);
     $user = userModel::query()->create([
         'id_user' => (string) $guru->id,
         'username' => 'guru-pencari',
@@ -99,8 +98,8 @@ it('returns matching tasks as an ajax paginated fragment', function () {
 
 it('prevents a teacher from viewing or changing another teachers task', function () {
     Storage::fake('task_attachments');
-    $guru = guruModel::query()->create(['nama' => 'Guru Login']);
-    $otherGuru = guruModel::query()->create(['nama' => 'Pemilik Tugas']);
+    $guru = createGuruForTest(['nama' => 'Guru Login']);
+    $otherGuru = createGuruForTest(['nama' => 'Pemilik Tugas']);
     $user = userModel::query()->create([
         'id_user' => (string) $guru->id,
         'username' => 'guru-login',
@@ -141,8 +140,8 @@ it('shows completed and incomplete students for a teachers task', function () {
         'nama' => 'XI RPL 1',
         'id_jurusan' => $jurusan->id,
     ]);
-    $guru = guruModel::query()->create(['nama' => 'Guru Status']);
-    $otherGuru = guruModel::query()->create(['nama' => 'Guru Lain']);
+    $guru = createGuruForTest(['nama' => 'Guru Status']);
+    $otherGuru = createGuruForTest(['nama' => 'Guru Lain']);
     $dudi = dudiModel::query()->create([
         'nama' => 'DUDI Bimbingan',
         'alamat' => 'Jl. Industri',
@@ -251,8 +250,8 @@ it('shows completed and incomplete students for a teachers task', function () {
 });
 
 it('does not show status for another teachers task', function () {
-    $guru = guruModel::query()->create(['nama' => 'Guru Login']);
-    $otherGuru = guruModel::query()->create(['nama' => 'Guru Pemilik']);
+    $guru = createGuruForTest(['nama' => 'Guru Login']);
+    $otherGuru = createGuruForTest(['nama' => 'Guru Pemilik']);
     $user = userModel::query()->create([
         'id_user' => (string) $guru->id,
         'username' => 'guru-status-access',

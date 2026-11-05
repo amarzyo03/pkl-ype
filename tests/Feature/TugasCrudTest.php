@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\guruModel;
 use App\Models\tugasModel;
 use App\Models\userModel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -12,8 +11,8 @@ uses(RefreshDatabase::class);
 it('can create, update, download, and soft delete a task with its attachment', function () {
     Storage::fake('task_attachments');
 
-    $guruPertama = guruModel::query()->create(['nama' => 'Guru A']);
-    $guruKedua = guruModel::query()->create(['nama' => 'Guru B']);
+    $guruPertama = createGuruForTest(['nama' => 'Guru A']);
+    $guruKedua = createGuruForTest(['nama' => 'Guru B']);
     $user = userModel::query()->create([
         'id_user' => (string) $guruPertama->id,
         'username' => 'user-guru-a',
@@ -104,7 +103,7 @@ it('can create, update, download, and soft delete a task with its attachment', f
 });
 
 it('allows creating a task without an optional attachment', function () {
-    $guru = guruModel::query()->create(['nama' => 'Guru Tanpa Lampiran']);
+    $guru = createGuruForTest(['nama' => 'Guru Tanpa Lampiran']);
     $user = userModel::query()->create([
         'id_user' => (string) $guru->id,
         'username' => 'user-guru-tanpa-lampiran',
@@ -129,7 +128,7 @@ it('allows creating a task without an optional attachment', function () {
 });
 
 it('validates required task fields, date, and attachment type', function () {
-    $guru = guruModel::query()->create(['nama' => 'Guru Aktif']);
+    $guru = createGuruForTest(['nama' => 'Guru Aktif']);
     $user = userModel::query()->create([
         'id_user' => (string) $guru->id,
         'username' => 'user-guru-aktif',

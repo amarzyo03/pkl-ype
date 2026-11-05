@@ -24,12 +24,30 @@
                     </div>
                 </div>
                 <div class="form-grid">
-                    <div class="field">
-                        <label class="field-label" for="nama">Name
+                    @if ($errors->any())
+                        <div class="col-12" role="alert">
+                            @foreach ($errors->all() as $error)
+                                <div>{{ $error }}</div>
+                            @endforeach
+                        </div>
+                    @endif
+                    <div class="field" id="guru-profile-field">
+                        <label class="field-label" for="id_guru">Guru
                             <span class="req">*</span>
                         </label>
-                        <input id="nama" class="input" type="text" name="nama" value="{{ old('nama') }}"
-                            placeholder="Nama Lengkap" autofocus required>
+                        <select id="id_guru" class="select" name="id_guru">
+                            <option value="">Pilih guru</option>
+                            @forelse ($gurus as $guru)
+                                <option value="{{ $guru->id }}" @selected(old('id_guru') == $guru->id)>
+                                    {{ $guru->nama }} —
+                                    {{ $guru->jurusan
+                                        ? $guru->jurusan->kode . ' - ' . $guru->jurusan->nama
+                                        : 'Jurusan tidak tersedia' }}
+                                </option>
+                            @empty
+                                <option value="" disabled>Tidak ada guru yang belum memiliki akun.</option>
+                            @endforelse
+                        </select>
                     </div>
                     <div class="field">
                         <label class="field-label" for="username">Username
@@ -56,10 +74,10 @@
                         <label class="field-label" for="role">Role
                             <span class="req">*</span>
                         </label>
-                        <select id="role" class="select" name="role">
-                            <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Admin</option>
-                            <option value="guru" {{ old('role') == 'guru' ? 'selected' : '' }}>Guru</option>
-                            <option value="siswa" {{ old('role') == 'siswa' ? 'selected' : '' }}>Siswa</option>
+                        <select id="role" class="select" name="role" required>
+                            <option value="admin" @selected(old('role', 'guru') === 'admin')>Admin</option>
+                            <option value="guru" @selected(old('role', 'guru') === 'guru')>Guru</option>
+                            <option value="siswa" @selected(old('role', 'guru') === 'siswa')>Siswa</option>
                         </select>
                     </div>
                     <div class="field">
@@ -82,4 +100,24 @@
         </div>
 
     </form>
+    <script>
+        const roleSelect = document.getElementById('role');
+        const guruField = document.getElementById('guru-profile-field');
+        const siswaField = document.getElementById('siswa-profile-field');
+        const guruSelect = document.getElementById('id_guru');
+        const siswaSelect = document.getElementById('id_siswa');
+
+        function updateProfileFields() {
+            const isStudent = roleSelect.value === 'siswa';
+            guruField.hidden = isStudent;
+            guruSelect.disabled = isStudent;
+            guruSelect.required = !isStudent;
+            siswaField.hidden = !isStudent;
+            siswaSelect.disabled = !isStudent;
+            siswaSelect.required = isStudent;
+        }
+
+        roleSelect.addEventListener('change', updateProfileFields);
+        updateProfileFields();
+    </script>
 @endsection

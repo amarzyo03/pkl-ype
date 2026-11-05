@@ -2,7 +2,6 @@
 
 use App\Models\absensiModel;
 use App\Models\dudiModel;
-use App\Models\guruModel;
 use App\Models\jurusanModel;
 use App\Models\kelasModel;
 use App\Models\pendaftaranModel;
@@ -21,8 +20,8 @@ it('shows attendance for the selected date and only the teachers approved dudi s
         'nama' => 'XI RPL 1',
         'id_jurusan' => $jurusan->id,
     ]);
-    $guru = guruModel::query()->create(['nama' => 'Guru Absensi']);
-    $otherGuru = guruModel::query()->create(['nama' => 'Guru Lain']);
+    $guru = createGuruForTest(['nama' => 'Guru Absensi']);
+    $otherGuru = createGuruForTest(['nama' => 'Guru Lain']);
     $dudi = dudiModel::query()->create([
         'nama' => 'DUDI Bimbingan',
         'alamat' => 'Jl. Industri',
@@ -138,7 +137,7 @@ it('returns only selected-date attendance in an ajax response', function () {
         'nama' => 'XI TKJ 1',
         'id_jurusan' => $jurusan->id,
     ]);
-    $guru = guruModel::query()->create(['nama' => 'Guru AJAX Absensi']);
+    $guru = createGuruForTest(['nama' => 'Guru AJAX Absensi']);
     $dudi = dudiModel::query()->create([
         'nama' => 'DUDI AJAX',
         'alamat' => 'Jl. AJAX',
@@ -181,7 +180,7 @@ it('returns only selected-date attendance in an ajax response', function () {
 });
 
 it('rejects invalid attendance dates', function () {
-    $guru = guruModel::query()->create(['nama' => 'Guru Tanggal']);
+    $guru = createGuruForTest(['nama' => 'Guru Tanggal']);
     $user = userModel::query()->create([
         'id_user' => (string) $guru->id,
         'username' => 'guru-absensi-invalid',

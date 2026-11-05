@@ -1,7 +1,6 @@
 <?php
 
 use App\Models\dudiModel;
-use App\Models\guruModel;
 use App\Models\jurnalModel;
 use App\Models\jurusanModel;
 use App\Models\kelasModel;
@@ -35,7 +34,7 @@ function createAuthenticatedJournalStudent(string $name): array
         'role' => 'siswa',
         'status' => 'active',
     ]);
-    $guru = guruModel::query()->create(['nama' => 'Guru Jurnal']);
+    $guru = createGuruForTest(['nama' => 'Guru Jurnal']);
     $dudi = dudiModel::query()->create([
         'nama' => 'DUDI Jurnal',
         'alamat' => 'Jl. Jurnal',

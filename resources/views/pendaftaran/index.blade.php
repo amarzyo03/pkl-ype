@@ -13,9 +13,9 @@
 
     <div class="grid">
         <section class="col-12 card">
-            <form action="{{ route('pendaftaran') }}" method="GET" class="data-toolbar">
-                <div class="data-toolbar-left">
-                    <div class="input-icon" style="flex:1;max-width:420px">
+            <div class="data-toolbar">
+                <form action="{{ route('pendaftaran') }}" method="GET" class="data-toolbar-left">
+                    <div class="input-icon">
                         <span class="ico">
                             <svg viewBox="0 0 24 24">
                                 <circle cx="11" cy="11" r="7" />
@@ -26,14 +26,37 @@
                             value="{{ $search }}">
                     </div>
                     <button type="submit" class="btn btn--ghost">Cari</button>
-                </div>
-            </form>
+                </form>
+
+                <form action="{{ route('pendaftaran.status.bulk') }}" method="POST" class="data-toolbar-right"
+                    id="bulk-registration-status">
+                    @csrf
+                    @method('PATCH')
+                    <select id="bulk-status" class="select" name="status" required>
+                        <option value="">Pilih status</option>
+                        <option value="pending" @selected(old('status') === 'pending')>Pending</option>
+                        <option value="disetujui" @selected(old('status') === 'disetujui')>Disetujui</option>
+                        <option value="ditolak" @selected(old('status') === 'ditolak')>Ditolak</option>
+                    </select>
+                    <button type="submit" class="btn btn--primary">Konfirmasi</button>
+                    @if ($errors->any())
+                        <div role="alert">
+                            @foreach ($errors->all() as $error)
+                                <p>{{ $error }}</p>
+                            @endforeach
+                        </div>
+                    @endif
+                </form>
+            </div>
 
             <div class="table-responsive" tabindex="0" role="region" aria-label="Tabel data pendaftaran">
                 <table class="data-table">
                     <thead>
                         <tr>
                             <th style="width:32px">#</th>
+                            <th>
+                                <input type="checkbox" id="select-all-pendaftaran" aria-label="Centang semua pendaftaran">
+                            </th>
                             <th>Siswa</th>
                             <th>DUDI</th>
                             <th>Status</th>
@@ -45,6 +68,11 @@
                         @forelse ($pendaftarans as $row)
                             <tr class="data-row">
                                 <td>{{ $pendaftarans->firstItem() + $loop->index }}</td>
+                                <td>
+                                    <input type="checkbox" name="pendaftaran_ids[]" value="{{ $row->id }}"
+                                        form="bulk-registration-status"
+                                        aria-label="Pilih pendaftaran {{ $row->siswa?->nama ?? $row->id }}">
+                                </td>
                                 <td> {{ ucwords($row->siswa?->nama ?? 'Siswa tidak tersedia') }}</td>
                                 <td>{{ $row->dudi?->nama ?? 'DUDI tidak tersedia' }}</td>
                                 <td>
@@ -117,7 +145,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="text-center text-muted">Belum ada data pendaftaran.</td>
+                                <td colspan="7" class="text-center text-muted">Belum ada data pendaftaran.</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -137,4 +165,16 @@
             </div>
         </section>
     </div>
+
+    <script>
+        document.getElementById('select-all-pendaftaran').addEventListener('change', function() {
+            if (!this.checked) {
+                return;
+            }
+
+            document.querySelectorAll('tbody input[name="pendaftaran_ids[]"]').forEach(function(checkbox) {
+                checkbox.checked = true;
+            });
+        });
+    </script>
 @endsection

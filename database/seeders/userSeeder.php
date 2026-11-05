@@ -15,21 +15,9 @@ class userSeeder extends Seeder
         userModel::insert([
             [
                 'id_user' => 1,
-                'username' => 'admin',
-                'password' => bcrypt('admin123'),
+                'username' => 'mikaela',
+                'password' => bcrypt('mikaela'),
                 'role' => 'admin',
-            ],
-            [
-                'id_user' => 1,
-                'username' => 'guru',
-                'password' => bcrypt('guru123'),
-                'role' => 'guru',
-            ],
-            [
-                'id_user' => 1,
-                'username' => 'siswa',
-                'password' => bcrypt('siswa123'),
-                'role' => 'siswa',
             ],
         ]);
     }

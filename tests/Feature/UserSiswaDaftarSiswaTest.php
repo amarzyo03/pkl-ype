@@ -1,7 +1,6 @@
 <?php
 
 use App\Models\dudiModel;
-use App\Models\guruModel;
 use App\Models\jurusanModel;
 use App\Models\kelasModel;
 use App\Models\pendaftaranModel;
@@ -20,7 +19,7 @@ it('lists approved students assigned to the signed-in students dudi', function (
         'nama' => 'XI RPL 1',
         'id_jurusan' => $jurusan->id,
     ]);
-    $guru = guruModel::query()->create(['nama' => 'Guru Pembimbing']);
+    $guru = createGuruForTest(['nama' => 'Guru Pembimbing']);
     $dudi = dudiModel::query()->create([
         'nama' => 'PT Mitra Siswa',
         'alamat' => 'Jl. Industri No. 1',

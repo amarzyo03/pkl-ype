@@ -43,7 +43,7 @@
                             </svg>
                         </span>
                         <input id="siswa-search" class="input" type="search" name="search"
-                            placeholder="Search siswa by NIS, NISN, name, class, username, or ID..."
+                            placeholder="Search siswa by NIS, NISN, name, class, or ID..."
                             value="{{ request('search', '') }}">
                     </div>
                 </div>
@@ -67,7 +67,6 @@
                             <th>NISN</th>
                             <th>Nama</th>
                             <th>Kelas</th>
-                            <th>Username</th>
                             <th>Status</th>
                             <th></th>
                         </tr>

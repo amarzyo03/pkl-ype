@@ -9,7 +9,7 @@
                 </div>
             </div>
         </td>
-        <td>{{ $row->username }}</td>
+        <td>{{ $row->jurusan?->nama ?? 'Jurusan belum dipilih' }}</td>
         <td>
             <div class="data-cell-actions">
                 <a href="{{ route('guru.edit', $row->id) }}" class="btn--icon" aria-label="Edit" title="Edit">

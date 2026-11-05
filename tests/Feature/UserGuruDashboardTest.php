@@ -2,7 +2,6 @@
 
 use App\Models\absensiModel;
 use App\Models\dudiModel;
-use App\Models\guruModel;
 use App\Models\jurusanModel;
 use App\Models\kelasModel;
 use App\Models\pendaftaranModel;
@@ -17,8 +16,8 @@ uses(RefreshDatabase::class);
 it('shows summaries and menu links for the signed-in teacher', function () {
     $jurusan = jurusanModel::query()->create(['kode' => 'GURU-DASH', 'nama' => 'Jurusan Guru']);
     $kelas = kelasModel::query()->create(['nama' => 'XI Guru', 'id_jurusan' => $jurusan->id]);
-    $guru = guruModel::query()->create(['nama' => 'Guru Dashboard']);
-    $otherGuru = guruModel::query()->create(['nama' => 'Guru Lain']);
+    $guru = createGuruForTest(['nama' => 'Guru Dashboard']);
+    $otherGuru = createGuruForTest(['nama' => 'Guru Lain']);
     $user = userModel::query()->create([
         'id_user' => (string) $guru->id,
         'username' => 'guru-dashboard',

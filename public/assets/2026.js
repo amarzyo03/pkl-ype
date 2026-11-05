@@ -121,7 +121,20 @@
                     (document.body &&
                         document.body.getAttribute("data-role")) ||
                     "";
-                if ("admin" === role) return n;
+                if ("admin" === role) {
+                    const dashboard = n[0].items.find(
+                        (item) => "dashboard" === item.key,
+                    );
+                    return n
+                        .filter((section) =>
+                            ["Monitoring", "Master"].includes(section.label),
+                        )
+                        .map((section) =>
+                            "Monitoring" === section.label && dashboard
+                                ? { ...section, items: [dashboard, ...section.items] }
+                                : section,
+                        );
+                }
                 if ("siswa" === role) {
                     return n
                         .filter((section) => "Workspace" === section.label)

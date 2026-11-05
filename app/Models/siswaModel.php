@@ -21,8 +21,6 @@ class siswaModel extends Model
         'nisn',
         'nama',
         'id_kelas',
-        'username',
-        'password',
         'status',
     ];
 

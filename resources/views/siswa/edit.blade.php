@@ -60,27 +60,10 @@
                         </select>
                     </div>
                     <div class="field">
-                        <label class="field-label" for="username">Username
-                            <span class="req">*</span>
-                        </label>
-                        <input id="username" class="input" type="text" name="username"
-                            value="{{ old('username', $siswa->username) }}" placeholder="Username" required>
-                    </div>
-                    <div class="field">
-                        <label class="field-label" for="password">Password</label>
-                        <input id="password" class="input" type="password" name="password"
-                            placeholder="Leave blank to keep current password">
-                    </div>
-                    <div class="field">
-                        <label class="field-label" for="password_confirmation">Confirm Password</label>
-                        <input id="password_confirmation" class="input" type="password" name="password_confirmation"
-                            placeholder="Confirm new password">
-                    </div>
-                    <div class="field">
                         <label class="field-label" for="status">Status
                             <span class="req">*</span>
                         </label>
-                        <select id="status" class="select" name="status">
+                        <select id="status" class="select" name="status" required>
                             <option value="active" {{ old('status', $siswa->status) == 'active' ? 'selected' : '' }}>Active
                             </option>
                             <option value="inactive" {{ old('status', $siswa->status) == 'inactive' ? 'selected' : '' }}>

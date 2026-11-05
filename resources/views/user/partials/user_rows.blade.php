@@ -3,9 +3,13 @@
         <td>{{ $users->firstItem() + $loop->index }}</td>
         <td>
             <div class="data-cell-user">
-                <div class="av ma-2">{{ strtoupper(substr($row->nama, 0, 1)) }}</div>
+                @php
+                    $profileName =
+                        ($row->role === 'siswa' ? $row->siswa?->nama : $row->guru?->nama) ?? 'Profil tidak ditemukan';
+                @endphp
+                <div class="av ma-2">{{ strtoupper(substr($profileName, 0, 1)) }}</div>
                 <div class="data-cell-user-meta">
-                    <div class="data-cell-user-name">{{ ucwords($row->nama) }}</div>
+                    <div class="data-cell-user-name">{{ ucwords($profileName) }}</div>
                     <div class="data-cell-user-email">{{ strtolower($row->username) }}</div>
                 </div>
             </div>

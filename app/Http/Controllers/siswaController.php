@@ -6,7 +6,6 @@ use App\Imports\SiswaImport;
 use App\Models\kelasModel;
 use App\Models\siswaModel;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -26,7 +25,6 @@ class siswaController extends Controller
                     ->orWhereHas('kelas', function ($kelasQuery) use ($search) {
                         $kelasQuery->where('nama', 'like', "%{$search}%");
                     })
-                    ->orWhere('username', 'like', "%{$search}%")
                     ->orWhere('id', 'like', "%{$search}%");
             });
         }
@@ -71,12 +69,9 @@ class siswaController extends Controller
             'nisn' => ['required', 'string', 'max:255', 'unique:tb_siswa,nisn'],
             'nama' => ['required', 'string', 'max:255'],
             'id_kelas' => ['required', 'integer', Rule::exists('tb_kelas', 'id')->whereNull('deleted_at')],
-            'username' => ['required', 'string', 'max:255', 'unique:tb_siswa,username'],
-            'password' => ['required', 'string', 'min:3', 'confirmed'],
             'status' => ['required', 'in:active,inactive'],
         ]);
 
-        $validated['password'] = Hash::make($validated['password']);
         siswaModel::create($validated);
 
         return redirect()->route('siswa')->with('success', 'Siswa berhasil ditambahkan.');
@@ -99,16 +94,8 @@ class siswaController extends Controller
             'nisn' => ['required', 'string', 'max:255', Rule::unique('tb_siswa', 'nisn')->ignore($siswa->id)],
             'nama' => ['required', 'string', 'max:255'],
             'id_kelas' => ['required', 'integer', Rule::exists('tb_kelas', 'id')->whereNull('deleted_at')],
-            'username' => ['required', 'string', 'max:255', Rule::unique('tb_siswa', 'username')->ignore($siswa->id)],
-            'password' => ['nullable', 'string', 'min:8', 'confirmed'],
             'status' => ['required', 'in:active,inactive'],
         ]);
-
-        if ($request->filled('password')) {
-            $validated['password'] = Hash::make($validated['password']);
-        } else {
-            unset($validated['password']);
-        }
 
         $siswa->update($validated);
 

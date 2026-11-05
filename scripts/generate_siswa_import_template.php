@@ -1,6 +1,6 @@
 <?php
 
-require __DIR__ . '/../vendor/autoload.php';
+require __DIR__.'/../vendor/autoload.php';
 
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -8,14 +8,13 @@ use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Color;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
-use PhpOffice\PhpSpreadsheet\Style\Font;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
-$spreadsheet = new Spreadsheet();
+$spreadsheet = new Spreadsheet;
 $sheet = $spreadsheet->getActiveSheet();
 $sheet->setTitle('Template Siswa');
 
-$sheet->mergeCells('A1:G1');
+$sheet->mergeCells('A1:E1');
 $sheet->setCellValue('A1', 'TEMPLATE IMPORT DATA SISWA');
 $sheet->getStyle('A1')->applyFromArray([
     'font' => [
@@ -31,7 +30,7 @@ $sheet->getStyle('A1')->applyFromArray([
 ]);
 $sheet->getRowDimension(1)->setRowHeight(26);
 
-$sheet->mergeCells('A2:G2');
+$sheet->mergeCells('A2:E2');
 $sheet->setCellValue('A2', 'Silakan isi data di bawah ini sesuai format yang tersedia. Status: 1 = aktif, 0 = inactive.');
 $sheet->getStyle('A2')->applyFromArray([
     'font' => [
@@ -47,7 +46,7 @@ $sheet->getStyle('A2')->applyFromArray([
 ]);
 $sheet->getRowDimension(2)->setRowHeight(22);
 
-$headers = ['nis', 'nisn', 'nama', 'kelas', 'username', 'password', 'status'];
+$headers = ['nis', 'nisn', 'nama', 'kelas', 'status'];
 $sheet->fromArray([$headers], null, 'A4');
 
 $headerStyle = [
@@ -73,18 +72,18 @@ $headerStyle = [
     ],
 ];
 
-$sheet->getStyle('A4:G4')->applyFromArray($headerStyle);
+$sheet->getStyle('A4:E4')->applyFromArray($headerStyle);
 $sheet->getRowDimension(4)->setRowHeight(22);
 
 $sampleRows = [
-    ['NIS-001', 'NISN-001', 'Budi Santoso', 'XII IPA 1', 'budisantoso', 'secret123', null],
-    ['NIS-002', 'NISN-002', 'Siti Nurhaliza', 'XII IPA 2', 'sitinurhaliza', 'secret123', null],
+    ['NIS-001', 'NISN-001', 'Budi Santoso', 'XII IPA 1', null],
+    ['NIS-002', 'NISN-002', 'Siti Nurhaliza', 'XII IPA 2', null],
 ];
 
 $sheet->fromArray($sampleRows, null, 'A5');
 
-$sheet->setCellValueExplicit('G5', 1, DataType::TYPE_NUMERIC);
-$sheet->setCellValueExplicit('G6', 0, DataType::TYPE_NUMERIC);
+$sheet->setCellValueExplicit('E5', 1, DataType::TYPE_NUMERIC);
+$sheet->setCellValueExplicit('E6', 0, DataType::TYPE_NUMERIC);
 
 $bodyStyle = [
     'font' => [
@@ -104,7 +103,7 @@ $bodyStyle = [
     ],
 ];
 
-$sheet->getStyle('A5:G6')->applyFromArray($bodyStyle);
+$sheet->getStyle('A5:E6')->applyFromArray($bodyStyle);
 
 for ($row = 5; $row <= 6; $row++) {
     $sheet->getRowDimension($row)->setRowHeight(22);
@@ -120,10 +119,10 @@ $sheet->getStyle('A8')->applyFromArray([
     ],
 ]);
 
-$sheet->mergeCells('A8:G8');
+$sheet->mergeCells('A8:E8');
 $sheet->setCellValue('A9', '1 = Aktif');
 $sheet->setCellValue('A10', '0 = Inactive');
-$sheet->setCellValue('A11', 'kolom yang tersedia: nis, nisn, nama, kelas, username, password, status');
+$sheet->setCellValue('A11', 'Kolom yang tersedia: nis, nisn, nama, kelas, status');
 
 $sheet->getStyle('A9:A11')->applyFromArray([
     'font' => [
@@ -137,11 +136,9 @@ $sheet->getColumnDimension('A')->setWidth(18);
 $sheet->getColumnDimension('B')->setWidth(18);
 $sheet->getColumnDimension('C')->setWidth(24);
 $sheet->getColumnDimension('D')->setWidth(18);
-$sheet->getColumnDimension('E')->setWidth(22);
-$sheet->getColumnDimension('F')->setWidth(18);
-$sheet->getColumnDimension('G')->setWidth(14);
+$sheet->getColumnDimension('E')->setWidth(14);
 
-$sheet->getStyle('A1:G11')->getFont()->setName('Cambria');
+$sheet->getStyle('A1:E11')->getFont()->setName('Cambria');
 
 $writer = new Xlsx($spreadsheet);
-$writer->save(__DIR__ . '/../public/assets/static/template/siswa-import-template.xlsx');
+$writer->save(__DIR__.'/../public/assets/static/template/siswa-import-template.xlsx');

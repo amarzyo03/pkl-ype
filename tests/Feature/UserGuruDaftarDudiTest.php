@@ -1,7 +1,6 @@
 <?php
 
 use App\Models\dudiModel;
-use App\Models\guruModel;
 use App\Models\jurusanModel;
 use App\Models\userModel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -13,8 +12,8 @@ it('shows only the signed-in teachers dudi with its related data', function () {
         'kode' => 'RPL',
         'nama' => 'Rekayasa Perangkat Lunak',
     ]);
-    $guru = guruModel::query()->create(['nama' => 'Guru Pembimbing']);
-    $otherGuru = guruModel::query()->create(['nama' => 'Guru Lain']);
+    $guru = createGuruForTest(['nama' => 'Guru Pembimbing']);
+    $otherGuru = createGuruForTest(['nama' => 'Guru Lain']);
     $user = userModel::query()->create([
         'id_user' => (string) $guru->id,
         'username' => 'guru-daftar-dudi',
@@ -53,7 +52,7 @@ it('shows only the signed-in teachers dudi with its related data', function () {
 });
 
 it('shows an empty state when the teacher has no dudi', function () {
-    $guru = guruModel::query()->create(['nama' => 'Guru Tanpa DUDI']);
+    $guru = createGuruForTest(['nama' => 'Guru Tanpa DUDI']);
     $user = userModel::query()->create([
         'id_user' => (string) $guru->id,
         'username' => 'guru-tanpa-dudi',

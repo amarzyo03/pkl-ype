@@ -12,7 +12,6 @@
             </div>
         </td>
         <td>{{ strtoupper($row->kelas?->nama ?? '-') }}</td>
-        <td>{{ strtolower($row->username) }}</td>
         <td>
             <span class="badge {{ $row->status === 'active' ? 'success' : 'danger' }} dot">
                 {{ ucwords($row->status) }}
@@ -43,6 +42,6 @@
     </tr>
 @empty
     <tr>
-        <td colspan="8" class="text-center text-muted">No siswa data Found.</td>
+        <td colspan="7" class="text-center text-muted">No siswa data Found.</td>
     </tr>
 @endforelse

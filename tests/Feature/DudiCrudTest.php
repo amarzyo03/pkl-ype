@@ -2,7 +2,6 @@
 
 use App\Imports\DudiImport;
 use App\Models\dudiModel;
-use App\Models\guruModel;
 use App\Models\jurusanModel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Validation\ValidationException;
@@ -11,7 +10,7 @@ uses(RefreshDatabase::class);
 
 it('can create, update, and delete a dudi', function () {
     $jurusan = jurusanModel::create(['kode' => 'RPL', 'nama' => 'Rekayasa Perangkat Lunak']);
-    $guru = guruModel::create([
+    $guru = createGuruForTest([
         'nama' => 'Budi Santoso',
         'username' => 'budi',
         'password' => bcrypt('password'),
@@ -79,7 +78,7 @@ it('can create, update, and delete a dudi', function () {
 
 it('rejects DUDI records that reference an unavailable guru', function () {
     $jurusan = jurusanModel::create(['kode' => 'RPL', 'nama' => 'Rekayasa Perangkat Lunak']);
-    $guru = guruModel::create([
+    $guru = createGuruForTest([
         'nama' => 'Budi Santoso',
         'username' => 'budi',
         'password' => bcrypt('password'),
@@ -107,7 +106,7 @@ it('imports dudi rows and updates matching names', function () {
         ->assertSee('id_guru');
 
     $jurusan = jurusanModel::create(['kode' => 'RPL', 'nama' => 'Rekayasa Perangkat Lunak']);
-    $guru = guruModel::create([
+    $guru = createGuruForTest([
         'nama' => 'Budi Santoso',
         'username' => 'budi',
         'password' => bcrypt('password'),
@@ -146,7 +145,7 @@ it('imports dudi rows and updates matching names', function () {
 });
 
 it('rejects imports that reference a missing jurusan', function () {
-    $guru = guruModel::create([
+    $guru = createGuruForTest([
         'nama' => 'Budi Santoso',
         'username' => 'budi',
         'password' => bcrypt('password'),
