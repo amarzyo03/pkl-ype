@@ -34,7 +34,8 @@ it('allows a student to open the dashboard on first login when user and student 
     $this->post(route('auth.login'), [
         'username' => 'siswa-baru',
         'password' => 'secret123',
-    ])->assertRedirect(route('userSiswa.dashboard'));
+    ])->assertRedirect(route('userSiswa.dashboard'))
+        ->assertSessionHas('auth_name', 'Siswa Baru');
 
     $this->get(route('userSiswa.dashboard'))->assertOk();
 });

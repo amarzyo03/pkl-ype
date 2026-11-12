@@ -2,9 +2,11 @@
 @section('content')
     <section class="hero">
         <div class="hero-text">
-            <span class="eyebrow">Guru · Siswa</span>
+            <span class="eyebrow">{{ ($isAdmin ?? false) ? 'Admin · Siswa' : 'Guru · Siswa' }}</span>
             <h1 class="hero-title">Daftar <span class="accent">Siswa</span></h1>
-            <p class="hero-sub">Siswa yang terdaftar pada DUDI bimbingan Anda.</p>
+            <p class="hero-sub">
+                {{ ($isAdmin ?? false) ? 'Siswa yang terdaftar pada DUDI dengan guru pembimbing.' : 'Siswa yang terdaftar pada DUDI bimbingan Anda.' }}
+            </p>
         </div>
     </section>
 
@@ -20,6 +22,9 @@
                             <th>Nama Siswa</th>
                             <th>Kelas</th>
                             <th>DUDI</th>
+                            @if ($isAdmin ?? false)
+                                <th>Guru Pembimbing</th>
+                            @endif
                             <th>Status Pendaftaran</th>
                         </tr>
                     </thead>
@@ -32,6 +37,9 @@
                                 <td>{{ $siswa->nama }}</td>
                                 <td>{{ $siswa->kelas?->nama ?? '-' }}</td>
                                 <td>{{ $siswa->pendaftaran?->dudi?->nama ?? '-' }}</td>
+                                @if ($isAdmin ?? false)
+                                    <td>{{ $siswa->pendaftaran?->dudi?->guru?->nama ?? '-' }}</td>
+                                @endif
                                 <td>
                                     @php
                                         $statusClass = match ($siswa->pendaftaran?->status) {
@@ -48,8 +56,8 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="text-center text-muted">
-                                    Belum ada siswa yang terdaftar pada DUDI bimbingan Anda.
+                                <td colspan="{{ ($isAdmin ?? false) ? 8 : 7 }}" class="text-center text-muted">
+                                    {{ ($isAdmin ?? false) ? 'Belum ada siswa yang terdaftar pada DUDI dengan guru pembimbing.' : 'Belum ada siswa yang terdaftar pada DUDI bimbingan Anda.' }}
                                 </td>
                             </tr>
                         @endforelse

@@ -120,6 +120,7 @@ it('prevents a teacher from viewing or changing another teachers task', function
         ->get(route('tugas.edit', $tugas->id))
         ->assertNotFound();
     $this->get(route('tugas.file', $tugas->id))->assertNotFound();
+    $this->get(route('tugas.pengumpulan.file', [$tugas->id, 1]))->assertNotFound();
     $this->put(route('tugas.update', $tugas->id), [
         'tanggal' => '2026-10-30',
         'judul' => 'Perubahan tidak sah',
@@ -132,6 +133,8 @@ it('prevents a teacher from viewing or changing another teachers task', function
 });
 
 it('shows completed and incomplete students for a teachers task', function () {
+    Storage::fake('task_attachments');
+
     $jurusan = jurusanModel::query()->create([
         'kode' => 'RPL',
         'nama' => 'Rekayasa Perangkat Lunak',
@@ -222,6 +225,7 @@ it('shows completed and incomplete students for a teachers task', function () {
         'status' => 'dikerjakan',
         'file' => 'jawaban.pdf',
     ]);
+    Storage::disk('task_attachments')->put('assets/static/tugas-pengumpulan/jawaban.pdf', 'Isi jawaban');
     tugasStatusModel::query()->create([
         'id_tugas' => $tugas->id,
         'id_siswa' => $siswaBatal->id,
@@ -229,6 +233,17 @@ it('shows completed and incomplete students for a teachers task', function () {
         'status' => null,
         'file' => null,
     ]);
+    tugasStatusModel::query()->create([
+        'id_tugas' => $tugas->id,
+        'id_siswa' => $siswaDudiLain->id,
+        'tanggal' => '2026-10-29',
+        'status' => 'dikerjakan',
+        'file' => 'jawaban-siswa-dudi-lain.pdf',
+    ]);
+    Storage::disk('task_attachments')->put(
+        'assets/static/tugas-pengumpulan/jawaban-siswa-dudi-lain.pdf',
+        'Isi jawaban siswa DUDI lain',
+    );
 
     $response = $this->withSession(['auth_id' => $user->id, 'auth_role' => 'guru'])
         ->get(route('tugas.status', $tugas->id));
@@ -242,11 +257,20 @@ it('shows completed and incomplete students for a teachers task', function () {
         ->assertSee('Siswa Sudah Mengerjakan')
         ->assertSee('Siswa Belum Mengerjakan')
         ->assertSee('Siswa Membatalkan Pengerjaan')
+        ->assertSee(route('tugas.pengumpulan.file', [$tugas->id, $siswaSelesai->id]), false)
+        ->assertDontSee(route('tugas.pengumpulan.file', [$tugas->id, $siswaDudiLain->id]), false)
         ->assertSee('Sudah mengerjakan')
         ->assertSee('Belum mengerjakan')
         ->assertDontSee('Siswa DUDI Lain');
 
     expect(substr_count($response->getContent(), '<table'))->toBe(1);
+
+    $this->get(route('tugas.pengumpulan.file', [$tugas->id, $siswaSelesai->id]))
+        ->assertDownload('jawaban.pdf');
+    $this->get(route('tugas.pengumpulan.file', [$tugas->id, $siswaBelum->id]))
+        ->assertNotFound();
+    $this->get(route('tugas.pengumpulan.file', [$tugas->id, $siswaDudiLain->id]))
+        ->assertNotFound();
 });
 
 it('does not show status for another teachers task', function () {

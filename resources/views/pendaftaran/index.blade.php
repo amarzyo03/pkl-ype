@@ -14,7 +14,8 @@
     <div class="grid">
         <section class="col-12 card">
             <div class="data-toolbar">
-                <form action="{{ route('pendaftaran') }}" method="GET" class="data-toolbar-left">
+                <form action="{{ route('pendaftaran') }}" method="GET" class="data-toolbar-left"
+                    id="pendaftaran-search-form">
                     <div class="input-icon">
                         <span class="ico">
                             <svg viewBox="0 0 24 24">
@@ -22,8 +23,8 @@
                                 <path d="m21 21-4.3-4.3" />
                             </svg>
                         </span>
-                        <input class="input" type="search" name="search" placeholder="Cari nama siswa, NIS, atau DUDI..."
-                            value="{{ $search }}">
+                        <input id="pendaftaran-search" class="input" type="search" name="search"
+                            placeholder="Cari nama siswa, NIS, atau DUDI..." value="{{ $search }}">
                     </div>
                     <button type="submit" class="btn btn--ghost">Cari</button>
                 </form>
@@ -38,7 +39,7 @@
                         <option value="disetujui" @selected(old('status') === 'disetujui')>Disetujui</option>
                         <option value="ditolak" @selected(old('status') === 'ditolak')>Ditolak</option>
                     </select>
-                    <button type="submit" class="btn btn--primary">Konfirmasi</button>
+                    <button type="submit" class="btn btn--primary">Konfirmasi yang dicentang</button>
                     @if ($errors->any())
                         <div role="alert">
                             @foreach ($errors->all() as $error)
@@ -64,117 +65,110 @@
                             <th>Aksi</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        @forelse ($pendaftarans as $row)
-                            <tr class="data-row">
-                                <td>{{ $pendaftarans->firstItem() + $loop->index }}</td>
-                                <td>
-                                    <input type="checkbox" name="pendaftaran_ids[]" value="{{ $row->id }}"
-                                        form="bulk-registration-status"
-                                        aria-label="Pilih pendaftaran {{ $row->siswa?->nama ?? $row->id }}">
-                                </td>
-                                <td> {{ ucwords($row->siswa?->nama ?? 'Siswa tidak tersedia') }}</td>
-                                <td>{{ $row->dudi?->nama ?? 'DUDI tidak tersedia' }}</td>
-                                <td>
-                                    @php
-                                        $statusClass = match ($row->status) {
-                                            'pending' => 'warning',
-                                            'disetujui' => 'success',
-                                            'ditolak' => 'danger',
-                                            default => 'info',
-                                        };
-                                    @endphp
-                                    <span class="badge dot {{ $statusClass }}">{{ ucfirst($row->status) }}</span>
-                                </td>
-                                <td>
-                                    @if ($row->status === 'pending')
-                                        <form action="{{ route('pendaftaran.status', $row->id) }}" method="POST"
-                                            style="display:inline-block">
-                                            @csrf
-                                            @method('PATCH')
-                                            <input type="hidden" name="status" value="disetujui">
-                                            <button type="submit" class="btn btn--success btn--small"
-                                                title="Setujui pendaftaran">Setujui</button>
-                                        </form>
-                                        <form action="{{ route('pendaftaran.status', $row->id) }}" method="POST"
-                                            style="display:inline-block">
-                                            @csrf
-                                            @method('PATCH')
-                                            <input type="hidden" name="status" value="ditolak">
-                                            <button type="submit" class="btn btn--danger btn--small"
-                                                title="Tolak pendaftaran">Tolak</button>
-                                        </form>
-                                    @else
-                                        <form action="{{ route('pendaftaran.status', $row->id) }}" method="POST"
-                                            style="display:inline-block">
-                                            @csrf
-                                            @method('PATCH')
-                                            <input type="hidden" name="status" value="pending">
-                                            <button type="submit" class="btn btn--ghost btn--small"
-                                                title="Batalkan keputusan dan kembalikan status ke pending">
-                                                Batalkan keputusan
-                                            </button>
-                                        </form>
-                                    @endif
-                                </td>
-                                <td>
-                                    <div class="data-cell-actions">
-                                        <a href="{{ route('pendaftaran.edit', $row->id) }}" class="btn--icon"
-                                            aria-label="Ubah pendaftaran" title="Ubah">
-                                            <svg viewBox="0 0 24 24">
-                                                <path d="M12 20h9" />
-                                                <path d="M16.5 3.5a2.1 2.1 0 1 1 3 3L7 19l-4 1 1-4z" />
-                                            </svg>
-                                        </a>
-
-                                        <form action="{{ route('pendaftaran.delete', $row->id) }}" method="POST">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn--icon btn--icon-delete"
-                                                aria-label="Hapus pendaftaran" title="Hapus">
-                                                <svg viewBox="0 0 24 24">
-                                                    <path d="M3 6h18" />
-                                                    <path d="M8 6V4h8v2" />
-                                                    <path d="M19 6l-1 14H6L5 6" />
-                                                    <path d="M10 11v6M14 11v6" />
-                                                </svg>
-                                            </button>
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="7" class="text-center text-muted">Belum ada data pendaftaran.</td>
-                            </tr>
-                        @endforelse
+                    <tbody id="pendaftaran-table-body">
+                        @include('pendaftaran.partials.pendaftaran_rows', ['pendaftarans' => $pendaftarans])
                     </tbody>
                 </table>
             </div>
 
             <div class="data-foot">
-                <div class="data-foot-info">
-                    @if ($pendaftarans->total() > 0)
-                        Menampilkan {{ $pendaftarans->firstItem() }}–{{ $pendaftarans->lastItem() }} dari
-                        {{ $pendaftarans->total() }} pendaftaran
-                    @else
-                        Tidak ada pendaftaran
-                    @endif
+                <div class="data-foot-info" id="pendaftaran-summary">
+                    @include('pendaftaran.partials.pendaftaran_summary', ['pendaftarans' => $pendaftarans])
                 </div>
-                <div class="pager">{{ $pendaftarans->links() }}</div>
+                <div class="pager" id="pendaftaran-pager">
+                    @include('pendaftaran.partials.pendaftaran_pager', ['pendaftarans' => $pendaftarans])
+                </div>
             </div>
         </section>
     </div>
 
     <script>
-        document.getElementById('select-all-pendaftaran').addEventListener('change', function() {
-            if (!this.checked) {
+        const pendaftaranIndexUrl = "{{ route('pendaftaran') }}";
+        const searchForm = document.getElementById('pendaftaran-search-form');
+        const searchInput = document.getElementById('pendaftaran-search');
+        const tableBody = document.getElementById('pendaftaran-table-body');
+        const summaryContainer = document.getElementById('pendaftaran-summary');
+        const pagerContainer = document.getElementById('pendaftaran-pager');
+
+        function buildQueryParams(page = 1) {
+            const params = new URLSearchParams();
+            const search = searchInput.value.trim();
+            const perPage = document.querySelector('[data-per-page]')?.value || '15';
+
+            if (search) {
+                params.set('search', search);
+            }
+
+            params.set('perPage', perPage);
+            params.set('page', page);
+            params.set('ajax', '1');
+
+            return params;
+        }
+
+        function updateList(page = 1) {
+            const params = buildQueryParams(page);
+            const url = `${pendaftaranIndexUrl}?${params.toString()}`;
+
+            fetch(url, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Gagal memuat data pendaftaran.');
+                    }
+
+                    return response.json();
+                })
+                .then(data => {
+                    tableBody.innerHTML = data.rows;
+                    summaryContainer.innerHTML = data.summary;
+                    pagerContainer.innerHTML = data.pager;
+                    document.getElementById('select-all-pendaftaran').checked = false;
+
+                    const summaryUrl = new URL(pendaftaranIndexUrl, window.location.origin);
+                    summaryUrl.search = params.toString().replace(/&ajax=1/g, '');
+                    history.replaceState({}, '', summaryUrl.toString().replace(window.location.origin, ''));
+                })
+                .catch(error => {
+                    console.error(error);
+                    window.showToast('Gagal memuat data pendaftaran. Silakan coba lagi.', 'error');
+                });
+        }
+
+        searchForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            updateList(1);
+        });
+
+        let searchTimer;
+        searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimer);
+            searchTimer = setTimeout(() => updateList(1), 300);
+        });
+
+        document.addEventListener('change', function(event) {
+            if (event.target.matches('[data-per-page]')) {
+                updateList(1);
+            }
+        });
+
+        document.addEventListener('click', function(event) {
+            const paginationButton = event.target.closest('[data-page]');
+            if (!paginationButton) {
                 return;
             }
 
+            event.preventDefault();
+            updateList(paginationButton.dataset.page);
+        });
+
+        document.getElementById('select-all-pendaftaran').addEventListener('change', function() {
             document.querySelectorAll('tbody input[name="pendaftaran_ids[]"]').forEach(function(checkbox) {
-                checkbox.checked = true;
-            });
+                checkbox.checked = this.checked;
+            }, this);
         });
     </script>
 @endsection

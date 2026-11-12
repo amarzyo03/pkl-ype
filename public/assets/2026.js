@@ -125,15 +125,48 @@
                     const dashboard = n[0].items.find(
                         (item) => "dashboard" === item.key,
                     );
+                    const monitoring = n.find(
+                        (section) => "Monitoring" === section.label,
+                    );
                     return n
                         .filter((section) =>
                             ["Monitoring", "Master"].includes(section.label),
                         )
-                        .map((section) =>
-                            "Monitoring" === section.label && dashboard
-                                ? { ...section, items: [dashboard, ...section.items] }
-                                : section,
-                        );
+                        .map((section) => {
+                            if ("Monitoring" !== section.label) {
+                                return section;
+                            }
+
+                            const teacherNavigationItems = [
+                                {
+                                    key: "daftar-dudi",
+                                    text: "Daftar DUDI",
+                                    href: "/id/guru/daftar-dudi",
+                                    icon: '<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 12h18M10 12v2h4v-2"/>',
+                                },
+                                {
+                                    key: "daftar-siswa",
+                                    text: "Daftar Siswa",
+                                    href: "/id/guru/daftar-siswa",
+                                    icon: '<circle cx="12" cy="8" r="3"/><path d="M5 21a7 7 0 0 1 14 0"/>',
+                                },
+                            ];
+
+                            return {
+                                ...section,
+                                items: [
+                                    ...(dashboard ? [dashboard] : []),
+                                    ...teacherNavigationItems,
+                                    ...["tugas-guru", "absensi-guru", "jurnal-guru"]
+                                        .map((key) =>
+                                            monitoring.items.find(
+                                                (item) => item.key === key,
+                                            ),
+                                        )
+                                        .filter(Boolean),
+                                ],
+                            };
+                        });
                 }
                 if ("siswa" === role) {
                     return n
@@ -258,12 +291,64 @@
                                 })(t, e),
                             )
                             .join("");
-                        return `\n    <aside class="d-sidebar">\n      <div class="brand">\n        <div class="brand-logo"><svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">\n  <path fill="#ffffff" d="M14.747 9.125c.527-1.426 1.736-2.573 3.317-2.573c1.643 0 2.792 1.085 3.318 2.573l6.077 16.867c.186.496.248.931.248 1.147c0 1.209-.992 2.046-2.139 2.046c-1.303 0-1.954-.682-2.264-1.611l-.931-2.915h-8.62l-.93 2.884c-.31.961-.961 1.642-2.232 1.642c-1.24 0-2.294-.93-2.294-2.17c0-.496.155-.868.217-1.023l6.233-16.867zm.34 11.256h5.891l-2.883-8.992h-.062l-2.946 8.992z"/>\n</svg></div>\n        <div class="brand-text">\n          <div class="brand-name">Adminator</div>\n          <div class="brand-tag">v4.1.2 · preview</div>\n        </div>\n      </div>\n      ${t}\n      <div class="sidebar-footer">\n       <div class="workspace">\n          <div class="workspace-avatar">JD</div>\n          <div class="workspace-text">\n            <div class="workspace-name">John Doe</div>\n            <div class="workspace-role">admin</div>\n          </div>\n          <svg class="workspace-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">\n            <path d="m7 9 5-5 5 5"/><path d="m7 15 5 5 5-5"/>\n          </svg>\n        </div>\n      </div>\n    </aside>`;
+                        return `\n    <aside class="d-sidebar">\n      <div class="brand">\n        <div class="brand-logo"><svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">\n  <path fill="#ffffff" d="M14.747 9.125c.527-1.426 1.736-2.573 3.317-2.573c1.643 0 2.792 1.085 3.318 2.573l6.077 16.867c.186.496.248.931.248 1.147c0 1.209-.992 2.046-2.139 2.046c-1.303 0-1.954-.682-2.264-1.611l-.931-2.915h-8.62l-.93 2.884c-.31.961-.961 1.642-2.232 1.642c-1.24 0-2.294-.93-2.294-2.17c0-.496.155-.868.217-1.023l6.233-16.867zm.34 11.256h5.891l-2.883-8.992h-.062l-2.946 8.992z"/>\n</svg></div>\n        <div class="brand-text">\n          <div class="brand-name">SMK YPE Kroya</div>\n          <div class="brand-tag">v1.0.0 · sys-pkl</div>\n        </div>\n      </div>\n      ${t}\n      <div class="sidebar-footer">\n       <div class="workspace">\n          <div class="workspace-avatar">S</div>\n          <div class="workspace-text">\n            <div class="workspace-name">John Doe</div>\n            <div class="workspace-role">admin</div>\n          </div>\n          <svg class="workspace-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">\n            <path d="m7 9 5-5 5 5"/><path d="m7 15 5 5 5-5"/>\n          </svg>\n        </div>\n      </div>\n    </aside>`;
                     })(t)),
                     r && (r.outerHTML = o(a)),
                     i &&
                         (i.outerHTML =
                             '\n    <footer class="d-footer">\n      <div>© 2026 · Designed by <a href="https://colorlib.com" target="_blank" rel="nofollow noopener noreferrer">Colorlib</a></div>\n      <div class="d-footer-meta">\n        <span>v4.1.2</span>\n        <span>preview build</span>\n      </div>\n    </footer>'));
+                const sidebarProfile = document.querySelector(
+                    ".d-sidebar .sidebar-footer",
+                );
+                if (sidebarProfile) {
+                    sidebarProfile.remove();
+                }
+
+                document
+                    .querySelectorAll(
+                        '.d-topbar .dd-wrap > [aria-label="Notifications"], .d-topbar .dd-wrap > [aria-label="Messages"]',
+                    )
+                    .forEach((button) => {
+                        const dropdown = button.closest(".dd-wrap");
+                        if (dropdown) {
+                            dropdown.remove();
+                        }
+                    });
+
+                const searchButton = document.querySelector(".d-topbar .cmd");
+                if (searchButton) {
+                    searchButton.remove();
+                }
+
+                document
+                    .querySelectorAll(
+                        ".dd-profile > .dd-menu-item:not(.danger), .dd-profile > .dd-divider",
+                    )
+                    .forEach((item) => item.remove());
+
+                const accountName =
+                    document.body.getAttribute("data-user-name") || "";
+                const accountRole =
+                    document.body.getAttribute("data-user-role") || "";
+                const accountAvatar = document.querySelector(
+                    ".d-topbar .avatar",
+                );
+                const accountNameElement = document.querySelector(
+                    ".dd-profile-name",
+                );
+                const accountRoleElement = document.querySelector(
+                    ".dd-profile-email",
+                );
+                if (accountAvatar) {
+                    accountAvatar.textContent =
+                        accountName.trim().charAt(0).toUpperCase();
+                }
+                if (accountNameElement) {
+                    accountNameElement.textContent = accountName;
+                }
+                if (accountRoleElement) {
+                    accountRoleElement.textContent = accountRole;
+                }
             }
             function r() {
                 const e = document.body;

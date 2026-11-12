@@ -160,6 +160,15 @@ class userGuruController extends Controller
             ->where('status', 'dikerjakan')
             ->whereIn('id_siswa', $siswas->modelKeys())
             ->pluck('id_siswa');
+        $pengumpulanFiles = tugasStatusModel::query()
+            ->where('id_tugas', $tugas->id)
+            ->where('status', 'dikerjakan')
+            ->whereNotNull('file')
+            ->whereIn('id_siswa', $siswas->modelKeys())
+            ->orderByDesc('id')
+            ->get(['id_siswa', 'file'])
+            ->unique('id_siswa')
+            ->keyBy('id_siswa');
         $siswaSelesai = $siswas->whereIn('id', $siswaSelesaiIds);
         $siswaBelum = $siswas->whereNotIn('id', $siswaSelesaiIds);
         $jumlahSelesai = $siswaSelesai->count();
@@ -169,9 +178,40 @@ class userGuruController extends Controller
             'tugas',
             'siswas',
             'siswaSelesaiIds',
+            'pengumpulanFiles',
             'jumlahSelesai',
             'jumlahBelum',
         ));
+    }
+
+    public function downloadPengumpulanFile(string $id, string $idSiswa): StreamedResponse
+    {
+        $tugas = $this->ownedTasks()->findOrFail($id);
+
+        siswaModel::query()
+            ->whereKey($idSiswa)
+            ->whereHas('pendaftaran', function (Builder $query): void {
+                $query->where('status', 'disetujui')
+                    ->whereHas('dudi', function (Builder $dudiQuery): void {
+                        $dudiQuery->where('id_guru', $this->guru->id);
+                    });
+            })
+            ->firstOrFail();
+
+        $pengumpulan = tugasStatusModel::query()
+            ->where('id_tugas', $tugas->id)
+            ->where('id_siswa', $idSiswa)
+            ->where('status', 'dikerjakan')
+            ->whereNotNull('file')
+            ->orderByDesc('id')
+            ->firstOrFail();
+
+        /** @var FilesystemAdapter $storage */
+        $storage = Storage::disk('task_attachments');
+        $path = 'assets/static/tugas-pengumpulan/'.basename($pengumpulan->file);
+        abort_unless($storage->exists($path), 404);
+
+        return $storage->download($path, basename($pengumpulan->file));
     }
 
     public function addTugas(): View

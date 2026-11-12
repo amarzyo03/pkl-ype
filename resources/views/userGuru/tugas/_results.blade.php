@@ -5,7 +5,6 @@
                 <th style="width:32px">#</th>
                 <th>Tanggal</th>
                 <th>Judul</th>
-                <th>Guru</th>
                 <th>Deskripsi</th>
                 <th>Lampiran</th>
                 <th>Status</th>
@@ -18,7 +17,6 @@
                     <td>{{ $tugas->firstItem() + $loop->index }}</td>
                     <td>{{ $row->tanggal->format('d/m/Y') }}</td>
                     <td>{{ $row->judul }}</td>
-                    <td>{{ $row->guru?->nama ?? 'Guru tidak tersedia' }}</td>
                     <td>{{ \Illuminate\Support\Str::limit($row->deskripsi, 120) }}</td>
                     <td>
                         @if ($row->file)
@@ -34,8 +32,8 @@
                     </td>
                     <td>
                         <div class="data-cell-actions">
-                            <a href="{{ route('tugas.edit', $row->id) }}" class="btn--icon"
-                                aria-label="Ubah tugas" title="Ubah">
+                            <a href="{{ route('tugas.edit', $row->id) }}" class="btn--icon" aria-label="Ubah tugas"
+                                title="Ubah">
                                 <svg viewBox="0 0 24 24">
                                     <path d="M12 20h9" />
                                     <path d="M16.5 3.5a2.1 2.1 0 1 1 3 3L7 19l-4 1 1-4z" />
@@ -44,8 +42,8 @@
                             <form action="{{ route('tugas.delete', $row->id) }}" method="POST">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn--icon btn--icon-delete"
-                                    aria-label="Hapus tugas" title="Hapus">
+                                <button type="submit" class="btn--icon btn--icon-delete" aria-label="Hapus tugas"
+                                    title="Hapus">
                                     <svg viewBox="0 0 24 24">
                                         <path d="M3 6h18" />
                                         <path d="M8 6V4h8v2" />

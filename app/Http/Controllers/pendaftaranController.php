@@ -6,6 +6,7 @@ use App\Models\dudiModel;
 use App\Models\pendaftaranModel;
 use App\Models\siswaModel;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -14,9 +15,15 @@ use Illuminate\View\View;
 
 class pendaftaranController extends Controller
 {
-    public function index(Request $request): View
+    public function index(Request $request): View|JsonResponse
     {
         $search = trim((string) $request->query('search', ''));
+
+        $perPage = (int) $request->query('perPage', 15);
+
+        if (! in_array($perPage, [15, 25, 50, 100], true)) {
+            $perPage = 15;
+        }
 
         $pendaftarans = pendaftaranModel::query()
             ->with(['siswa', 'dudi'])
@@ -34,8 +41,16 @@ class pendaftaranController extends Controller
                 });
             })
             ->orderByDesc('id')
-            ->paginate(15)
-            ->withQueryString();
+            ->paginate($perPage)
+            ->appends($request->query());
+
+        if ($request->boolean('ajax')) {
+            return response()->json([
+                'rows' => view('pendaftaran.partials.pendaftaran_rows', compact('pendaftarans'))->render(),
+                'summary' => view('pendaftaran.partials.pendaftaran_summary', compact('pendaftarans'))->render(),
+                'pager' => view('pendaftaran.partials.pendaftaran_pager', compact('pendaftarans'))->render(),
+            ]);
+        }
 
         return view('pendaftaran.index', compact('pendaftarans', 'search'));
     }

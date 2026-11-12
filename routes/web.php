@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminBimbinganController;
 use App\Http\Controllers\authController;
 use App\Http\Controllers\dashboardController;
 use App\Http\Controllers\dudiController;
@@ -26,6 +27,8 @@ Route::middleware(['adminMiddleware'])->group(function () {
     // ==== WORKSPACE ===== ##
     // ==== DASHBOARD ===== ##
     Route::get('/dashboard', [dashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dudi-bimbingan', [AdminBimbinganController::class, 'daftarDudi'])->name('admin.bimbingan.dudi');
+    Route::get('/siswa-bimbingan', [AdminBimbinganController::class, 'daftarSiswa'])->name('admin.bimbingan.siswa');
 
     // ==== MASTER ===== ##
     // ==== PENDAFTARAN ===== ##
@@ -120,6 +123,8 @@ Route::middleware(['guruMiddleware'])->group(function () {
     Route::put('/id/guru/tugas/update/{id}', [userGuruController::class, 'updateTugas'])->name('tugas.update');
     Route::delete('/id/guru/tugas/delete/{id}', [userGuruController::class, 'deleteTugas'])->name('tugas.delete');
     Route::get('/id/guru/tugas/{id}/file', [userGuruController::class, 'downloadTugasFile'])->name('tugas.file');
+    Route::get('/id/guru/tugas/{id}/pengumpulan/{idSiswa}/file', [userGuruController::class, 'downloadPengumpulanFile'])
+        ->name('tugas.pengumpulan.file');
 
     // ==== ABSENSI ===== ##
     Route::get('/id/guru/absensi', [userGuruController::class, 'absensi'])->name('userGuru.absensi');

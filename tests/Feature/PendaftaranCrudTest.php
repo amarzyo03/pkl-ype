@@ -109,6 +109,46 @@ it('can create, update, and soft delete a registration', function () {
         ->assertDontSee('Siti Aminah (NIS-002)');
 });
 
+it('renders registration list partials for ajax requests', function () {
+    $siswa = siswaModel::create([
+        'nis' => 'NIS-003',
+        'nisn' => 'NISN-003',
+        'nama' => 'Rina Lestari',
+        'id_kelas' => 1,
+    ]);
+    $dudi = dudiModel::create([
+        'nama' => 'PT Contoh',
+        'alamat' => 'Jl. Merdeka',
+        'telp' => '021123456',
+        'pic' => 'Andi',
+        'id_jurusan' => 1,
+        'id_guru' => 1,
+    ]);
+
+    pendaftaranModel::query()->create([
+        'id_siswa' => $siswa->id,
+        'id_dudi' => $dudi->id,
+        'status' => 'pending',
+    ]);
+
+    $response = $this->get(route('pendaftaran', [
+        'search' => 'Rina',
+        'perPage' => 25,
+        'ajax' => 1,
+    ]));
+
+    $response->assertOk()
+        ->assertJsonStructure(['rows', 'summary', 'pager']);
+
+    expect($response->json('rows'))
+        ->toContain('Rina Lestari')
+        ->toContain('form="bulk-registration-status"')
+        ->and($response->json('summary'))
+        ->toContain('1–1 dari')
+        ->toContain('1 pendaftaran')
+        ->toContain('25 per halaman');
+});
+
 it('can approve or reject pending registrations only', function () {
     $makeRegistration = function (string $username, string $name): pendaftaranModel {
         $siswa = siswaModel::create([

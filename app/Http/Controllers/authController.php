@@ -43,6 +43,12 @@ class authController extends Controller
 
         Session::put('auth_id', $auth->id);
         Session::put('auth_username', $auth->username);
+        $authName = match ($auth->role) {
+            'guru' => $auth->guru?->nama,
+            'siswa' => $auth->siswa?->nama,
+            default => null,
+        };
+        Session::put('auth_name', $authName ?? $auth->username);
         Session::put('auth_role', $auth->role);
 
         return redirect()

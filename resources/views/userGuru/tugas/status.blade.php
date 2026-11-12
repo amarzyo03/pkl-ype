@@ -33,6 +33,7 @@
                             <th>Nama Siswa</th>
                             <th>Kelas</th>
                             <th>Status</th>
+                            <th>File dikirimkan</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -50,10 +51,23 @@
                                         <span class="badge dot warning">Belum mengerjakan</span>
                                     @endif
                                 </td>
+                                <td>
+                                    @if ($pengumpulanFiles->has($siswa->id))
+                                        @php
+                                            $file = $pengumpulanFiles->get($siswa->id)->file;
+                                        @endphp
+                                        <a href="{{ route('tugas.pengumpulan.file', [$tugas->id, $siswa->id]) }}"
+                                            class="btn btn--ghost btn--small" title="Unduh {{ basename($file) }}">
+                                            Unduh file
+                                        </a>
+                                    @else
+                                        <span class="text-muted">-</span>
+                                    @endif
+                                </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="text-center text-muted">
+                                <td colspan="7" class="text-center text-muted">
                                     Belum ada siswa terdaftar pada DUDI guru ini.
                                 </td>
                             </tr>

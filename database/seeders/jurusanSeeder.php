@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Models\jurusanModel;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Carbon;
 
 class jurusanSeeder extends Seeder
 {
@@ -13,37 +12,29 @@ class jurusanSeeder extends Seeder
      */
     public function run(): void
     {
-        jurusanModel::insert([
+        jurusanModel::insert(
             [
-                'kode' => 'akt',
-                'nama' => 'akuntansi',
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ],
-            [
-                'kode' => 'mpk',
-                'nama' => 'manajemen perkantoran',
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ],
-            [
-                'kode' => 'bsr',
-                'nama' => 'bisnis retail',
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ],
-            [
-                'kode' => 'tkj',
-                'nama' => 'teknik komputer dan jaringan',
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ],
-            [
-                'kode' => 'tkr',
-                'nama' => 'teknik kendaraan ringan',
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ],
-        ]);
+                [
+                    'kode' => 'akt',
+                    'nama' => 'akuntansi',
+                ],
+                [
+                    'kode' => 'bsr',
+                    'nama' => 'bisnis retail / bisnis digital',
+                ],
+                [
+                    'kode' => 'mpk',
+                    'nama' => 'manajemen perkantoran',
+                ],
+                [
+                    'kode' => 'tkj',
+                    'nama' => 'teknik komputer dan jaringan',
+                ],
+                [
+                    'kode' => 'tkr',
+                    'nama' => 'teknik kendaraan ringan',
+                ],
+            ]
+        );
     }
 }

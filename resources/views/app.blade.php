@@ -29,8 +29,10 @@
 
 <body
     data-role="{{ session('auth_role') }}"
+    data-user-name="{{ session('auth_name', session('auth_username', '')) }}"
+    data-user-role="{{ session('auth_role', '') }}"
     data-active="{{ request()->segment(1) === 'id' ? (request()->segment(3) === 'pendaftaran' ? 'pendaftaran-siswa' : (request()->segment(3) === 'tugas' || request()->segment(3) === 'jurnal' || request()->segment(3) === 'absensi' ? request()->segment(3) . '-' . request()->segment(2) : request()->segment(3))) : (request()->segment(1) ?: 'dashboard') }}"
-    data-crumbs="Workspace | Dashboard">
+    data-crumbs="">
     <div class="shell">
         <div data-shell-sidebar></div>
         <div class="main">

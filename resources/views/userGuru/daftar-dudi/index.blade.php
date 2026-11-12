@@ -2,9 +2,11 @@
 @section('content')
     <section class="hero">
         <div class="hero-text">
-            <span class="eyebrow">Guru · DUDI</span>
+            <span class="eyebrow">{{ $isAdmin ?? false ? 'Admin · DUDI' : 'Guru · DUDI' }}</span>
             <h1 class="hero-title">Daftar <span class="accent">DUDI</span></h1>
-            <p class="hero-sub">Daftar mitra dunia usaha dan dunia industri yang menjadi tanggung jawab Anda.</p>
+            <p class="hero-sub">
+                {{ $isAdmin ?? false ? 'Daftar DUDI beserta guru pembimbingnya.' : 'Daftar mitra dunia usaha dan dunia industri yang menjadi tanggung jawab Anda.' }}
+            </p>
         </div>
     </section>
 
@@ -19,7 +21,6 @@
                             <th>Alamat</th>
                             <th>Telepon</th>
                             <th>PIC</th>
-                            <th>Jurusan</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -30,12 +31,13 @@
                                 <td>{{ $row->alamat }}</td>
                                 <td>{{ $row->telp }}</td>
                                 <td>{{ ucwords($row->pic ?? '-') }}</td>
-                                <td>{{ ucwords($row->jurusan?->nama ?? '-') }}</td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="text-center text-muted">Belum ada data DUDI untuk guru ini.</td>
-                            </tr>
+                                <td colspan="7" class="text-center text-muted">
+                                    {{ $isAdmin ?? false ? 'Belum ada DUDI dengan guru pembimbing.' : 'Belum ada data DUDI untuk guru ini.' }}
+                                </td>
+                            </tr>   
                         @endforelse
                     </tbody>
                 </table>
