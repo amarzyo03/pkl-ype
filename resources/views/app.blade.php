@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Dashboard · 2026 Redesign Preview</title>
+    <title>PKL · SMK YPE Kroya</title>
     <script>
         ! function() {
             try {

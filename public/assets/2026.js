@@ -296,7 +296,7 @@
                     r && (r.outerHTML = o(a)),
                     i &&
                         (i.outerHTML =
-                            '\n    <footer class="d-footer">\n      <div>© 2026 · Designed by <a href="https://colorlib.com" target="_blank" rel="nofollow noopener noreferrer">Colorlib</a></div>\n      <div class="d-footer-meta">\n        <span>v4.1.2</span>\n        <span>preview build</span>\n      </div>\n    </footer>'));
+                            '\n    <footer class="d-footer">\n      <div>© 2026 · Created by <a href="#" target="_blank" rel="nofollow noopener noreferrer">TKJ YPE Kroya</a></div>\n      <div class="d-footer-meta">\n        <span>v1.0.0</span>\n        <span>sys-pkl</span>\n      </div>\n    </footer>'));
                 const sidebarProfile = document.querySelector(
                     ".d-sidebar .sidebar-footer",
                 );
