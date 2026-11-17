@@ -17,6 +17,7 @@ class singleUserSeeder extends Seeder
             'id_user' => 1,
             'username' => 'mikaela',
             'password' => bcrypt('mikaela'),
+            'role' => 'admin',
         ]);
     }
 }

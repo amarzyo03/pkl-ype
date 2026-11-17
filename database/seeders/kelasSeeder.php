@@ -19,23 +19,23 @@ class kelasSeeder extends Seeder
                     'id_jurusan' => 1,
                 ],
                 [
-                    'nama' => 'xi bsr-1',
-                    'id_jurusan' => 2,
-                ],
-                [
-                    'nama' => 'xi bsr-2',
-                    'id_jurusan' => 2,
-                ],
-                [
                     'nama' => 'xi mpk-1',
-                    'id_jurusan' => 3,
+                    'id_jurusan' => 2,
                 ],
                 [
                     'nama' => 'xi mpk-2',
+                    'id_jurusan' => 2,
+                ],
+                [
+                    'nama' => 'xi mpk-3',
+                    'id_jurusan' => 2,
+                ],
+                [
+                    'nama' => 'xi bsr-1',
                     'id_jurusan' => 3,
                 ],
                 [
-                    'nama' => 'xi mpk-1',
+                    'nama' => 'xi bsr-2',
                     'id_jurusan' => 3,
                 ],
                 [
@@ -72,10 +72,6 @@ class kelasSeeder extends Seeder
                 ],
                 [
                     'nama' => 'xi tkr-6',
-                    'id_jurusan' => 5,
-                ],
-                [
-                    'nama' => 'xi tkr-7',
                     'id_jurusan' => 5,
                 ],
             ]

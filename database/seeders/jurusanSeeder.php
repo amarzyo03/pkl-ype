@@ -19,12 +19,12 @@ class jurusanSeeder extends Seeder
                     'nama' => 'akuntansi',
                 ],
                 [
-                    'kode' => 'bsr',
-                    'nama' => 'bisnis retail / bisnis digital',
-                ],
-                [
                     'kode' => 'mpk',
                     'nama' => 'manajemen perkantoran',
+                ],
+                [
+                    'kode' => 'bsr',
+                    'nama' => 'bisnis retail / bisnis digital',
                 ],
                 [
                     'kode' => 'tkj',
