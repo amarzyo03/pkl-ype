@@ -17,7 +17,7 @@ class guruSeeder extends Seeder
             ['id' => 1, 'nama' => 'mikaela, dev', 'created_at' => null, 'updated_at' => null, 'deleted_at' => null],
             ['id' => 2, 'nama' => 'martiti roniasih, s.pd', 'created_at' => null, 'updated_at' => null, 'deleted_at' => null],
             ['id' => 3, 'nama' => 'novianti nutriani, s.pd', 'created_at' => null, 'updated_at' => null, 'deleted_at' => null],
-            ['id' => 4, 'nama' => 'net yulianti, s.pd', 'created_at' => null, 'updated_at' => null, 'deleted_at' => null],
+            ['id' => 4, 'nama' => 'neti yulianti, s.pd', 'created_at' => null, 'updated_at' => null, 'deleted_at' => null],
             ['id' => 5, 'nama' => 'panata testi w, s.pd', 'created_at' => null, 'updated_at' => null, 'deleted_at' => null],
             ['id' => 6, 'nama' => 'nurcahyani putri h, se', 'created_at' => null, 'updated_at' => null, 'deleted_at' => null],
             ['id' => 7, 'nama' => 'yuni afidah, s.pd', 'created_at' => null, 'updated_at' => null, 'deleted_at' => null],
