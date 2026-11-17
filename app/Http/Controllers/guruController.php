@@ -4,26 +4,20 @@ namespace App\Http\Controllers;
 
 use App\Imports\GuruImport;
 use App\Models\guruModel;
-use App\Models\jurusanModel;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 use Maatwebsite\Excel\Facades\Excel;
 
 class guruController extends Controller
 {
     public function index(Request $request)
     {
-        $query = guruModel::query()->with('jurusan');
+        $query = guruModel::query();
         $search = trim((string) $request->input('search', ''));
 
         if ($search !== '') {
             $query->where(function ($q) use ($search) {
                 $q->where('nama', 'like', "%{$search}%")
-                    ->orWhere('id', 'like', "%{$search}%")
-                    ->orWhereHas('jurusan', function ($jurusanQuery) use ($search) {
-                        $jurusanQuery->where('nama', 'like', "%{$search}%")
-                            ->orWhere('kode', 'like', "%{$search}%");
-                    });
+                    ->orWhere('id', 'like', "%{$search}%");
             });
         }
 
@@ -50,20 +44,13 @@ class guruController extends Controller
 
     public function add()
     {
-        $jurusans = jurusanModel::query()->orderBy('nama')->get();
-
-        return view('guru.add', compact('jurusans'));
+        return view('guru.add');
     }
 
     public function save(Request $request)
     {
         $validated = $request->validate([
             'nama' => ['required', 'string', 'max:255'],
-            'id_jurusan' => [
-                'required',
-                'integer',
-                Rule::exists('tb_jurusan', 'id')->whereNull('deleted_at'),
-            ],
         ]);
 
         guruModel::create($validated);
@@ -74,9 +61,8 @@ class guruController extends Controller
     public function edit(string $id)
     {
         $guru = guruModel::findOrFail($id);
-        $jurusans = jurusanModel::query()->orderBy('nama')->get();
 
-        return view('guru.edit', compact('guru', 'jurusans'));
+        return view('guru.edit', compact('guru'));
     }
 
     public function update(Request $request, string $id)
@@ -85,11 +71,6 @@ class guruController extends Controller
 
         $validated = $request->validate([
             'nama' => ['required', 'string', 'max:255'],
-            'id_jurusan' => [
-                'required',
-                'integer',
-                Rule::exists('tb_jurusan', 'id')->whereNull('deleted_at'),
-            ],
         ]);
 
         $guru->update($validated);

@@ -39,10 +39,7 @@
                             <option value="">Pilih guru</option>
                             @forelse ($gurus as $guru)
                                 <option value="{{ $guru->id }}" @selected(old('id_guru') == $guru->id)>
-                                    {{ $guru->nama }} —
-                                    {{ $guru->jurusan
-                                        ? $guru->jurusan->kode . ' - ' . $guru->jurusan->nama
-                                        : 'Jurusan tidak tersedia' }}
+                                    {{ $guru->nama }}
                                 </option>
                             @empty
                                 <option value="" disabled>Tidak ada guru yang belum memiliki akun.</option>

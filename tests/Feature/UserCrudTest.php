@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\jurusanModel;
 use App\Models\kelasModel;
 use App\Models\siswaModel;
 use App\Models\userModel;
@@ -15,7 +16,7 @@ it('creates a guru login linked to the selected guru profile', function () {
         ->get(route('user.add'))
         ->assertOk()
         ->assertSee('Guru Pilihan')
-        ->assertSee('TEST-GURU - Jurusan Guru Test')
+        ->assertDontSee('Jurusan tidak tersedia')
         ->assertSee('Pilih guru');
 
     $this->withSession(['auth_id' => 1, 'auth_role' => 'admin'])
@@ -111,7 +112,7 @@ it('updates the selected guru profile without replacing an unchanged password', 
         ->get(route('user.edit', $account->id))
         ->assertOk()
         ->assertSee('Guru Lama')
-        ->assertSee('TEST-GURU - Jurusan Guru Test')
+        ->assertDontSee('Jurusan tidak tersedia')
         ->assertSee('Pilih guru');
 
     $this->withSession(['auth_id' => 1, 'auth_role' => 'admin'])
@@ -150,9 +151,13 @@ it('shows and searches users using their linked guru name', function () {
 
 it('uses the profile that matches the account role when profile ids overlap', function () {
     $guru = createGuruForTest(['nama' => 'Guru Profile']);
+    $jurusan = jurusanModel::query()->create([
+        'kode' => 'USER-TEST',
+        'nama' => 'Jurusan User Test',
+    ]);
     $kelas = kelasModel::query()->create([
         'nama' => 'Kelas Profil Test',
-        'id_jurusan' => $guru->id_jurusan,
+        'id_jurusan' => $jurusan->id,
     ]);
     $siswa = siswaModel::query()->create([
         'nis' => 'SISWA-TEST',

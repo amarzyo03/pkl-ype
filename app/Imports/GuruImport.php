@@ -3,7 +3,6 @@
 namespace App\Imports;
 
 use App\Models\guruModel;
-use App\Models\jurusanModel;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
@@ -19,20 +18,12 @@ class GuruImport implements ToCollection, WithHeadingRow
     {
         foreach ($rows as $row) {
             $nama = trim((string) ($row['nama'] ?? ''));
-            $kodeJurusan = trim((string) ($row['kode_jurusan'] ?? ''));
 
-            if ($nama === '' || $kodeJurusan === '') {
-                continue;
-            }
-
-            $jurusan = jurusanModel::query()->where('kode', $kodeJurusan)->first();
-
-            if ($jurusan === null) {
+            if ($nama === '') {
                 continue;
             }
 
             $guru = guruModel::withTrashed()->firstOrNew(['nama' => $nama]);
-            $guru->id_jurusan = $jurusan->id;
 
             if ($guru->trashed()) {
                 $guru->restore();

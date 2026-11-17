@@ -39,10 +39,7 @@
                             @foreach ($gurus as $guru)
                                 <option value="{{ $guru->id }}"
                                     @selected(old('id_guru', $user->role !== 'siswa' ? $user->id_user : '') == $guru->id)>
-                                    {{ $guru->nama }} —
-                                    {{ $guru->jurusan
-                                        ? $guru->jurusan->kode . ' - ' . $guru->jurusan->nama
-                                        : 'Jurusan tidak tersedia' }}
+                                    {{ $guru->nama }}
                                 </option>
                             @endforeach
                         </select>

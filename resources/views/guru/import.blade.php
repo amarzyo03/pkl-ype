@@ -3,7 +3,7 @@
     <section class="hero">
         <div class="hero-text"><span class="eyebrow">Master · Guru · Import</span>
             <h1 class="hero-title">Import <span class="accent">Guru</span></h1>
-            <p class="hero-sub">Upload file Excel untuk menambahkan atau memperbarui data guru dan jurusannya.</p>
+            <p class="hero-sub">Upload file Excel untuk menambahkan atau memperbarui data guru.</p>
         </div>
         <div class="hero-actions">
             <a href="{{ route('guru') }}" class="btn btn--ghost">Cancel</a>
@@ -36,8 +36,8 @@
                 <div
                     style="padding:16px;border-radius:12px;background:var(--bg-muted);border:1px solid rgba(148,163,184,.2);color:var(--t-muted);font-size:13px;line-height:1.6;">
                     Kolom file Excel:<br>
-                    <strong>nama</strong>, <strong>kode_jurusan</strong><br><br>
-                    Kode jurusan harus sesuai dengan kode yang terdaftar pada data jurusan.
+                    <strong>nama</strong><br><br>
+                    File import hanya memerlukan kolom nama.
                 </div>
             </form>
         </div>

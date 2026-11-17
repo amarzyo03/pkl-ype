@@ -9,7 +9,6 @@
                 </div>
             </div>
         </td>
-        <td>{{ ucwords($row->jurusan?->nama) ?? 'Jurusan belum dipilih' }}</td>
         <td>
             <div class="data-cell-actions">
                 <a href="{{ route('guru.edit', $row->id) }}" class="btn--icon" aria-label="Edit" title="Edit">
@@ -35,6 +34,6 @@
     </tr>
 @empty
     <tr>
-        <td colspan="4" class="text-center text-muted">Belum ada data guru.</td>
+        <td colspan="3" class="text-center text-muted">Belum ada data guru.</td>
     </tr>
 @endforelse

@@ -68,7 +68,6 @@ class userController extends Controller
     public function add()
     {
         $gurus = guruModel::query()
-            ->with('jurusan')
             ->whereNotIn('id', userModel::query()->whereIn('role', ['admin', 'guru'])->select('id_user'))
             ->orderBy('nama')
             ->get();
@@ -110,7 +109,7 @@ class userController extends Controller
     public function edit(string $id)
     {
         $user = userModel::findOrFail($id);
-        $gurus = guruModel::query()->with('jurusan')->orderBy('nama')->get();
+        $gurus = guruModel::query()->orderBy('nama')->get();
         $siswas = siswaModel::query()->orderBy('nama')->get();
 
         return view('user.edit', compact('user', 'gurus', 'siswas'));

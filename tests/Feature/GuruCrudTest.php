@@ -2,98 +2,74 @@
 
 use App\Imports\GuruImport;
 use App\Models\guruModel;
-use App\Models\jurusanModel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 
 uses(RefreshDatabase::class);
 
 beforeEach(function () {
     $this->withSession(['auth_id' => 1, 'auth_role' => 'admin']);
-    $this->jurusan = jurusanModel::query()->create([
-        'kode' => 'GURU-RPL',
-        'nama' => 'Rekayasa Perangkat Lunak',
-    ]);
-    $this->jurusanLain = jurusanModel::query()->create([
-        'kode' => 'GURU-TKJ',
-        'nama' => 'Teknik Komputer dan Jaringan',
-    ]);
 });
 
-it('can create, update, and delete guru data with its major', function () {
+it('can create, update, and delete guru data without a jurusan field', function () {
     $this->get(route('guru.add'))
         ->assertOk()
         ->assertSee('name="nama"', false)
-        ->assertSee('name="id_jurusan"', false)
+        ->assertDontSee('name="id_jurusan"', false)
         ->assertDontSee('name="username"', false)
-        ->assertDontSee('name="password"', false)
-        ->assertSee('GURU-RPL - Rekayasa Perangkat Lunak')
-        ->assertSee('Rekayasa Perangkat Lunak');
+        ->assertDontSee('name="password"', false);
 
     $this->post(route('guru.save'), [
         'nama' => 'Budi Santoso',
-        'id_jurusan' => $this->jurusan->id,
     ])->assertRedirect(route('guru'));
 
     $guru = guruModel::query()->where('nama', 'Budi Santoso')->firstOrFail();
-    expect($guru->jurusan->nama)->toBe('Rekayasa Perangkat Lunak');
+    expect($guru->nama)->toBe('Budi Santoso');
 
     $this->put(route('guru.update', $guru->id), [
-        'nama' => 'Budi Santoso',
-        'id_jurusan' => $this->jurusanLain->id,
+        'nama' => 'Budi Santoso Baru',
     ])->assertRedirect(route('guru'));
 
     $this->get(route('guru.edit', $guru->id))
         ->assertOk()
-        ->assertSee('GURU-TKJ - Teknik Komputer dan Jaringan');
+        ->assertSee('Budi Santoso Baru');
 
     $guru->refresh();
-    expect($guru->id_jurusan)->toBe($this->jurusanLain->id)
-        ->and($guru->jurusan->nama)->toBe('Teknik Komputer dan Jaringan');
+    expect($guru->nama)->toBe('Budi Santoso Baru');
 
     $this->get(route('guru'))
         ->assertOk()
-        ->assertSee('Budi Santoso')
-        ->assertSee('Teknik Komputer dan Jaringan');
-    $this->get(route('guru', ['search' => 'GURU-TKJ']))
+        ->assertSee('Budi Santoso Baru');
+    $this->get(route('guru', ['search' => 'Budi']))
         ->assertOk()
-        ->assertSee('Budi Santoso')
-        ->assertSee('Teknik Komputer dan Jaringan');
+        ->assertSee('Budi Santoso Baru');
 
     $this->delete(route('guru.delete', $guru->id))->assertRedirect(route('guru'));
     $this->assertSoftDeleted('tb_guru', ['id' => $guru->id]);
 });
 
-it('requires a valid active major when creating and updating guru data', function () {
-    $this->from(route('guru.add'))
-        ->post(route('guru.save'), [
-            'nama' => 'Guru Baru',
-            'id_jurusan' => 999,
-        ])
-        ->assertRedirect(route('guru.add'))
-        ->assertSessionHasErrors('id_jurusan');
-
-    $guru = guruModel::query()->create([
-        'nama' => 'Guru Lama',
-        'id_jurusan' => $this->jurusan->id,
+it('shows legacy guru rows with an empty deleted_at value after normalization', function () {
+    DB::table('tb_guru')->insert([
+        'nama' => 'Guru Data Lama',
+        'deleted_at' => '',
     ]);
 
-    $this->from(route('guru.edit', $guru->id))
-        ->put(route('guru.update', $guru->id), [
-            'nama' => 'Guru Lama',
-            'id_jurusan' => 999,
-        ])
-        ->assertRedirect(route('guru.edit', $guru->id))
-        ->assertSessionHasErrors('id_jurusan');
+    $migration = require database_path('migrations/2026_11_17_082000_normalize_empty_tb_guru_deleted_at.php');
+    $migration->up();
+
+    $this->get(route('guru'))
+        ->assertOk()
+        ->assertSee('Guru Data Lama');
 });
 
-it('imports guru names with their major using the major code', function () {
+it('imports guru names without needing a jurusan', function () {
     (new GuruImport)->collection(collect([
-        ['nama' => 'Guru Baru', 'kode_jurusan' => 'GURU-RPL'],
-        ['nama' => 'Guru Baru', 'kode_jurusan' => 'GURU-TKJ'],
-        ['nama' => 'Tanpa Jurusan', 'kode_jurusan' => 'UNKNOWN'],
+        ['nama' => 'Guru Baru'],
+        ['nama' => 'Guru Baru'],
+        ['nama' => 'Guru Lain'],
     ]));
 
-    expect(guruModel::query()->count())->toBe(1)
-        ->and(guruModel::query()->where('nama', 'Guru Baru')->firstOrFail()->id_jurusan)
-        ->toBe($this->jurusanLain->id);
+    expect(guruModel::query()->count())->toBe(2)
+        ->and(guruModel::query()->where('nama', 'Guru Baru')->count())->toBe(1)
+        ->and(guruModel::query()->where('nama', 'Guru Lain')->exists())->toBeTrue();
 });
