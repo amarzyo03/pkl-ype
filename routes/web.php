@@ -7,6 +7,8 @@ use App\Http\Controllers\dudiController;
 use App\Http\Controllers\guruController;
 use App\Http\Controllers\jurusanController;
 use App\Http\Controllers\kelasController;
+use App\Http\Controllers\mapelController;
+use App\Http\Controllers\mappingController;
 use App\Http\Controllers\pendaftaranController;
 use App\Http\Controllers\siswaController;
 use App\Http\Controllers\userController;
@@ -80,6 +82,17 @@ Route::middleware(['adminMiddleware'])->group(function () {
     Route::delete('/jurusan/delete/{id}', [jurusanController::class, 'delete'])->name('jurusan.delete');
     Route::get('/jurusan/import', [jurusanController::class, 'import'])->name('jurusan.import');
     Route::post('/jurusan/import', [jurusanController::class, 'importStore'])->name('jurusan.import.store');
+
+    // ==== MAPEL ===== ##
+    Route::get('/mapel', [mapelController::class, 'index'])->name('mapel');
+    Route::get('/mapel/add', [mapelController::class, 'add'])->name('mapel.add');
+    Route::post('/mapel/save', [mapelController::class, 'save'])->name('mapel.save');
+    Route::get('/mapel/edit/{id}', [mapelController::class, 'edit'])->name('mapel.edit');
+    Route::put('/mapel/update/{id}', [mapelController::class, 'update'])->name('mapel.update');
+    Route::delete('/mapel/delete/{id}', [mapelController::class, 'delete'])->name('mapel.delete');
+
+    // ==== MAPPING GURU ===== ##
+    Route::resource('mapping', mappingController::class)->except(['show']);
 
     // ==== GURU ===== ##
     Route::get('/guru', [guruController::class, 'index'])->name('guru');

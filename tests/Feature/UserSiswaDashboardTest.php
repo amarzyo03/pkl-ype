@@ -2,9 +2,11 @@
 
 use App\Models\absensiModel;
 use App\Models\dudiModel;
+use App\Models\guruMapelKelasModel;
 use App\Models\jurnalModel;
 use App\Models\jurusanModel;
 use App\Models\kelasModel;
+use App\Models\mapelModel;
 use App\Models\pendaftaranModel;
 use App\Models\siswaModel;
 use App\Models\tugasModel;
@@ -31,6 +33,16 @@ it('shows student information and activity summaries on the dashboard', function
         'status' => 'active',
     ]);
     $guru = createGuruForTest(['nama' => 'Guru Dashboard']);
+    $mapel = mapelModel::query()->create([
+        'kode' => 'dashboard',
+        'nama' => 'Mapel Dashboard',
+        'jenis' => 'produktif',
+    ]);
+    guruMapelKelasModel::query()->create([
+        'id_guru' => $guru->id,
+        'id_mapel' => $mapel->id,
+        'id_kelas' => $kelas->id,
+    ]);
     $dudi = dudiModel::query()->create([
         'nama' => 'DUDI Dashboard',
         'alamat' => 'Jl. Dashboard',

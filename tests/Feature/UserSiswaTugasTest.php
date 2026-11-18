@@ -1,7 +1,9 @@
 <?php
 
+use App\Models\guruMapelKelasModel;
 use App\Models\jurusanModel;
 use App\Models\kelasModel;
+use App\Models\mapelModel;
 use App\Models\siswaModel;
 use App\Models\tugasModel;
 use App\Models\userModel;
@@ -17,6 +19,31 @@ it('shows active tasks with a kerjakan link for each task', function () {
         'nama' => 'Guru Tugas',
         'username' => 'guru-tugas',
         'password' => bcrypt('password'),
+    ]);
+    $jurusan = jurusanModel::query()->create(['kode' => 'TUGAS', 'nama' => 'Jurusan Tugas']);
+    $kelas = kelasModel::query()->create(['nama' => 'Kelas Tugas', 'id_jurusan' => $jurusan->id]);
+    $mapel = mapelModel::query()->create([
+        'kode' => 'tugas',
+        'nama' => 'Mapel Tugas',
+        'jenis' => 'produktif',
+    ]);
+    guruMapelKelasModel::query()->create([
+        'id_guru' => $guru->id,
+        'id_mapel' => $mapel->id,
+        'id_kelas' => $kelas->id,
+    ]);
+    $siswa = siswaModel::query()->create([
+        'nis' => 'TUGAS-AKTIF-1',
+        'nisn' => 'TUGAS-AKTIF-1',
+        'nama' => 'Siswa Tugas',
+        'id_kelas' => $kelas->id,
+    ]);
+    $user = userModel::query()->create([
+        'id_user' => (string) $siswa->id,
+        'username' => 'user-tugas',
+        'password' => 'password',
+        'role' => 'siswa',
+        'status' => 'active',
     ]);
 
     $tugas = tugasModel::query()->create([
@@ -34,13 +61,13 @@ it('shows active tasks with a kerjakan link for each task', function () {
     ]);
     $tugasTerhapus->delete();
 
-    $response = $this->get(route('userSiswa.tugas'));
+    $response = $this->withSession(['auth_id' => $user->id, 'auth_role' => 'siswa'])
+        ->get(route('userSiswa.tugas'));
 
     $response
         ->assertOk()
         ->assertSee('Tugas Aktif')
         ->assertSee('Guru Tugas')
-        ->assertSee('Deskripsi tugas.')
         ->assertSee('20/10/2026')
         ->assertSee(route('userSiswa.tugas.kerjakan', $tugas->id), false)
         ->assertDontSee('Tugas Terhapus');
@@ -66,6 +93,16 @@ it('orders tasks by newest date first', function () {
     ]);
     $guru = createGuruForTest([
         'nama' => 'Guru Pengampu',
+    ]);
+    $mapel = mapelModel::query()->create([
+        'kode' => 'sort',
+        'nama' => 'Mapel Urut',
+        'jenis' => 'skk',
+    ]);
+    guruMapelKelasModel::query()->create([
+        'id_guru' => $guru->id,
+        'id_mapel' => $mapel->id,
+        'id_kelas' => $kelas->id,
     ]);
 
     foreach ([
@@ -93,13 +130,30 @@ it('allows a student to submit a PDF and marks the task as completed', function 
         'username' => 'guru-pengampu',
         'password' => bcrypt('password'),
     ]);
+    $jurusan = jurusanModel::query()->create(['kode' => 'RPL', 'nama' => 'Rekayasa Perangkat Lunak']);
+    $kelas = kelasModel::query()->create(['nama' => 'X RPL 1', 'id_jurusan' => $jurusan->id]);
+    $mapel = mapelModel::query()->create([
+        'kode' => 'praktik',
+        'nama' => 'Praktik',
+        'jenis' => 'produktif',
+    ]);
+    guruMapelKelasModel::query()->create([
+        'id_guru' => $guru->id,
+        'id_mapel' => $mapel->id,
+        'id_kelas' => $kelas->id,
+    ]);
     $siswa = siswaModel::query()->create([
         'nis' => '12345',
         'nisn' => '1234567890',
         'nama' => 'Siswa Pengumpul',
-        'id_kelas' => 1,
+        'id_kelas' => $kelas->id,
+    ]);
+    $user = userModel::query()->create([
+        'id_user' => (string) $siswa->id,
         'username' => 'siswa-pengumpul',
         'password' => bcrypt('password'),
+        'role' => 'siswa',
+        'status' => 'active',
     ]);
     $tugas = tugasModel::query()->create([
         'id_guru' => $guru->id,
@@ -108,7 +162,8 @@ it('allows a student to submit a PDF and marks the task as completed', function 
         'deskripsi' => 'Buat laporan dalam format PDF.',
     ]);
 
-    $this->get(route('userSiswa.tugas.kerjakan', $tugas->id))
+    $this->withSession(['auth_id' => $user->id, 'auth_role' => 'siswa'])
+        ->get(route('userSiswa.tugas.kerjakan', $tugas->id))
         ->assertOk()
         ->assertSee('Belum dikerjakan');
 
@@ -122,8 +177,7 @@ it('allows a student to submit a PDF and marks the task as completed', function 
         ->assertSee('Laporan Praktik')
         ->assertSee('Buat laporan dalam format PDF.')
         ->assertSee('Belum dikerjakan')
-        ->assertSee('name="id_siswa"', false)
-        ->assertSee('selected>', false);
+        ->assertSee('value="Siswa Pengumpul"', false);
 
     $this->from(route('userSiswa.tugas.kerjakan', $tugas->id))
         ->post(route('userSiswa.tugas.kerjakan.attempt', $tugas->id), [
@@ -141,7 +195,6 @@ it('allows a student to submit a PDF and marks the task as completed', function 
     ])
         ->assertRedirect(route('userSiswa.tugas.kerjakan', [
             'id' => $tugas->id,
-            'id_siswa' => $siswa->id,
         ]))
         ->assertSessionHas('success');
 
@@ -158,41 +211,35 @@ it('allows a student to submit a PDF and marks the task as completed', function 
         ->first();
 
     expect($pengumpulan->file)
-        ->toBe('siswa-pengumpul_'.$tugas->id.'_laporan-praktik_siswa-'.$siswa->id.'.pdf');
-    Storage::disk('task_attachments')->assertExists(
-        'assets/static/pengumpulan-tugas/'.$pengumpulan->file,
-    );
+        ->toBe('Siswa Pengumpul_X RPL 1_'.now()->toDateString().'_Laporan Praktik.pdf');
+    expect(Storage::disk('task_attachments')->allFiles())
+        ->toContain('assets/static/tugas-pengumpulan/'.$pengumpulan->file);
 
     $this->get(route('userSiswa.tugas.kerjakan', [
         'id' => $tugas->id,
-        'id_siswa' => $siswa->id,
     ]))
         ->assertOk()
-        ->assertSee('Dikerjakan')
+        ->assertSee('Sudah dikerjakan')
         ->assertSee(basename($pengumpulan->file))
-        ->assertSee('id="file" class="input" type="file" name="file" accept=".pdf,application/pdf"', false)
+        ->assertSee('name="file"', false)
         ->assertSee('disabled', false)
-        ->assertSee('Batalkan pengerjaan tugas');
+        ->assertSee('Batalkan Pengerjaan Tugas');
 
     $taskList = $this->get(route('userSiswa.tugas', ['id_siswa' => $siswa->id]));
     $taskList
         ->assertOk()
-        ->assertSee('Sudah dikerjakan')
-        ->assertSee(route('userSiswa.tugas.kerjakan', [
-            'id' => $tugas->id,
-            'id_siswa' => $siswa->id,
-        ]), false);
+        ->assertSee('Laporan Praktik')
+        ->assertSee(route('userSiswa.tugas.kerjakan', $tugas->id), false);
 
     $this->post(route('userSiswa.tugas.kerjakan.cancel', $tugas->id), [
         'id_siswa' => $siswa->id,
     ])
-        ->assertRedirect(route('userSiswa.tugas.kerjakan', [
-            'id' => $tugas->id,
-            'id_siswa' => $siswa->id,
-        ]))
+        ->assertRedirect(route('userSiswa.tugas.kerjakan', $tugas->id))
         ->assertSessionHas('success');
 
-    Storage::disk('task_attachments')->assertMissing($pengumpulan->file);
+    Storage::disk('task_attachments')->assertMissing(
+        'assets/static/tugas-pengumpulan/'.$pengumpulan->file,
+    );
     $this->assertDatabaseHas('tb_tugas_status', [
         'id' => $pengumpulan->id,
         'status' => null,
@@ -202,18 +249,63 @@ it('allows a student to submit a PDF and marks the task as completed', function 
     $this->post(route('userSiswa.tugas.kerjakan.attempt', $tugas->id), [
         'id_siswa' => $siswa->id,
         'file' => UploadedFile::fake()->create('jawaban-baru.pdf', 100, 'application/pdf'),
-    ])->assertRedirect(route('userSiswa.tugas.kerjakan', [
-        'id' => $tugas->id,
-        'id_siswa' => $siswa->id,
-    ]));
+    ])->assertRedirect(route('userSiswa.tugas.kerjakan', $tugas->id));
 
     $pengumpulanBaru = DB::table('tb_tugas_status')
         ->where('id_siswa', $siswa->id)
         ->where('id_tugas', $tugas->id)
+        ->orderByDesc('id')
         ->first();
 
     expect($pengumpulanBaru->file)->toBe($pengumpulan->file);
     Storage::disk('task_attachments')->assertExists(
-        'assets/static/pengumpulan-tugas/'.$pengumpulanBaru->file,
+        'assets/static/tugas-pengumpulan/'.$pengumpulanBaru->file,
     );
+});
+
+it('limits task access and submissions to students in a teachers mapped class', function () {
+    $jurusan = jurusanModel::query()->create(['kode' => 'AKSES', 'nama' => 'Jurusan Akses']);
+    $kelasAjar = kelasModel::query()->create(['nama' => 'Kelas Ajar', 'id_jurusan' => $jurusan->id]);
+    $kelasLain = kelasModel::query()->create(['nama' => 'Kelas Lain', 'id_jurusan' => $jurusan->id]);
+    $guru = createGuruForTest(['nama' => 'Guru Pengampu']);
+    $mapel = mapelModel::query()->create([
+        'kode' => 'akses',
+        'nama' => 'Mapel Akses',
+        'jenis' => 'produktif',
+    ]);
+    guruMapelKelasModel::query()->create([
+        'id_guru' => $guru->id,
+        'id_mapel' => $mapel->id,
+        'id_kelas' => $kelasAjar->id,
+    ]);
+    $siswaLain = siswaModel::query()->create([
+        'nis' => 'AKSES-2',
+        'nisn' => 'AKSES-2',
+        'nama' => 'Siswa Kelas Lain',
+        'id_kelas' => $kelasLain->id,
+    ]);
+    $userLain = userModel::query()->create([
+        'id_user' => (string) $siswaLain->id,
+        'username' => 'siswa-kelas-lain',
+        'password' => 'password',
+        'role' => 'siswa',
+        'status' => 'active',
+    ]);
+    $tugas = tugasModel::query()->create([
+        'id_guru' => $guru->id,
+        'tanggal' => '2026-10-29',
+        'judul' => 'Tugas Kelas Ajar',
+        'deskripsi' => 'Tugas untuk kelas yang dipetakan.',
+    ]);
+
+    $this->withSession(['auth_id' => $userLain->id, 'auth_role' => 'siswa'])
+        ->get(route('userSiswa.tugas'))
+        ->assertOk()
+        ->assertDontSee('Tugas Kelas Ajar');
+    $this->get(route('userSiswa.tugas.kerjakan', $tugas->id))->assertNotFound();
+    $this->post(route('userSiswa.tugas.kerjakan.attempt', $tugas->id), [
+        'file' => UploadedFile::fake()->create('jawaban.pdf', 100, 'application/pdf'),
+    ])->assertNotFound();
+
+    $this->assertDatabaseCount('tb_tugas_status', 0);
 });

@@ -1,8 +1,10 @@
 <?php
 
 use App\Models\dudiModel;
+use App\Models\guruMapelKelasModel;
 use App\Models\jurusanModel;
 use App\Models\kelasModel;
+use App\Models\mapelModel;
 use App\Models\pendaftaranModel;
 use App\Models\siswaModel;
 use App\Models\tugasModel;
@@ -143,8 +145,22 @@ it('shows completed and incomplete students for a teachers task', function () {
         'nama' => 'XI RPL 1',
         'id_jurusan' => $jurusan->id,
     ]);
+    $kelasLain = kelasModel::query()->create([
+        'nama' => 'XI RPL 2',
+        'id_jurusan' => $jurusan->id,
+    ]);
     $guru = createGuruForTest(['nama' => 'Guru Status']);
     $otherGuru = createGuruForTest(['nama' => 'Guru Lain']);
+    $mapel = mapelModel::query()->create([
+        'kode' => 'status',
+        'nama' => 'Mapel Status',
+        'jenis' => 'produktif',
+    ]);
+    guruMapelKelasModel::query()->create([
+        'id_guru' => $guru->id,
+        'id_mapel' => $mapel->id,
+        'id_kelas' => $kelas->id,
+    ]);
     $dudi = dudiModel::query()->create([
         'nama' => 'DUDI Bimbingan',
         'alamat' => 'Jl. Industri',
@@ -195,7 +211,13 @@ it('shows completed and incomplete students for a teachers task', function () {
     $siswaDudiLain = siswaModel::query()->create([
         'nis' => '10003',
         'nisn' => '20003',
-        'nama' => 'Siswa DUDI Lain',
+        'nama' => 'Siswa Kelas Lain',
+        'id_kelas' => $kelasLain->id,
+    ]);
+    $siswaTanpaPendaftaran = siswaModel::query()->create([
+        'nis' => '10005',
+        'nisn' => '20005',
+        'nama' => 'Siswa Tanpa Pendaftaran',
         'id_kelas' => $kelas->id,
     ]);
     pendaftaranModel::query()->create([
@@ -253,15 +275,16 @@ it('shows completed and incomplete students for a teachers task', function () {
         ->assertViewIs('userGuru.tugas.status')
         ->assertSee('Tugas status siswa')
         ->assertSee('Sudah mengerjakan: 1 siswa')
-        ->assertSee('Belum mengerjakan: 2 siswa')
+        ->assertSee('Belum mengerjakan: 3 siswa')
         ->assertSee('Siswa Sudah Mengerjakan')
         ->assertSee('Siswa Belum Mengerjakan')
         ->assertSee('Siswa Membatalkan Pengerjaan')
+        ->assertSee('Siswa Tanpa Pendaftaran')
         ->assertSee(route('tugas.pengumpulan.file', [$tugas->id, $siswaSelesai->id]), false)
         ->assertDontSee(route('tugas.pengumpulan.file', [$tugas->id, $siswaDudiLain->id]), false)
         ->assertSee('Sudah mengerjakan')
         ->assertSee('Belum mengerjakan')
-        ->assertDontSee('Siswa DUDI Lain');
+        ->assertDontSee('Siswa Kelas Lain');
 
     expect(substr_count($response->getContent(), '<table'))->toBe(1);
 

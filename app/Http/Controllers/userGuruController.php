@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\absensiModel;
 use App\Models\dudiModel;
+use App\Models\guruMapelKelasModel;
 use App\Models\guruModel;
 use App\Models\jurnalModel;
 use App\Models\pendaftaranModel;
@@ -107,9 +108,7 @@ class userGuruController extends Controller
 
     public function tugas(Request $request): View
     {
-        $query = tugasModel::query()
-            ->with('guru')
-            ->where('id_guru', $this->guru->id);
+        $query = $this->ownedTasks()->with('guru');
         $search = trim($request->string('search')->toString());
 
         if ($search !== '') {
@@ -145,14 +144,7 @@ class userGuruController extends Controller
     public function statusTugas(string $id): View
     {
         $tugas = $this->ownedTasks()->findOrFail($id);
-        $siswas = siswaModel::query()
-            ->with('kelas')
-            ->whereHas('pendaftaran', function (Builder $query): void {
-                $query->where('status', 'disetujui')
-                    ->whereHas('dudi', function (Builder $dudiQuery): void {
-                        $dudiQuery->where('id_guru', $this->guru->id);
-                    });
-            })
+        $siswas = $this->teachingClassStudents()
             ->orderBy('nama')
             ->get();
         $siswaSelesaiIds = tugasStatusModel::query()
@@ -188,14 +180,8 @@ class userGuruController extends Controller
     {
         $tugas = $this->ownedTasks()->findOrFail($id);
 
-        siswaModel::query()
+        $this->teachingClassStudents()
             ->whereKey($idSiswa)
-            ->whereHas('pendaftaran', function (Builder $query): void {
-                $query->where('status', 'disetujui')
-                    ->whereHas('dudi', function (Builder $dudiQuery): void {
-                        $dudiQuery->where('id_guru', $this->guru->id);
-                    });
-            })
             ->firstOrFail();
 
         $pengumpulan = tugasStatusModel::query()
@@ -336,6 +322,15 @@ class userGuruController extends Controller
     private function ownedTasks(): Builder
     {
         return tugasModel::query()->where('id_guru', $this->guru->id);
+    }
+
+    private function teachingClassStudents(): Builder
+    {
+        $classIds = guruMapelKelasModel::query()
+            ->where('id_guru', $this->guru->id)
+            ->select('id_kelas');
+
+        return siswaModel::query()->with('kelas')->whereIn('id_kelas', $classIds);
     }
 
     private function storeAttachment(Request $request, string $tanggal, string $judul): string

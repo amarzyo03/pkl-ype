@@ -96,6 +96,18 @@
                             icon: '<path d="M4 5h16v14H4z"/><path d="M4 10h16M9 5v14"/>',
                         },
                         {
+                            key: "mapel",
+                            text: "Mata Pelajaran",
+                            href: "/mapel",
+                            icon: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>',
+                        },
+                        {
+                            key: "mapping",
+                            text: "Mapping Guru",
+                            href: "/mapping",
+                            icon: '<path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M20 8v6M17 11h6"/>',
+                        },
+                        {
                             key: "jurusan",
                             text: "Jurusan",
                             href: "/jurusan",

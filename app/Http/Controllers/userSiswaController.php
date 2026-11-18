@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\absensiModel;
 use App\Models\dudiModel;
+use App\Models\guruMapelKelasModel;
 use App\Models\jurnalModel;
 use App\Models\pendaftaranModel;
 use App\Models\siswaModel;
@@ -11,6 +12,7 @@ use App\Models\tugasModel;
 use App\Models\tugasStatusModel;
 use App\Models\userModel;
 use Closure;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -44,10 +46,11 @@ class userSiswaController extends Controller
         $pendaftaran = $this->pendaftaran;
         $totalAbsensi = absensiModel::query()->where('id_siswa', $siswa->id)->count();
         $totalJurnal = jurnalModel::query()->where('id_siswa', $siswa->id)->count();
-        $totalTugas = tugasModel::query()->count();
+        $totalTugas = $this->availableTasksForStudent()->count();
         $tugasSelesai = tugasStatusModel::query()
             ->where('id_siswa', $siswa->id)
             ->where('status', 'dikerjakan')
+            ->whereIn('id_tugas', $this->availableTasksForStudent()->select('id'))
             ->distinct()
             ->count('id_tugas');
         $absensiTerbaru = absensiModel::query()
@@ -160,8 +163,7 @@ class userSiswaController extends Controller
             return redirect()->route('userSiswa.pendaftaran.status')->with('failed', 'Status Peserta PKL masih belum disetujui');
         }
 
-        $siswa = $this->siswa->id;
-        $tugas = tugasModel::query()
+        $tugas = $this->availableTasksForStudent()
             ->select(['id', 'id_guru', 'tanggal', 'judul'])
             ->with('guru:id,nama')
             ->orderByDesc('tanggal')
@@ -174,7 +176,7 @@ class userSiswaController extends Controller
     public function tugasKerjakan($id)
     {
         $siswa = $this->siswa;
-        $tugas = tugasModel::query()->with('guru:id,nama')->find($id);
+        $tugas = $this->availableTasksForStudent()->with('guru:id,nama')->findOrFail($id);
         $tugas_status = tugasStatusModel::where('id_siswa', $siswa->id)->where('id_tugas', $tugas->id)->orderByDesc('id')->first();
 
         return view('userSiswa.tugas.kerjakan', compact('siswa', 'tugas', 'tugas_status'));
@@ -182,6 +184,7 @@ class userSiswaController extends Controller
 
     public function attemptTugasKerjakan(Request $request, string $id)
     {
+        $tugas = $this->availableTasksForStudent()->findOrFail($id);
         $request->validate([
             'file' => 'required|file|mimes:pdf|max:1024',
         ]);
@@ -189,7 +192,6 @@ class userSiswaController extends Controller
         $siswa = $this->siswa->id;
         $siswa_nama = $this->siswa->nama;
         $siswa_kelas = $this->siswa->kelas->nama;
-        $tugas = tugasModel::query()->find($id);
         $tanggal = now()->toDateString();
         $file = $request->file('file');
         $nama_file = $siswa_nama.'_'.$siswa_kelas.'_'.$tanggal.'_'.$tugas->judul.'.'.strtolower($file->getClientOriginalExtension());
@@ -221,7 +223,7 @@ class userSiswaController extends Controller
     public function cancelTugasKerjakan(string $id)
     {
         $siswa = $this->siswa->id;
-        $tugas = tugasModel::query()->find($id);
+        $tugas = $this->availableTasksForStudent()->findOrFail($id);
         $tugas_status = tugasStatusModel::query()
             ->where('id_siswa', $siswa)
             ->where('id_tugas', $tugas->id)
@@ -250,6 +252,15 @@ class userSiswaController extends Controller
         return redirect()
             ->route('userSiswa.tugas.kerjakan', $tugas->id)
             ->with('success', 'Pengerjaan tugas dibatalkan. Anda dapat mengunggah file kembali.');
+    }
+
+    private function availableTasksForStudent(): Builder
+    {
+        $teacherIds = guruMapelKelasModel::query()
+            ->where('id_kelas', $this->siswa->id_kelas)
+            ->select('id_guru');
+
+        return tugasModel::query()->whereIn('id_guru', $teacherIds);
     }
 
     // # ===== ABSENSI ===== ##
