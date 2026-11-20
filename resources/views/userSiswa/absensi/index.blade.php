@@ -22,6 +22,7 @@
                             <th style="width: 32px">#</th>
                             <th>Tanggal</th>
                             <th>Foto</th>
+                            <th>Lokasi</th>
                             <th>Keterangan</th>
                             <th>Status</th>
                             <th>Aksi</th>
@@ -42,6 +43,7 @@
                                         -
                                     @endif
                                 </td>
+                                <td>{{ $row->lokasi ?: '-' }}</td>
                                 <td>{{ $row->keterangan }}</td>
                                 <td>{{ $row->status }}</td>
                                 <td>

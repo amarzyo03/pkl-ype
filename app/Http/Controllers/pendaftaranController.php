@@ -59,6 +59,7 @@ class pendaftaranController extends Controller
     {
         $dudis = dudiModel::query()->orderBy('nama')->get();
         $siswas = siswaModel::query()
+            ->with('kelas')
             ->whereDoesntHave('pendaftaran', fn (Builder $query) => $query->withTrashed())
             ->orderBy('nama')
             ->get();
@@ -80,6 +81,7 @@ class pendaftaranController extends Controller
         $pendaftaran = pendaftaranModel::query()->findOrFail($id);
         $dudis = dudiModel::query()->orderBy('nama')->get();
         $siswas = siswaModel::query()
+            ->with('kelas')
             ->where(function (Builder $query) use ($pendaftaran): void {
                 $query->whereDoesntHave('pendaftaran', fn (Builder $query) => $query->withTrashed());
 

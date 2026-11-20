@@ -46,9 +46,17 @@
                         @enderror
                     </div>
                     <div class="field">
-                        <label class="field-label" for="foto">Foto</label>
-                        <input class="input" id="foto" type="file" name="foto" accept=".jpg,.jpeg,.png,image/*">
+                        <label class="field-label" for="foto">Foto <span class="req">*</span></label>
+                        <input class="input" id="foto" type="file" name="foto" accept=".jpg,.jpeg,.png,image/*" required>
                         @error('foto')
+                            <small role="alert">{{ $message }}</small>
+                        @enderror
+                    </div>
+                    <div class="field">
+                        <label class="field-label" for="lokasi">DUDI</label>
+                        <input class="input" id="lokasi" type="text" name="lokasi"
+                            value="{{ old('lokasi', $lokasi) }}" maxlength="255" readonly>
+                        @error('lokasi')
                             <small role="alert">{{ $message }}</small>
                         @enderror
                     </div>

@@ -57,6 +57,14 @@
                         @enderror
                     </div>
                     <div class="field" style="grid-column: 1 / -1">
+                        <label class="field-label" for="lokasi">Lokasi</label>
+                        <input class="input" id="lokasi" type="text" name="lokasi"
+                            value="{{ old('lokasi', $absensi->lokasi) }}" maxlength="255">
+                        @error('lokasi')
+                            <small role="alert">{{ $message }}</small>
+                        @enderror
+                    </div>
+                    <div class="field" style="grid-column: 1 / -1">
                         <label class="field-label" for="keterangan">Keterangan</label>
                         <textarea class="input" id="keterangan" name="keterangan" rows="4" maxlength="255">{{ old('keterangan', $absensi->keterangan) }}</textarea>
                         @error('keterangan')

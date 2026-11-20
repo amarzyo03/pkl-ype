@@ -269,7 +269,7 @@ class userSiswaController extends Controller
         $siswa_info = $this->siswa;
         $dudi = $this->pendaftaran;
         $absensi = absensiModel::query()
-            ->select(['id', 'tanggal', 'foto', 'keterangan', 'status'])
+            ->select(['id', 'tanggal', 'foto', 'lokasi', 'keterangan', 'status'])
             ->where('id_siswa', $siswa_info->id)
             ->orderByDesc('tanggal')
             ->orderByDesc('id')
@@ -288,28 +288,15 @@ class userSiswaController extends Controller
 
     public function saveAbsensi(Request $request)
     {
-        $request->validate($this->absensiRules(), $this->absensiMessages());
+        $data = $request->validate($this->absensiRules(), $this->absensiMessages());
+        $data['id_siswa'] = $this->siswa->id;
+        $data['lokasi'] = $data['lokasi'] ?? $this->pendaftaran?->dudi?->nama;
 
-        $foto = $request->file('foto');
-        $foto_nama = $this->siswa->id.'_'.now()->format('YmdHis').'_'.Str::random(8).'.'.$foto->extension();
-        $path = Storage::disk('task_attachments')->putFileAs(
-            'assets/static/absensi',
-            $foto,
-            $foto_nama
-        );
-
-        if ($path === false) {
-            throw new RuntimeException('Foto absensi gagal disimpan.');
+        if ($request->hasFile('foto')) {
+            $data['foto'] = $this->storeAbsensiPhoto($request);
+        } else {
+            unset($data['foto']);
         }
-
-        $data =
-            [
-                'id_siswa' => $this->siswa->id,
-                'tanggal' => $request->tanggal,
-                'status' => $request->status,
-                'foto' => $foto_nama,
-                'keterangan' => $request->keterangan,
-            ];
 
         absensiModel::create($data);
 

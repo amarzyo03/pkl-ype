@@ -31,10 +31,14 @@
                     <label class="field-label" for="id_siswa">Siswa <span class="req">*</span></label>
                     <select id="id_siswa" class="select" name="id_siswa" required>
                         <option value="">Pilih siswa</option>
-                        @foreach ($siswas as $siswa)
-                            <option value="{{ $siswa->id }}" @selected((string) old('id_siswa', $pendaftaran->id_siswa ?? '') === (string) $siswa->id)>
-                                {{ $siswa->nama }} ({{ $siswa->nis }})
-                            </option>
+                        @foreach ($siswas->groupBy(fn ($siswa) => $siswa->kelas?->nama ?? 'Tanpa Kelas')->sortKeys() as $namaKelas => $siswaKelas)
+                            <optgroup label="===== {{ strtoupper($namaKelas) }} =====">
+                                @foreach ($siswaKelas as $siswa)
+                                    <option value="{{ $siswa->id }}" @selected((string) old('id_siswa', $pendaftaran->id_siswa ?? '') === (string) $siswa->id)>
+                                        {{ $siswa->nama }} ({{ $siswa->kelas?->nama ?? 'Tanpa Kelas' }})
+                                    </option>
+                                @endforeach
+                            </optgroup>
                         @endforeach
                     </select>
                     @error('id_siswa')
